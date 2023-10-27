@@ -6,7 +6,7 @@
     "dev": "vite --host",
     "build": "vue-tsc && vite build",
     "preview": "vite preview",
-    "publish": "npm publish"
+    "pub": "npm publish"
   },
   "dependencies": {
     "vue": "^3.3.7"
