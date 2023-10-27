@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "build": "vue-tsc && vite build",
     "preview": "vite preview"
   },
@@ -29,8 +29,7 @@
   "files": [
     "package.json",
     "README.md",
-    "dist",
-    "src/package"
+    "dist"
   ],
   "main": "./dist/index.umd.cjs",
   "module": "./dist/index.js",
