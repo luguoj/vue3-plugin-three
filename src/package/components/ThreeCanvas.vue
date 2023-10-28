@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {ref, watch} from "vue";
+import {ref, toRaw, watch} from "vue";
 import * as Three from "three";
 import * as ThreeAddons from "three/examples/jsm/Addons";
 import {vPsrResizeObserver} from "@psr-framework/vue3-plugin-utils"
@@ -54,6 +54,7 @@ watch(canvasSize, canvasSize => {
 // 为场景添加/移除对象
 let currentThreeObjects: Three.Object3D[] = []
 watch(() => props.threeObjects, threeObjects => {
+  threeObjects = toRaw(threeObjects)
   const toRemove = currentThreeObjects.filter(currentThreeObject => !threeObjects.includes(currentThreeObject))
   const toAdd = threeObjects.filter(threeObject => !currentThreeObjects.includes(threeObject))
   if (toRemove.length) {
