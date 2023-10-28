@@ -54,8 +54,12 @@ let currentThreeObjects: Three.Object3D[] = []
 watch(() => props.threeObjects, threeObjects => {
   const toRemove = currentThreeObjects.filter(currentThreeObject => !threeObjects.includes(currentThreeObject))
   const toAdd = threeObjects.filter(threeObject => !currentThreeObjects.includes(threeObject))
-  scene.remove(...toRemove)
-  scene.add(...toAdd)
+  if (toRemove.length) {
+    scene.remove(...toRemove)
+  }
+  if (toAdd.length) {
+    scene.add(...toAdd)
+  }
   currentThreeObjects = [...threeObjects]
 }, {immediate: true})
 
