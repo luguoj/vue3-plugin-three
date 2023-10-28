@@ -5,7 +5,9 @@ import * as ThreeAddons from "three/examples/jsm/Addons";
 import {vPsrResizeObserver} from "@psr-framework/vue3-plugin-utils"
 
 const props = defineProps<{
-  threeCamara: Three.Camera,
+  threeRenderer?: Three.WebGLRenderer
+  threeScene?: Three.Scene
+  threeCamara: Three.Camera
   threeObjects: Three.Object3D[]
 }>()
 
@@ -21,9 +23,9 @@ function handleResize(entry: ResizeObserverEntry) {
 // 检查WebGL兼容性
 const isWebGLAvailable = ThreeAddons.WebGL.isWebGLAvailable();
 // 创建渲染器
-const renderer = new Three.WebGLRenderer();
+const renderer = props.threeRenderer || new Three.WebGLRenderer();
 //创建场景
-const scene = new Three.Scene();
+const scene = props.threeScene || new Three.Scene();
 // 在画布上渲染场景
 watch(canvasRef, canvas => {
   if (canvas) {
