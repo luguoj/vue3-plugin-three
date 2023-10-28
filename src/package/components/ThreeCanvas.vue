@@ -11,6 +11,11 @@ const props = defineProps<{
   threeObjects: Three.Object3D[]
 }>()
 
+const emits = defineEmits<{
+  (event: 'threeDraw', delta: number): void
+  (event: 'threeResize', size: { width: number, height: number }): void
+}>()
+
 // 画布容器
 const canvasRef = ref<HTMLElement>()
 const canvasSize = ref<{ width: number, height: number }>({width: 0, height: 0})
@@ -34,10 +39,16 @@ watch(canvasRef, canvas => {
   }
 })
 
+let clock: Three.Clock | undefined = undefined
+
 // 每次刷新时进行场景绘制
 function animate() {
+  if (clock == undefined) {
+    clock = new Three.Clock()
+  }
   requestAnimationFrame(animate);
   renderer.render(scene, props.threeCamara);
+  emits('threeDraw', clock.getDelta())
 }
 
 // 让渲染器尺寸随画布缩放
@@ -50,6 +61,7 @@ watch(canvasSize, canvasSize => {
     camara.aspect = canvasSize.width != 0 ? (canvasSize.width / canvasSize.height) : 1
     camara.updateProjectionMatrix()
   }
+  emits('threeResize', {...canvasSize})
 })
 // 为场景添加/移除对象
 let currentThreeObjects: Three.Object3D[] = []
