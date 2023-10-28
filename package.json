@@ -9,6 +9,8 @@
     "pub": "npm publish"
   },
   "dependencies": {
+    "@types/three": "^0.158.0",
+    "three": "^0.158.0",
     "vue": "^3.3.7"
   },
   "devDependencies": {
