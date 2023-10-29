@@ -1,88 +1,25 @@
 <script setup lang="ts">
-import {ref, toRaw, watch} from "vue";
-import * as Three from "three";
+import {shallowRef, watch} from "vue";
 import * as ThreeAddons from "three/examples/jsm/Addons";
-import {vPsrResizeObserver} from "@psr-framework/vue3-plugin-utils"
+import {PsrThreePluginTypes} from "../types";
 
 const props = defineProps<{
-  threeRenderer?: Three.WebGLRenderer
-  threeScene?: Three.Scene
-  threeCamara: Three.Camera
-  threeObjects: Three.Object3D[]
+  rendererContext: PsrThreePluginTypes.RendererContext<any>
 }>()
-
-const emits = defineEmits<{
-  (event: 'threeDraw', delta: number): void
-  (event: 'threeResize', size: { width: number, height: number }): void
-}>()
-
-// 画布容器
-const canvasRef = ref<HTMLElement>()
-const canvasSize = ref<{ width: number, height: number }>({width: 0, height: 0})
-
-// 监控更新画布尺寸
-function handleResize(entry: ResizeObserverEntry) {
-  canvasSize.value = {width: entry.contentRect.width, height: entry.contentRect.height}
-}
 
 // 检查WebGL兼容性
 const isWebGLAvailable = ThreeAddons.WebGL.isWebGLAvailable();
-// 创建渲染器
-const renderer = props.threeRenderer || new Three.WebGLRenderer();
-//创建场景
-const scene = props.threeScene || new Three.Scene();
-// 在画布上渲染场景
-watch(canvasRef, canvas => {
-  if (canvas) {
-    canvas.appendChild(renderer.domElement);
-    animate()
-  }
+
+const containerRef = shallowRef<HTMLElement>()
+
+watch(containerRef, container => {
+  props.rendererContext.containerRef.value = container
 })
-
-let clock: Three.Clock | undefined = undefined
-
-// 每次刷新时进行场景绘制
-function animate() {
-  if (clock == undefined) {
-    clock = new Three.Clock()
-  }
-  requestAnimationFrame(animate);
-  renderer.render(scene, props.threeCamara);
-  emits('threeDraw', clock.getDelta())
-}
-
-// 让渲染器尺寸随画布缩放
-watch(canvasSize, canvasSize => {
-  // 更新渲染器尺寸
-  renderer.setSize(canvasSize.width, canvasSize.height, false);
-  const camara = props.threeCamara
-  if (camara instanceof Three.PerspectiveCamera) {
-    // 更新透视相机长宽比
-    camara.aspect = canvasSize.width != 0 ? (canvasSize.width / canvasSize.height) : 1
-    camara.updateProjectionMatrix()
-  }
-  emits('threeResize', {...canvasSize})
-})
-// 为场景添加/移除对象
-let currentThreeObjects: Three.Object3D[] = []
-watch(() => props.threeObjects, threeObjects => {
-  threeObjects = toRaw(threeObjects)
-  const toRemove = currentThreeObjects.filter(currentThreeObject => !threeObjects.includes(currentThreeObject))
-  const toAdd = threeObjects.filter(threeObject => !currentThreeObjects.includes(threeObject))
-  if (toRemove.length) {
-    scene.remove(...toRemove)
-  }
-  if (toAdd.length) {
-    scene.add(...toAdd)
-  }
-  currentThreeObjects = [...threeObjects]
-}, {immediate: true})
-
 </script>
 
 <template>
   <div>
-    <div style="height: 100%;width: 100%;" v-if="isWebGLAvailable" ref="canvasRef" v-psr-resize-observer="handleResize"/>
+    <div style="height: 100%;width: 100%;" v-if="isWebGLAvailable" ref="containerRef"/>
     <div v-else>WebGL is not available!</div>
   </div>
 </template>
