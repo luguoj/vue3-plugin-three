@@ -1,59 +1,55 @@
 <script lang="ts" setup>
 
-import * as Three from "three";
+import * as THREE from "three";
 import {Font, FontLoader, TextGeometry} from "three/addons";
-import {PsrThreeCanvas} from "../../package";
+import {PsrThree, PsrThreeCanvas} from "../../package";
 import {onMounted, ref, watch} from "vue";
-
-// 创建摄像机
-const camera: Three.Camera = new Three.PerspectiveCamera(30, 1, 1, 1500);
-camera.position.set(0, 400, 700);
-camera.lookAt(new Three.Vector3(0, 150, 0))
+// 创建渲染器
+const rendererContext = PsrThree.createRenderer({
+  antialias: true, // 启用抗锯齿
+})
 
 // 创建场景
-const scene = new Three.Scene();
-scene.background = new Three.Color(0x000000);
-scene.fog = new Three.Fog(0x000000, 250, 1400);
+const sceneContext = PsrThree.createScene<THREE.PerspectiveCamera>()
+rendererContext.sceneContextRef.value = sceneContext
+sceneContext.scene.background = new THREE.Color(0x000000);
+sceneContext.scene.fog = new THREE.Fog(0x000000, 250, 1400);
 
-const objects = ref<Three.Object3D[]>([])
+// 创建摄像机
+const camera = new THREE.PerspectiveCamera(30, 1, 1, 1500);
+camera.position.set(0, 400, 700);
+camera.lookAt(new THREE.Vector3(0, 150, 0))
+sceneContext.cameraContextRef.value = PsrThree.createCamera(camera).enableAspectAdaption(rendererContext.sizeRef)
 
 // 创建光源
-const dirLight = new Three.DirectionalLight(0xffffff, 0.4);
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
 dirLight.position.set(0, 0, 1).normalize();
-objects.value.push(dirLight)
+sceneContext.objects.push(dirLight)
 
-const pointLight = new Three.PointLight(0xffffff, 4.5, 0, 0);
+const pointLight = new THREE.PointLight(0xffffff, 4.5, 0, 0);
 pointLight.color.setHSL(Math.random(), 1, 0.5);
 pointLight.position.set(0, 100, 90);
-objects.value.push(pointLight);
+sceneContext.objects.push(pointLight);
 
 // 创建材质
-const materials: Three.MeshPhongMaterial[] = [
-  new Three.MeshPhongMaterial({color: 0xffffff, flatShading: true}), // front
-  new Three.MeshPhongMaterial({color: 0xffffff}) // side
+const materials: THREE.MeshPhongMaterial[] = [
+  new THREE.MeshPhongMaterial({color: 0xffffff, flatShading: true}), // front
+  new THREE.MeshPhongMaterial({color: 0xffffff}) // side
 ];
 
 // 创建3d对象组
-const group = new Three.Group();
+const group = new THREE.Group();
 group.position.y = 100;
-objects.value.push(group);
+sceneContext.objects.push(group);
 
 // 创建背景平面
-const plane = new Three.Mesh(
-    new Three.PlaneGeometry(10000, 10000),
-    new Three.MeshBasicMaterial({color: 0xffffff, opacity: 0.5, transparent: true})
+const plane = new THREE.Mesh(
+    new THREE.PlaneGeometry(10000, 10000),
+    new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 0.5, transparent: true})
 );
 plane.position.y = 100;
 plane.rotation.x = -Math.PI / 2;
-objects.value.push(plane);
-
-// 创建渲染器
-const renderer = new Three.WebGLRenderer({
-  antialias: true, // 启用抗锯齿
-});
-// 设置设备像素比，避免HiDPI设备上绘图模糊
-renderer.setPixelRatio(window.devicePixelRatio);
-
+sceneContext.objects.push(plane);
 
 const text = ref('three.js'),
     bevelEnabled = true,
@@ -83,7 +79,7 @@ function loadFont() {
   );
 }
 
-let textMesh1: Three.Mesh, textMesh2: Three.Mesh, textGeo: TextGeometry;
+let textMesh1: THREE.Mesh, textMesh2: THREE.Mesh, textGeo: TextGeometry;
 
 // 创建文本
 function createText(text: string) {
@@ -111,7 +107,7 @@ function createText(text: string) {
 
   const centerOffset = textGeo.boundingBox ? -0.5 * (textGeo.boundingBox.max.x - textGeo.boundingBox.min.x) : 0;
 
-  textMesh1 = new Three.Mesh(textGeo, materials);
+  textMesh1 = new THREE.Mesh(textGeo, materials);
   textMesh1.position.x = centerOffset;
   textMesh1.position.y = hover;
   textMesh1.position.z = 0;
@@ -120,7 +116,7 @@ function createText(text: string) {
   group.add(textMesh1);
 
   if (mirror) {
-    textMesh2 = new Three.Mesh(textGeo, materials);
+    textMesh2 = new THREE.Mesh(textGeo, materials);
     textMesh2.position.x = centerOffset;
     textMesh2.position.y = -hover;
     textMesh2.position.z = height;
@@ -143,10 +139,7 @@ watch(text, text => {
   <div>
     <psr-three-canvas
         style="height: 100%;"
-        :three-renderer="renderer"
-        :three-scene="scene"
-        :three-camara="camera"
-        :three-objects="objects"
+        :renderer-context="rendererContext"
     />
     <input v-model="text"/>
   </div>
