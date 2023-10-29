@@ -1,0 +1,83 @@
+<script lang="ts" setup>
+import {shallowRef, ShallowRef} from "vue";
+import * as THREE from "three";
+import {PsrThree, PsrThreeCanvas} from "../../package";
+import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
+import cathedralUrl from "../asserts/cathedral.glb?url"
+import horseUrl from "../asserts/horse.glb?url"
+// 创建渲染器
+const rendererContext = PsrThree.createRenderer()
+
+// 创建场景
+const sceneContext = PsrThree.createScene<THREE.PerspectiveCamera>()
+rendererContext.sceneContextRef.value = sceneContext
+
+// 创建相机
+const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(30, 1, 1, 10000);
+camera.position.set(3, 3, 3);
+camera.lookAt(new THREE.Vector3(0, 0, 0))
+sceneContext.cameraContextRef.value = PsrThree.createCamera(camera).enableAspectAdaption(rendererContext.sizeRef)
+
+// 创建光源
+const light = new THREE.AmbientLight(0xffffff, 1);
+sceneContext.objects.push(light)
+
+const spotLight = new THREE.SpotLight(0xffffff);
+spotLight.position.set(100, 1000, 100);
+
+spotLight.castShadow = true;
+
+spotLight.shadow.mapSize.width = 1024;
+spotLight.shadow.mapSize.height = 1024;
+
+spotLight.shadow.camera.near = 500;
+spotLight.shadow.camera.far = 4000;
+spotLight.shadow.camera.fov = 30;
+
+sceneContext.objects.push(spotLight);
+
+// 为场景添加模型
+let model1: ShallowRef<THREE.Object3D | undefined> = shallowRef()
+let model2: ShallowRef<THREE.Object3D | undefined> = shallowRef()
+
+const loader = new GLTFLoader();
+loader.load(cathedralUrl, function (gltf) {
+  const model = gltf.scene
+  model.scale.set(0.05, 0.05, 0.05)
+  model.position.set(-0.8, 0, 0.8)
+  sceneContext.objects.push(model);
+  model1.value = model
+}, undefined, function (error) {
+  console.error(error);
+});
+
+loader.load(horseUrl, function (gltf) {
+  const model = gltf.scene
+  model.scale.set(0.005, 0.005, 0.005)
+  model.position.set(0.8, 0, -0.8)
+  sceneContext.objects.push(model);
+  model2.value = model
+}, undefined, function (error) {
+  console.error(error);
+});
+
+// 为模型添加动画
+rendererContext.events.update.on(delta => {
+  if (model1.value) {
+    model1.value.rotation.y += delta
+  }
+  if (model2.value) {
+    model2.value.rotation.y += delta
+  }
+})
+</script>
+
+<template>
+  <psr-three-canvas
+      :renderer-context="rendererContext"
+  />
+</template>
+
+<style scoped>
+
+</style>
