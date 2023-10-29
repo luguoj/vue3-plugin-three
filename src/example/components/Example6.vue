@@ -1,10 +1,11 @@
 <script lang="ts" setup>
-import {shallowRef, ShallowRef} from "vue";
+import {onBeforeUnmount, onMounted, shallowRef, ShallowRef} from "vue";
 import * as THREE from "three";
 import {PsrThree, PsrThreeCanvas} from "../../package";
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import cathedralUrl from "../asserts/cathedral.glb?url"
 import horseUrl from "../asserts/horse.glb?url"
+import {Object3DUtils} from "../../package/utils/Object3DUtils.ts";
 // 创建渲染器
 const rendererContext = PsrThree.createRenderer()
 
@@ -41,26 +42,26 @@ let model1: ShallowRef<THREE.Object3D | undefined> = shallowRef()
 let model2: ShallowRef<THREE.Object3D | undefined> = shallowRef()
 
 const loader = new GLTFLoader();
-loader.load(cathedralUrl, function (gltf) {
-  const model = gltf.scene
-  model.scale.set(0.05, 0.05, 0.05)
-  model.position.set(-0.8, 0, 0.8)
-  sceneContext.objects.push(model);
-  model1.value = model
-}, undefined, function (error) {
-  console.error(error);
-});
-
-loader.load(horseUrl, function (gltf) {
-  const model = gltf.scene
-  model.scale.set(0.005, 0.005, 0.005)
-  model.position.set(0.8, 0, -0.8)
-  sceneContext.objects.push(model);
-  model2.value = model
-}, undefined, function (error) {
-  console.error(error);
-});
-
+onMounted(() => {
+  loader.load(cathedralUrl, function (gltf) {
+    const model = gltf.scene
+    model.scale.set(0.05, 0.05, 0.05)
+    model.position.set(-0.8, 0, 0.8)
+    sceneContext.objects.push(model);
+    model1.value = model
+  }, undefined, function (error) {
+    console.error(error);
+  });
+  loader.load(horseUrl, function (gltf) {
+    const model = gltf.scene
+    model.scale.set(0.005, 0.005, 0.005)
+    model.position.set(0.8, 0, -0.8)
+    sceneContext.objects.push(model);
+    model2.value = model
+  }, undefined, function (error) {
+    console.error(error);
+  });
+})
 // 为模型添加动画
 rendererContext.events.update.on(delta => {
   if (model1.value) {
@@ -70,11 +71,25 @@ rendererContext.events.update.on(delta => {
     model2.value.rotation.y += delta
   }
 })
+
+onBeforeUnmount(() => {
+  dispose()
+})
+
+function dispose() {
+  rendererContext.runningRef.value = false
+  sceneContext.scene.traverse(object => Object3DUtils.dispose(object))
+  sceneContext.scene.clear()
+  rendererContext.renderer.dispose()
+  THREE.Cache.clear()
+  console.log('dispose')
+}
 </script>
 
 <template>
   <psr-three-canvas
       :renderer-context="rendererContext"
+      @click="dispose"
   />
 </template>
 
