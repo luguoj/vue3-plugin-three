@@ -1,11 +1,15 @@
 <script setup lang="ts">
 
-import Example3 from "./components/Example3.vue";
+import Example from "./components/Example7.vue";
+import {ref} from "vue";
+
+const show = ref(true)
 </script>
 
 <template>
-  <div style="height: 100%;width: 100%;">
-    <example3 style="height: 50%;width: 50%;"/>
+  <button @click="show=!show">on/off</button>
+  <div v-if="show" style="height: 100%;width: 100%;">
+    <example style="height: 100%;width: 100%;"/>
   </div>
 </template>
 

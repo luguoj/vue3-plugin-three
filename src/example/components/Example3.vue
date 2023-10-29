@@ -10,14 +10,9 @@ const sceneContext = PsrThree.createScene<THREE.PerspectiveCamera>()
 rendererContext.sceneContextRef.value = sceneContext
 
 // 创建相机
-const camera = new THREE.PerspectiveCamera(
-    75,  // 视野角度
-    1, // 长宽比
-    0.1, // 近截面
-    1000, // 远截面
-);
-camera.position.z = 5;
-sceneContext.cameraContextRef.value = PsrThree.createCamera(camera).enableAspectAdaption(rendererContext.sizeRef)
+const camera = PsrThree.createPerspectiveCamera().autoAspect(rendererContext.sizeRef)
+camera.camera.position.z = 5;
+sceneContext.cameraContextRef.value = camera
 
 // 为场景添加模型
 const geometry = new THREE.BoxGeometry(1, 1, 1);

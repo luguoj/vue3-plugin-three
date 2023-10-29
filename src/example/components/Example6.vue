@@ -14,10 +14,11 @@ const sceneContext = PsrThree.createScene<THREE.PerspectiveCamera>()
 rendererContext.sceneContextRef.value = sceneContext
 
 // 创建相机
-const camera: THREE.PerspectiveCamera = new THREE.PerspectiveCamera(30, 1, 1, 10000);
-camera.position.set(3, 3, 3);
-camera.lookAt(new THREE.Vector3(0, 0, 0))
-sceneContext.cameraContextRef.value = PsrThree.createCamera(camera).enableAspectAdaption(rendererContext.sizeRef)
+const camera = PsrThree.createPerspectiveCamera().autoAspect(rendererContext.sizeRef)
+camera.fov.value = 30
+camera.camera.position.set(3, 3, 3);
+camera.camera.lookAt(new THREE.Vector3(0, 0, 0))
+sceneContext.cameraContextRef.value = camera
 
 // 创建光源
 const light = new THREE.AmbientLight(0xffffff, 1);

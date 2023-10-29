@@ -16,10 +16,11 @@ sceneContext.scene.background = new THREE.Color(0x000000);
 sceneContext.scene.fog = new THREE.Fog(0x000000, 250, 1400);
 
 // 创建摄像机
-const camera = new THREE.PerspectiveCamera(30, 1, 1, 1500);
-camera.position.set(0, 400, 700);
-camera.lookAt(new THREE.Vector3(0, 150, 0))
-sceneContext.cameraContextRef.value = PsrThree.createCamera(camera).enableAspectAdaption(rendererContext.sizeRef)
+const camera = PsrThree.createPerspectiveCamera().autoAspect(rendererContext.sizeRef)
+camera.fov.value = 30
+camera.camera.position.set(0, 400, 700);
+camera.camera.lookAt(new THREE.Vector3(0, 150, 0))
+sceneContext.cameraContextRef.value = camera
 
 // 创建光源
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
