@@ -30,8 +30,25 @@ export namespace PsrThreePluginTypes {
     export interface CameraContext<C extends THREE.Camera> {
         // 摄像机
         readonly camera: C;
+    }
 
-        enableAspectAdaption(size: Ref<Size | undefined>): CameraContext<C>;
+    export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
+        zoom: Ref<number>;
+        fov: Ref<number>;
+        aspect: Ref<number>;
+        near: Ref<number>;
+        far: Ref<number>;
+
+        autoAspect(size: false | Ref<Size | undefined>): PerspectiveCameraContext;
+    }
+
+    export interface OrthographicCameraContext extends CameraContext<THREE.OrthographicCamera> {
+        left: Ref<number>;
+        right: Ref<number>;
+        top: Ref<number>;
+        bottom: Ref<number>;
+        near: Ref<number>;
+        far: Ref<number>;
     }
 
     export interface SceneContext<C extends THREE.Camera> {
