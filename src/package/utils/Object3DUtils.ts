@@ -4,6 +4,7 @@ export namespace Object3DUtils {
     export function dispose(object?: THREE.Object3D) {
         if (object) {
             for (const child of object.children) {
+                Object3DUtils.dispose(child)
                 if (child instanceof THREE.Mesh) {
                     child.geometry.dispose()
                     if (child.material instanceof THREE.Material) {
@@ -13,8 +14,6 @@ export namespace Object3DUtils {
                             materialElement.dispose()
                         }
                     }
-                } else {
-                    Object3DUtils.dispose(child)
                 }
             }
         }
