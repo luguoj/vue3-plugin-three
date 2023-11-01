@@ -36,7 +36,7 @@ export class RendererContextImpl<C extends THREE.Camera> implements PsrThreePlug
         // 更新渲染器尺寸
         watch(this.sizeRef, size => {
             const {width, height} = size || {width: 0, height: 0}
-            this.renderer.setSize(width, height, false);
+            this.renderer.setSize(Math.floor(width / this.renderer.getPixelRatio()), Math.floor(height / this.renderer.getPixelRatio()), false);
         })
         watch(this.runningRef, running => {
             if (running) {
