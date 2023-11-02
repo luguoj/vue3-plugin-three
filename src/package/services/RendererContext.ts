@@ -38,12 +38,15 @@ export class RendererContextImpl<C extends THREE.Camera> implements PsrThreePlug
             const {width, height} = size || {width: 0, height: 0}
             this.renderer.setSize(Math.floor(width / this.renderer.getPixelRatio()), Math.floor(height / this.renderer.getPixelRatio()), false);
         })
+        let animationId: number | undefined = undefined
         watch(this.runningRef, running => {
             if (running) {
                 // 重置时钟
                 this.clock.getDelta()
                 // 在浏览器下一帧进行重绘
-                requestAnimationFrame(() => this.draw());
+                animationId = requestAnimationFrame(() => this.draw());
+            } else if (animationId) {
+                cancelAnimationFrame(animationId)
             }
         })
     }
