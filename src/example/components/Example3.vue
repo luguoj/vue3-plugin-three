@@ -1,16 +1,16 @@
 <script lang="ts" setup>
 import * as THREE from "three";
 import {PsrThree, PsrThreeCanvas} from "../../package";
-
+const context = PsrThree.createContext()
 // 创建渲染器
-const rendererContext = PsrThree.createRenderer()
+const rendererContext = context.useRenderer('renderer')
 
 // 创建场景
-const sceneContext = PsrThree.createScene<THREE.PerspectiveCamera>()
+const sceneContext = context.useScene<THREE.PerspectiveCamera>('scene')
 rendererContext.sceneContextRef.value = sceneContext
 
 // 创建相机
-const camera = PsrThree.createPerspectiveCamera().autoAspect(rendererContext.sizeRef)
+const camera = context.usePerspectiveCamera('camera').autoAspect(rendererContext.sizeRef)
 camera.camera.position.z = 5;
 sceneContext.cameraContextRef.value = camera
 

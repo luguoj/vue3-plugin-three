@@ -4,19 +4,20 @@ import * as THREE from "three";
 import {Font, FontLoader, TextGeometry} from "three/addons";
 import {PsrThree, PsrThreeCanvas} from "../../package";
 import {onMounted, ref, watch} from "vue";
+const context = PsrThree.createContext()
 // 创建渲染器
-const rendererContext = PsrThree.createRenderer({
+const rendererContext = context.useRenderer('renderer',{
   antialias: true, // 启用抗锯齿
 })
 
 // 创建场景
-const sceneContext = PsrThree.createScene<THREE.PerspectiveCamera>()
+const sceneContext = context.useScene<THREE.PerspectiveCamera>('scene')
 rendererContext.sceneContextRef.value = sceneContext
 sceneContext.scene.background = new THREE.Color(0x000000);
 sceneContext.scene.fog = new THREE.Fog(0x000000, 250, 1400);
 
 // 创建摄像机
-const camera = PsrThree.createPerspectiveCamera().autoAspect(rendererContext.sizeRef)
+const camera = context.usePerspectiveCamera('camera').autoAspect(rendererContext.sizeRef)
 camera.fov.value = 30
 camera.camera.position.set(0, 400, 700);
 camera.camera.lookAt(new THREE.Vector3(0, 150, 0))

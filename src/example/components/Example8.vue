@@ -3,17 +3,19 @@ import {watch} from "vue";
 import * as THREE from "three";
 import {PsrThree, PsrThreeCanvas} from "../../package";
 import {FirstPersonControls} from 'three/addons';
+
+const context = PsrThree.createContext()
 // 创建渲染器
-const rendererContext = PsrThree.createRenderer({
+const rendererContext = context.useRenderer('renderer', {
   antialias: true, // 启用抗锯齿
 })
 
 // 创建场景
-const sceneContext = PsrThree.createScene<THREE.PerspectiveCamera>()
+const sceneContext = context.useScene<THREE.PerspectiveCamera>('scene')
 rendererContext.sceneContextRef.value = sceneContext
 
 // 创建相机
-const camera = PsrThree.createPerspectiveCamera().autoAspect(rendererContext.sizeRef)
+const camera = context.usePerspectiveCamera('camera').autoAspect(rendererContext.sizeRef)
 camera.camera.position.set(0, 0, 5);
 camera.camera.lookAt(new THREE.Vector3(0, 0, 0))
 sceneContext.cameraContextRef.value = camera
@@ -41,7 +43,7 @@ controls.verticalMax = 2.0;
 rendererContext.events.update.on(delta => {
   controls.update(delta)
 })
-watch(rendererContext.sizeRef,()=>{
+watch(rendererContext.sizeRef, () => {
   controls.handleResize()
 })
 </script>

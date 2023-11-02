@@ -6,15 +6,17 @@ import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import cathedralUrl from "../asserts/cathedral.glb?url"
 import horseUrl from "../asserts/horse.glb?url"
 import {Object3DUtils} from "../../package/utils/Object3DUtils.ts";
+
+const context = PsrThree.createContext()
 // 创建渲染器
-const rendererContext = PsrThree.createRenderer()
+const rendererContext = context.useRenderer('renderer')
 
 // 创建场景
-const sceneContext = PsrThree.createScene<THREE.PerspectiveCamera>()
+const sceneContext = context.useScene<THREE.PerspectiveCamera>('scene')
 rendererContext.sceneContextRef.value = sceneContext
 
 // 创建相机
-const camera = PsrThree.createPerspectiveCamera().autoAspect(rendererContext.sizeRef)
+const camera = context.usePerspectiveCamera('camera').autoAspect(rendererContext.sizeRef)
 camera.fov.value = 30
 camera.camera.position.set(3, 3, 3);
 camera.camera.lookAt(new THREE.Vector3(0, 0, 0))
