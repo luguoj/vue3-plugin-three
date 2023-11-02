@@ -1,1 +1,1 @@
-export * from './PsrThree.ts'
+export * from './PsrThree'
