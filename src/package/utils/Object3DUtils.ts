@@ -1,7 +1,7 @@
 import * as THREE from "three"
 
 export namespace Object3DUtils {
-    export function dispose(object?: THREE.Object3D) {
+    export function dispose(object?: THREE.Object3D & { dispose?: () => void }) {
         if (object) {
             for (const child of object.children) {
                 Object3DUtils.dispose(child)
@@ -15,6 +15,9 @@ export namespace Object3DUtils {
                         }
                     }
                 }
+            }
+            if (object.dispose) {
+                object.dispose()
             }
         }
     }
