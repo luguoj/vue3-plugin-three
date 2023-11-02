@@ -8,6 +8,21 @@ export namespace PsrThreePluginTypes {
         height: number
     }
 
+    export interface ThreeContext {
+
+        useRenderer<C extends THREE.Camera>(name: string, params?: THREE.WebGLRendererParameters): RendererContext<C>;
+
+        useCamera<C extends THREE.Camera>(name: string, camera: C): CameraContext<C>;
+
+        usePerspectiveCamera(name: string): PerspectiveCameraContext;
+
+        useOrthographicCamera(name: string): OrthographicCameraContext;
+
+        useScene<C extends THREE.Camera>(name: string): SceneContext<C>;
+
+        dispose(): void;
+    }
+
     export interface RendererContext<C extends THREE.Camera> {
         // 画布容器引用
         readonly containerRef: ShallowRef<HTMLElement | undefined>
