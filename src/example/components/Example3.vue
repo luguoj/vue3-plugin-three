@@ -20,10 +20,23 @@ const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 const cube = new THREE.Mesh(geometry, material);
 sceneContext.objects.push(cube)
 
+const edges = new THREE.EdgesGeometry(geometry)
+const lineModel = new THREE.LineSegments(
+    edges,
+    new THREE.LineBasicMaterial({
+      color: 0x4b96ff,
+      depthTest: false,
+      transparent: true
+    })
+)
+sceneContext.objects.push(lineModel)
+
 // 添加动画
 function animate(delta: number) {
   cube.rotation.x += delta
   cube.rotation.y += delta
+  lineModel.rotation.x += delta
+  lineModel.rotation.y += delta
 }
 
 rendererContext.events.update.on(animate)
