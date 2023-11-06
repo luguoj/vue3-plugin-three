@@ -4,7 +4,7 @@ import * as ThreeAddons from "three/examples/jsm/Addons";
 import {PsrThreePluginTypes} from "../types";
 
 const props = defineProps<{
-  rendererContext: PsrThreePluginTypes.RendererContext<any>
+  rendererContext: PsrThreePluginTypes.RendererContext
 }>()
 
 // 检查WebGL兼容性
