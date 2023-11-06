@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import {Object3D} from "three";
 import {PsrThreePluginTypes} from "../types";
 import {Object3DUtils} from "../utils/Object3DUtils.ts";
 import {RendererContextImpl} from "./RendererContext.ts";
@@ -6,7 +7,6 @@ import {CameraContextImpl} from "./CameraContext.ts";
 import {PerspectiveCameraContextImpl} from "./PerspectiveCameraContext.ts";
 import {OrthographicCameraContextImpl} from "./OrthographicCameraContext.ts";
 import {SceneContextImpl} from "./SceneContext.ts";
-import {Object3D} from "three";
 import {Object3DContextImpl} from "./Object3DContext.ts";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
@@ -60,7 +60,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         }
         for (const sceneId in this.scenes) {
             const scene = this.scenes[sceneId].scene
-            scene.clear()
+            Object3DUtils.dispose(scene)
             delete this.scenes[sceneId]
         }
         for (const objectId in this.objects) {
