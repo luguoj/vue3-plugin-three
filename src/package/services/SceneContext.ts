@@ -1,27 +1,36 @@
-import {shallowReactive, shallowRef, ShallowRef, ShallowUnwrapRef, watch} from "vue";
+import {computed, ComputedRef, markRaw, ref, shallowReactive, ShallowUnwrapRef, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 
 
-export class SceneContextImpl<C extends THREE.Camera> implements PsrThreePluginTypes.SceneContext<C> {
+export class SceneContextImpl implements PsrThreePluginTypes.SceneContext {
     readonly scene: THREE.Scene = new THREE.Scene()
-    readonly objects: ShallowUnwrapRef<THREE.Object3D[]> = shallowReactive<THREE.Object3D[]>([])
-    readonly cameraContextRef: ShallowRef<PsrThreePluginTypes.CameraContext<C> | undefined> = shallowRef<PsrThreePluginTypes.CameraContext<C>>()
-    // 已经渲染的3d对象
-    private renderedObjects: THREE.Object3D[] = []
+    readonly objects: ShallowUnwrapRef<PsrThreePluginTypes.Object3DContext<any>[]> = shallowReactive<PsrThreePluginTypes.Object3DContext<any>[]>([])
+    readonly objectById: ComputedRef<Record<string, PsrThreePluginTypes.Object3DContext<any>>> = computed(() => {
+        const objectByName: Record<string, PsrThreePluginTypes.Object3DContext<any>> = {}
+        for (const object of this.objects) {
+            objectByName[object.id] = markRaw(object)
+        }
+        return objectByName
+    })
+    readonly activatedCameraId = ref<string>()
+    readonly activatedCamera: ComputedRef<PsrThreePluginTypes.CameraContext<any> | undefined> = computed(() =>
+        this.activatedCameraId.value && this.objectById.value[this.activatedCameraId.value] as PsrThreePluginTypes.CameraContext<any> || undefined
+    )
 
     constructor() {
         // 更新需要渲染的3d对象
-        watch(() => this.objects, objects => {
-            const toRemove = this.renderedObjects.filter(renderedObject => !objects.includes(renderedObject))
-            const toAdd = objects.filter(object => !this.renderedObjects.includes(object))
-            if (toRemove.length) {
-                this.scene.remove(...toRemove)
+        watch(this.objectById, (newObjectById, oldObjectById) => {
+            for (const oldObjectId in oldObjectById) {
+                if (!newObjectById[oldObjectId]) {
+                    this.scene.remove(oldObjectById[oldObjectId].object)
+                }
             }
-            if (toAdd.length) {
-                this.scene.add(...toAdd)
+            for (const newObjectId in newObjectById) {
+                if (!oldObjectById[newObjectId]) {
+                    this.scene.add(newObjectById[newObjectId].object)
+                }
             }
-            this.renderedObjects = [...objects]
-        }, {deep: true})
+        })
     }
 }

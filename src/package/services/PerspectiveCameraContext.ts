@@ -4,6 +4,7 @@ import {PsrThreePluginTypes} from "../types";
 import {CameraContextImpl} from "./CameraContext.ts";
 
 export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.PerspectiveCamera> implements PsrThreePluginTypes.PerspectiveCameraContext {
+    readonly type: PsrThreePluginTypes.Object3DType = 'PerspectiveCamera';
     readonly zoom = ref(1)
     readonly fov = ref(50)
     readonly aspect = ref(1)
@@ -12,27 +13,27 @@ export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.Perspe
 
     private stopAutoAspectHandle?: WatchStopHandle = undefined
 
-    constructor() {
-        super(new THREE.PerspectiveCamera());
+    constructor(id: string) {
+        super(id, new THREE.PerspectiveCamera());
         watch(this.zoom, zoom => {
-            this.camera.zoom = zoom
-            this.camera.updateProjectionMatrix()
+            this.object.zoom = zoom
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.fov, fov => {
-            this.camera.fov = fov
-            this.camera.updateProjectionMatrix()
+            this.object.fov = fov
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.aspect, aspect => {
-            this.camera.aspect = aspect
-            this.camera.updateProjectionMatrix()
+            this.object.aspect = aspect
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.near, near => {
-            this.camera.near = near
-            this.camera.updateProjectionMatrix()
+            this.object.near = near
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.far, far => {
-            this.camera.far = far
-            this.camera.updateProjectionMatrix()
+            this.object.far = far
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
     }
 
@@ -43,9 +44,7 @@ export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.Perspe
         if (size) {
             this.stopAutoAspectHandle = watch(size, newSize => {
                 const {width, height} = newSize || {width: 0, height: 0}
-                if (this.camera instanceof THREE.ArrayCamera) {
-
-                } else if (this.camera instanceof THREE.StereoCamera) {
+                if (this.object instanceof THREE.ArrayCamera) {
 
                 } else {
                     // 更新透视相机长宽比

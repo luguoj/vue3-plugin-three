@@ -4,6 +4,7 @@ import {PsrThreePluginTypes} from "../types";
 import {CameraContextImpl} from "./CameraContext.ts";
 
 export class OrthographicCameraContextImpl extends CameraContextImpl<THREE.OrthographicCamera> implements PsrThreePluginTypes.OrthographicCameraContext {
+    readonly type: PsrThreePluginTypes.Object3DType = 'OrthographicCamera';
     readonly left = ref(-1)
     readonly right = ref(1)
     readonly top = ref(1)
@@ -11,31 +12,31 @@ export class OrthographicCameraContextImpl extends CameraContextImpl<THREE.Ortho
     readonly near = ref(0.1)
     readonly far = ref(2000)
 
-    constructor() {
-        super(new THREE.OrthographicCamera());
+    constructor(id: string) {
+        super(id, new THREE.OrthographicCamera());
         watch(this.left, left => {
-            this.camera.left = left
-            this.camera.updateProjectionMatrix()
+            this.object.left = left
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.right, right => {
-            this.camera.right = right
-            this.camera.updateProjectionMatrix()
+            this.object.right = right
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.top, top => {
-            this.camera.top = top
-            this.camera.updateProjectionMatrix()
+            this.object.top = top
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.bottom, bottom => {
-            this.camera.bottom = bottom
-            this.camera.updateProjectionMatrix()
+            this.object.bottom = bottom
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.near, near => {
-            this.camera.near = near
-            this.camera.updateProjectionMatrix()
+            this.object.near = near
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
         watch(this.far, far => {
-            this.camera.far = far
-            this.camera.updateProjectionMatrix()
+            this.object.far = far
+            this.object.updateProjectionMatrix()
         }, {immediate: true})
     }
 }

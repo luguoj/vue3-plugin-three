@@ -3,12 +3,12 @@ import {createEventHook} from "@vueuse/core";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 
-export class RendererContextImpl<C extends THREE.Camera> implements PsrThreePluginTypes.RendererContext<C> {
+export class RendererContextImpl implements PsrThreePluginTypes.RendererContext {
     readonly containerRef: ShallowRef<HTMLElement | undefined> = shallowRef<HTMLElement>()
     readonly renderer: THREE.WebGLRenderer
-    readonly runningRef: Ref<boolean> = ref(false)
-    readonly sceneContextRef: ShallowRef<PsrThreePluginTypes.SceneContext<C> | undefined> = shallowRef<PsrThreePluginTypes.SceneContext<C>>()
-    readonly sizeRef: Ref<PsrThreePluginTypes.Size | undefined> = ref()
+    readonly running: Ref<boolean> = ref(false)
+    readonly scene: ShallowRef<PsrThreePluginTypes.SceneContext | undefined> = shallowRef<PsrThreePluginTypes.SceneContext>()
+    readonly size: Ref<PsrThreePluginTypes.Size | undefined> = ref()
     readonly events = {
         update: createEventHook<number>(),
         mounted: createEventHook<THREE.WebGLRenderer>(),
@@ -25,21 +25,21 @@ export class RendererContextImpl<C extends THREE.Camera> implements PsrThreePlug
                 // 将画布追加到容器
                 container.appendChild(this.renderer.domElement);
                 // 监控容器resize
-                const resizeObserver = new ResizeObserver(entries => this.sizeRef.value = {width: entries[0].contentRect.width, height: entries[0].contentRect.height})
+                const resizeObserver = new ResizeObserver(entries => this.size.value = {width: entries[0].contentRect.width, height: entries[0].contentRect.height})
                 resizeObserver.observe(container)
                 // 触发挂载事件
                 this.events.mounted.trigger(this.renderer).then(() => {
-                    this.runningRef.value = true
+                    this.running.value = true
                 })
             }
         })
         // 更新渲染器尺寸
-        watch(this.sizeRef, size => {
+        watch(this.size, size => {
             const {width, height} = size || {width: 0, height: 0}
             this.renderer.setSize(Math.floor(width / this.renderer.getPixelRatio()), Math.floor(height / this.renderer.getPixelRatio()), false);
         })
         let animationId: number | undefined = undefined
-        watch(this.runningRef, running => {
+        watch(this.running, running => {
             if (running) {
                 // 重置时钟
                 this.clock.getDelta()
@@ -61,13 +61,13 @@ export class RendererContextImpl<C extends THREE.Camera> implements PsrThreePlug
 
     // 帧绘制
     private draw() {
-        if (this.runningRef.value) {
+        if (this.running.value) {
             // 在浏览器下一帧进行重绘
             requestAnimationFrame(() => this.draw());
         }
         // 绘制场景
-        const scene = this.sceneContextRef.value?.scene
-        const camera = this.sceneContextRef.value?.cameraContextRef.value?.camera
+        const scene = this.scene.value?.scene
+        const camera = this.scene.value?.activatedCamera.value?.object
         if (scene && camera) {
             this.renderer.render(scene, camera)
         }

@@ -1,4 +1,4 @@
-import {Ref, ShallowRef, ShallowUnwrapRef} from "vue";
+import {ComputedRef, Ref, ShallowRef, ShallowUnwrapRef} from "vue";
 import {EventHook} from "@vueuse/core/index";
 import * as THREE from "three"
 
@@ -10,29 +10,31 @@ export namespace PsrThreePluginTypes {
 
     export interface ThreeContext {
 
-        useRenderer<C extends THREE.Camera>(name: string, params?: THREE.WebGLRendererParameters): RendererContext<C>;
+        useRenderer(id: string, params?: THREE.WebGLRendererParameters): RendererContext;
 
-        useCamera<C extends THREE.Camera>(name: string, camera: C): CameraContext<C>;
+        useScene(id: string): SceneContext;
 
-        usePerspectiveCamera(name: string): PerspectiveCameraContext;
+        useObject<O extends THREE.Object3D>(id: string, object: O): Object3DContext<O>;
 
-        useOrthographicCamera(name: string): OrthographicCameraContext;
+        useCamera<C extends THREE.Camera>(id: string, camera: C): CameraContext<C>;
 
-        useScene<C extends THREE.Camera>(name: string): SceneContext<C>;
+        usePerspectiveCamera(id: string): PerspectiveCameraContext;
+
+        useOrthographicCamera(id: string): OrthographicCameraContext;
 
         dispose(): void;
     }
 
-    export interface RendererContext<C extends THREE.Camera> {
+    export interface RendererContext {
         // 画布容器引用
         readonly containerRef: ShallowRef<HTMLElement | undefined>
         // 渲染器
         readonly renderer: THREE.WebGLRenderer
         // 运行标识
-        readonly runningRef: Ref<boolean>
+        readonly running: Ref<boolean>
         // 场景上下文
-        readonly sceneContextRef: ShallowRef<SceneContext<C> | undefined>
-        readonly sizeRef: Ref<Size | undefined>
+        readonly scene: ShallowRef<SceneContext | undefined>
+        readonly size: Ref<Size | undefined>
         // 事件
         readonly events: {
             // 更新场景
@@ -42,9 +44,17 @@ export namespace PsrThreePluginTypes {
         }
     }
 
-    export interface CameraContext<C extends THREE.Camera> {
+    export type Object3DType = 'Object3D' | 'Camera' | 'PerspectiveCamera' | 'OrthographicCamera'
+
+    export interface Object3DContext<O extends THREE.Object3D> {
+        readonly type: Object3DType
+        readonly id: string
         // 摄像机
-        readonly camera: C;
+        readonly object: O;
+    }
+
+    export interface CameraContext<C extends THREE.Camera> extends Object3DContext<C> {
+        readonly enableHelper: Ref<boolean>
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -66,12 +76,16 @@ export namespace PsrThreePluginTypes {
         far: Ref<number>;
     }
 
-    export interface SceneContext<C extends THREE.Camera> {
+    export interface SceneContext {
         // 场景
-        readonly scene: THREE.Scene;
+        readonly scene: THREE.Scene
         // 3d对象
-        readonly objects: ShallowUnwrapRef<THREE.Object3D[]>;
-        // 摄像机上下文
-        readonly cameraContextRef: ShallowRef<CameraContext<C> | undefined>;
+        readonly objects: ShallowUnwrapRef<Object3DContext<any>[]>
+        // 3d对象与id映射
+        objectById: ComputedRef<Record<string, Object3DContext<any>>>
+        // 激活的摄像机Id
+        readonly activatedCameraId: Ref<string | undefined>
+        // 激活的摄像机
+        readonly activatedCamera: ComputedRef<CameraContext<any> | undefined>
     }
 }
