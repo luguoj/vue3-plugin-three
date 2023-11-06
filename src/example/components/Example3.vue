@@ -1,24 +1,17 @@
 <script lang="ts" setup>
 import * as THREE from "three";
-import {PsrThree, PsrThreeCanvas} from "../../package";
-const context = PsrThree.createContext()
-// 创建渲染器
-const rendererContext = context.useRenderer('renderer')
+import {PsrThreeCanvas} from "../../package";
+import {createExampleContext} from "./createExampleContext.ts";
 
-// 创建场景
-const sceneContext = context.useScene<THREE.PerspectiveCamera>('scene')
-rendererContext.sceneContextRef.value = sceneContext
+const {context, renderer, scene, camera} = createExampleContext()
 
-// 创建相机
-const camera = context.usePerspectiveCamera('camera').autoAspect(rendererContext.sizeRef)
-camera.camera.position.z = 5;
-sceneContext.cameraContextRef.value = camera
+camera.object.position.z = 5;
 
 // 为场景添加模型
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 const cube = new THREE.Mesh(geometry, material);
-sceneContext.objects.push(cube)
+scene.objects.push(context.useObject('cube', cube))
 
 const edges = new THREE.EdgesGeometry(geometry)
 const lineModel = new THREE.LineSegments(
@@ -29,7 +22,7 @@ const lineModel = new THREE.LineSegments(
       transparent: true
     })
 )
-sceneContext.objects.push(lineModel)
+scene.objects.push(context.useObject('line', lineModel))
 
 // 添加动画
 function animate(delta: number) {
@@ -39,13 +32,13 @@ function animate(delta: number) {
   lineModel.rotation.y += delta
 }
 
-rendererContext.events.update.on(animate)
+renderer.events.update.on(animate)
 
 </script>
 
 <template>
   <psr-three-canvas
-      :renderer-context="rendererContext"
+      :renderer-context="renderer"
   />
 </template>
 

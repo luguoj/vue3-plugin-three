@@ -1,19 +1,12 @@
 <script lang="ts" setup>
 
 import * as THREE from "three";
-import {PsrThree, PsrThreeCanvas} from "../../package";
-const context = PsrThree.createContext()
-// 创建渲染器
-const rendererContext = context.useRenderer('renderer')
+import {PsrThreeCanvas} from "../../package";
+import {createExampleContext} from "./createExampleContext.ts";
 
-// 创建场景
-const sceneContext = context.useScene<THREE.PerspectiveCamera>('scene')
-rendererContext.sceneContextRef.value = sceneContext
+const {context, renderer, scene, camera} = createExampleContext()
 
-// 创建相机
-const camera = context.usePerspectiveCamera('camera').autoAspect(rendererContext.sizeRef)
-camera.camera.position.z = 100;
-sceneContext.cameraContextRef.value = camera
+camera.object.position.z = 100;
 
 //创建白色的线条基本材质
 const material = new THREE.LineBasicMaterial({color: 0xffffff});
@@ -25,12 +18,12 @@ points.push(new THREE.Vector3(10, 0, 0));
 const geometry = new THREE.BufferGeometry().setFromPoints(points);
 // 创建线段（连接几何结构中的连续顶点）
 const line = new THREE.Line(geometry, material);
-sceneContext.objects.push(line)
+scene.objects.push(context.useObject('l', line))
 </script>
 
 <template>
   <psr-three-canvas
-      :renderer-context="rendererContext"
+      :renderer-context="renderer"
   />
 </template>
 

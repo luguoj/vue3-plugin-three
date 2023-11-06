@@ -2,36 +2,28 @@
 
 import * as THREE from "three";
 import {Font, FontLoader, TextGeometry} from "three/addons";
-import {PsrThree, PsrThreeCanvas} from "../../package";
+import {PsrThreeCanvas} from "../../package";
 import {onMounted, ref, watch} from "vue";
-const context = PsrThree.createContext()
-// 创建渲染器
-const rendererContext = context.useRenderer('renderer',{
-  antialias: true, // 启用抗锯齿
-})
+import {createExampleContext} from "./createExampleContext.ts";
 
-// 创建场景
-const sceneContext = context.useScene<THREE.PerspectiveCamera>('scene')
-rendererContext.sceneContextRef.value = sceneContext
-sceneContext.scene.background = new THREE.Color(0x000000);
-sceneContext.scene.fog = new THREE.Fog(0x000000, 250, 1400);
+const {context, renderer, scene, camera} = createExampleContext()
 
-// 创建摄像机
-const camera = context.usePerspectiveCamera('camera').autoAspect(rendererContext.sizeRef)
+scene.scene.background = new THREE.Color(0x000000);
+scene.scene.fog = new THREE.Fog(0x000000, 250, 1400);
+
 camera.fov.value = 30
-camera.camera.position.set(0, 400, 700);
-camera.camera.lookAt(new THREE.Vector3(0, 150, 0))
-sceneContext.cameraContextRef.value = camera
+camera.object.position.set(0, 400, 700);
+camera.object.lookAt(new THREE.Vector3(0, 150, 0))
 
 // 创建光源
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
 dirLight.position.set(0, 0, 1).normalize();
-sceneContext.objects.push(dirLight)
+scene.objects.push(context.useObject('dir-l', dirLight))
 
 const pointLight = new THREE.PointLight(0xffffff, 4.5, 0, 0);
 pointLight.color.setHSL(Math.random(), 1, 0.5);
 pointLight.position.set(0, 100, 90);
-sceneContext.objects.push(pointLight);
+scene.objects.push(context.useObject('point-l', pointLight));
 
 // 创建材质
 const materials: THREE.MeshPhongMaterial[] = [
@@ -42,7 +34,7 @@ const materials: THREE.MeshPhongMaterial[] = [
 // 创建3d对象组
 const group = new THREE.Group();
 group.position.y = 100;
-sceneContext.objects.push(group);
+scene.objects.push(context.useObject('text-g', group));
 
 // 创建背景平面
 const plane = new THREE.Mesh(
@@ -51,7 +43,7 @@ const plane = new THREE.Mesh(
 );
 plane.position.y = 100;
 plane.rotation.x = -Math.PI / 2;
-sceneContext.objects.push(plane);
+scene.objects.push(context.useObject('bg-p', plane));
 
 const text = ref('three.js'),
     bevelEnabled = true,
@@ -141,7 +133,7 @@ watch(text, text => {
   <div>
     <psr-three-canvas
         style="height: 100%;"
-        :renderer-context="rendererContext"
+        :renderer-context="renderer"
     />
     <input v-model="text"/>
   </div>

@@ -1,23 +1,13 @@
 <script lang="ts" setup>
 import * as THREE from "three";
-import {PsrThree, PsrThreeCanvas} from "../../package";
+import {PsrThreeCanvas} from "../../package";
 import {DragControls} from 'three/examples/jsm/Addons';
+import {createExampleContext} from "./createExampleContext.ts";
 
-const context = PsrThree.createContext()
-// 创建渲染器
-const rendererContext = context.useRenderer('renderer', {
-  antialias: true, // 启用抗锯齿
-})
+const {context, renderer, scene, camera} = createExampleContext()
 
-// 创建场景
-const sceneContext = context.useScene<THREE.PerspectiveCamera>('scene')
-rendererContext.sceneContextRef.value = sceneContext
-
-// 创建相机
-const camera = context.usePerspectiveCamera('camera').autoAspect(rendererContext.sizeRef)
-camera.camera.position.set(0, 0, 5);
-camera.camera.lookAt(new THREE.Vector3(0, 0, 0))
-sceneContext.cameraContextRef.value = camera
+camera.object.position.set(0, 0, 5);
+camera.object.lookAt(new THREE.Vector3(0, 0, 0))
 
 // 为场景添加模型
 function createCube() {
@@ -29,17 +19,17 @@ function createCube() {
 const cube = createCube();
 const cube2 = createCube();
 cube2.position.set(2, 0, 0)
-sceneContext.objects.push(cube)
-sceneContext.objects.push(cube2)
+scene.objects.push(context.useObject('c1', cube))
+scene.objects.push(context.useObject('c2', cube2))
 
 // 为模型添加动画
-rendererContext.events.update.on(delta => {
+renderer.events.update.on(delta => {
   cube.rotation.x += delta
   cube.rotation.y += delta
 })
 
 // 对需要拖拽的组件创建拖拽控制器
-const controls = new DragControls(sceneContext.objects, camera.camera, rendererContext.renderer.domElement);
+const controls = new DragControls(scene.objects.map(object => object.object), camera.object, renderer.renderer.domElement);
 // 添加拖拽开始结束事件监听
 controls.addEventListener('dragstart', function (event) {
   if (event.object instanceof THREE.Mesh) {
@@ -66,7 +56,7 @@ controls.addEventListener('hoveroff', function (event) {
 
 <template>
   <psr-three-canvas
-      :renderer-context="rendererContext"
+      :renderer-context="renderer"
   />
 </template>
 
