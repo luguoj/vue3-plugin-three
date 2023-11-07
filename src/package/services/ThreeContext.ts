@@ -1,5 +1,4 @@
 import * as THREE from "three";
-import {Object3D} from "three";
 import {PsrThreePluginTypes} from "../types";
 import {Object3DUtils} from "../utils/Object3DUtils.ts";
 import {RendererContextImpl} from "./RendererContext.ts";
@@ -8,6 +7,9 @@ import {PerspectiveCameraContextImpl} from "./PerspectiveCameraContext.ts";
 import {OrthographicCameraContextImpl} from "./OrthographicCameraContext.ts";
 import {SceneContextImpl} from "./SceneContext.ts";
 import {Object3DContextImpl} from "./Object3DContext.ts";
+import {LightContextImpl} from "./LightContext.ts";
+import {DirectionalLightContextImpl} from "./DirectionalLightContext.ts";
+import {Object3D} from "three";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
@@ -28,7 +30,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.scenes[id]
     }
 
-    private getObject<O extends PsrThreePluginTypes.Object3DContext<any>>(id: string, type: PsrThreePluginTypes.Object3DType, provider: () => O): O {
+    private getObject<O extends PsrThreePluginTypes.Object3DContext<any, any>>(id: string, type: PsrThreePluginTypes.Object3DType, provider: () => O): O {
         if (!this.objects[id]) {
             this.objects[id] = provider()
         } else if (this.objects[id].type !== type) {
@@ -37,7 +39,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.objects[id] as O
     }
 
-    useObject<O extends Object3D>(id: string, object: O): PsrThreePluginTypes.Object3DContext<O> {
+    useObject<O extends Object3D, H extends Object3D | void = void>(id: string, object: O): PsrThreePluginTypes.Object3DContext<O, H> {
         return this.getObject(id, 'Object3D', () => new Object3DContextImpl(id, object))
     }
 
@@ -53,6 +55,13 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.getObject(id, 'OrthographicCamera', () => new OrthographicCameraContextImpl(id))
     }
 
+    useLight<L extends THREE.Light>(id: string, light: L): PsrThreePluginTypes.LightContext<L> {
+        return this.getObject(id, 'Light', () => new LightContextImpl(id, light))
+    }
+
+    useDirectionalLight(id: string): PsrThreePluginTypes.DirectionalLightContext {
+        return this.getObject(id, 'DirectionalLight', () => new DirectionalLightContextImpl(id))
+    }
 
     dispose() {
         for (const rendererId in this.renderers) {
