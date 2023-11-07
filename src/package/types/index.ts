@@ -26,6 +26,12 @@ export namespace PsrThreePluginTypes {
 
         useDirectionalLight(id: string): DirectionalLightContext
 
+        useHemisphereLight(id: string): HemisphereLightContext
+
+        usePointLight(id: string): PointLightContext
+
+        useSpotLight(id: string): SpotLightContext
+
         dispose(): void;
     }
 
@@ -57,6 +63,9 @@ export namespace PsrThreePluginTypes {
         | 'OrthographicCamera'
         | 'Light'
         | 'DirectionalLight'
+        | 'HemisphereLight'
+        | 'PointLight'
+        | 'SpotLight'
 
     export interface Object3DContext<O extends THREE.Object3D, H extends THREE.Object3D | void = void> {
         readonly type: Object3DType
@@ -109,5 +118,16 @@ export namespace PsrThreePluginTypes {
 
     export interface DirectionalLightContext extends LightContext<THREE.DirectionalLight, THREE.DirectionalLightHelper> {
         helperOptions: Ref<{ size?: number } | false>
+    }
+
+    export interface HemisphereLightContext extends LightContext<THREE.HemisphereLight, THREE.HemisphereLightHelper> {
+        helperOptions: Ref<{ size: number } | false>
+    }
+
+    export interface PointLightContext extends LightContext<THREE.PointLight, THREE.PointLightHelper> {
+        helperOptions: Ref<{ size: number } | false>
+    }
+
+    export interface SpotLightContext extends LightContext<THREE.SpotLight, THREE.SpotLightHelper> {
     }
 }

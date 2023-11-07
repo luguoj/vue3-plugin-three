@@ -9,7 +9,9 @@ import {SceneContextImpl} from "./SceneContext.ts";
 import {Object3DContextImpl} from "./Object3DContext.ts";
 import {LightContextImpl} from "./LightContext.ts";
 import {DirectionalLightContextImpl} from "./DirectionalLightContext.ts";
-import {Object3D} from "three";
+import {HemisphereLightContextImpl} from "./HemisphereLightContext.ts";
+import {PointLightContextImpl} from "./PointLightContext.ts";
+import {SpotLightContextImpl} from "./SpotLightContext.ts";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
@@ -61,6 +63,18 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
 
     useDirectionalLight(id: string): PsrThreePluginTypes.DirectionalLightContext {
         return this.getObject(id, 'DirectionalLight', () => new DirectionalLightContextImpl(id))
+    }
+
+    useHemisphereLight(id: string): PsrThreePluginTypes.HemisphereLightContext {
+        return this.getObject(id, 'HemisphereLight', () => new HemisphereLightContextImpl(id))
+    }
+
+    usePointLight(id: string): PsrThreePluginTypes.PointLightContext {
+        return this.getObject(id, 'PointLight', () => new PointLightContextImpl(id))
+    }
+
+    useSpotLight(id: string): PsrThreePluginTypes.SpotLightContext {
+        return this.getObject(id, 'SpotLight', () => new SpotLightContextImpl(id))
     }
 
     dispose() {
