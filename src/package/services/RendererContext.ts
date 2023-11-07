@@ -12,11 +12,11 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     readonly events = {
         update: createEventHook<number>(),
         mounted: createEventHook<THREE.WebGLRenderer>(),
+        beginUpdate: createEventHook<void>(),
+        endUpdate: createEventHook<void>()
     }
     // 时钟
     private readonly clock: THREE.Clock = new THREE.Clock()
-    // 更新场景合约
-    private updatePromise?: Promise<unknown[]> = undefined
 
     constructor(params?: THREE.WebGLRendererParameters) {
         this.renderer = this.buildRenderer(params)
@@ -61,20 +61,20 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
 
     // 帧绘制
     private draw() {
-        if (this.running.value) {
-            // 在浏览器下一帧进行重绘
-            requestAnimationFrame(() => this.draw());
-        }
-        // 绘制场景
-        const scene = this.scene.value?.scene
-        const camera = this.scene.value?.activatedCamera.value?.object
-        if (scene && camera) {
-            this.renderer.render(scene, camera)
-        }
         // 更新场景
-        if (!this.updatePromise) {
-            // 如果没有正在执行的更新则触发下一帧
-            this.updatePromise = this.events.update.trigger(this.clock.getDelta()).finally(() => this.updatePromise = undefined)
-        }
+        this.events.update.trigger(this.clock.getDelta()).finally(() => {
+            if (this.running.value) {
+                this.events.beginUpdate.trigger().then()
+                // 绘制场景
+                const scene = this.scene.value?.scene
+                const camera = this.scene.value?.activatedCamera.value?.object
+                if (scene && camera) {
+                    this.renderer.render(scene, camera)
+                }
+                // 在浏览器下一帧进行重绘
+                requestAnimationFrame(() => this.draw());
+                this.events.endUpdate.trigger().then()
+            }
+        })
     }
 }

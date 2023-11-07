@@ -41,6 +41,8 @@ export namespace PsrThreePluginTypes {
             update: EventHook<number>
             // 完成挂载
             mounted: EventHook<THREE.WebGLRenderer>
+            beginUpdate:EventHook<void>
+            endUpdate:EventHook<void>
         }
     }
 
