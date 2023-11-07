@@ -2,6 +2,7 @@
 import * as THREE from "three";
 import {PsrThreeCanvas} from "../../package";
 import {createExampleContext} from "./createExampleContext.ts";
+import {ref} from "vue";
 
 const {context, renderer, scene, camera} = createExampleContext()
 
@@ -33,13 +34,18 @@ function animate(delta: number) {
 }
 
 renderer.events.update.on(animate)
-
+const stateEnabled = ref(true)
 </script>
 
 <template>
-  <psr-three-canvas
-      :renderer-context="renderer"
-  />
+  <div>
+    <button @click="stateEnabled=!stateEnabled">sw</button>
+    <psr-three-canvas
+        style="height: 100%;"
+        :renderer-context="renderer"
+        :state-enabled="stateEnabled"
+    />
+  </div>
 </template>
 
 <style scoped>
