@@ -14,7 +14,7 @@ export namespace PsrThreePluginTypes {
 
         useScene(id: string): SceneContext;
 
-        useObject<O extends THREE.Object3D, H extends THREE.Object3D | void = void>(id: string, object: O): Object3DContext<O, H>;
+        useObject<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper>(id: string, object: O): Object3DContext<O, H>;
 
         useCamera<C extends THREE.Camera>(id: string, camera: C): CameraContext<C>;
 
@@ -67,7 +67,7 @@ export namespace PsrThreePluginTypes {
         | 'PointLight'
         | 'SpotLight'
 
-    export interface Object3DContext<O extends THREE.Object3D, H extends THREE.Object3D | void = void> {
+    export interface Object3DContext<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper> {
         readonly type: Object3DType
         readonly id: string
         // 摄像机
@@ -113,19 +113,25 @@ export namespace PsrThreePluginTypes {
         readonly activatedCamera: ComputedRef<CameraContext<any> | undefined>
     }
 
-    export interface LightContext<L extends THREE.Light, H extends THREE.Object3D | void = void> extends Object3DContext<L, H> {
+    export interface LightContext<L extends THREE.Light, H extends THREE.Object3D = THREE.BoxHelper> extends Object3DContext<L, H> {
     }
 
     export interface DirectionalLightContext extends LightContext<THREE.DirectionalLight, THREE.DirectionalLightHelper> {
-        helperOptions: Ref<{ size?: number } | false>
+        helperOptions: Ref<{
+            size?: number
+        } | false>
     }
 
     export interface HemisphereLightContext extends LightContext<THREE.HemisphereLight, THREE.HemisphereLightHelper> {
-        helperOptions: Ref<{ size: number } | false>
+        helperOptions: Ref<{
+            size: number
+        } | false>
     }
 
     export interface PointLightContext extends LightContext<THREE.PointLight, THREE.PointLightHelper> {
-        helperOptions: Ref<{ size: number } | false>
+        helperOptions: Ref<{
+            size: number
+        } | false>
     }
 
     export interface SpotLightContext extends LightContext<THREE.SpotLight, THREE.SpotLightHelper> {

@@ -41,7 +41,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.objects[id] as O
     }
 
-    useObject<O extends THREE.Object3D, H extends THREE.Object3D | void = void>(id: string, object: O): PsrThreePluginTypes.Object3DContext<O, H> {
+    useObject<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper>(id: string, object: O): PsrThreePluginTypes.Object3DContext<O, H> {
         return this.getObject(id, 'Object3D', () => new Object3DContextImpl(id, object))
     }
 

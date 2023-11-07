@@ -3,7 +3,7 @@ import {PsrThreePluginTypes} from "../types";
 import {ref, Ref, watch} from "vue";
 import {Object3DUtils} from "../utils/Object3DUtils.ts";
 
-export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Object3D | void = void> implements PsrThreePluginTypes.Object3DContext<O, H> {
+export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper> implements PsrThreePluginTypes.Object3DContext<O, H> {
     readonly type: PsrThreePluginTypes.Object3DType = 'Object3D';
     readonly id: string;
     readonly object: O;
@@ -12,10 +12,14 @@ export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Objec
     helper: H | undefined
     readonly buildHelper?: (helperOptions?: any) => H
 
-    constructor(id: string, object: O, options?: { buildHelper?: (helperOptions?: any) => H }) {
+    constructor(id: string, object: O, options?: {
+        buildHelper?: (helperOptions?: any) => H
+    }) {
         this.id = id
         this.object = object
-        this.buildHelper = options?.buildHelper
+        this.buildHelper = options?.buildHelper || (() => {
+            return new THREE.BoxHelper(this.object) as any
+        })
         if (this.buildHelper) {
             watch(this.helperOptions, newOptions => {
                 if (newOptions && this.buildHelper) {
