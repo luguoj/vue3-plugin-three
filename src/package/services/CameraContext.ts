@@ -6,9 +6,10 @@ export class CameraContextImpl<C extends THREE.Camera> extends Object3DContextIm
     readonly type: PsrThreePluginTypes.Object3DType = 'Camera';
 
     constructor(id: string, camera: C) {
-        super(id, camera);
-        this.buildHelper = () => {
-            return new THREE.CameraHelper(this.object)
-        }
+        super(id, camera, {
+            buildHelper: () => {
+                return new THREE.CameraHelper(this.object)
+            }
+        })
     }
 }

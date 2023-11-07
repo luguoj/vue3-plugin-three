@@ -64,7 +64,7 @@ export namespace PsrThreePluginTypes {
         // 摄像机
         readonly object: O;
         // 启用辅助器
-        readonly helperEnabled: Ref<boolean>
+        readonly helperOptions: Ref<any | false>
         // 辅助器对象
         helper: H | undefined
     }
@@ -108,5 +108,6 @@ export namespace PsrThreePluginTypes {
     }
 
     export interface DirectionalLightContext extends LightContext<THREE.DirectionalLight, THREE.DirectionalLightHelper> {
+        helperOptions: Ref<{ size?: number } | false>
     }
 }

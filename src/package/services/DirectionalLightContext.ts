@@ -6,9 +6,10 @@ export class DirectionalLightContextImpl extends LightContextImpl<THREE.Directio
     readonly type: PsrThreePluginTypes.Object3DType = 'DirectionalLight';
 
     constructor(id: string) {
-        super(id, new THREE.DirectionalLight());
-        this.buildHelper = () => {
-            return new THREE.DirectionalLightHelper(this.object)
-        }
+        super(id, new THREE.DirectionalLight(), {
+            buildHelper: (helperOptions: { size?: number }) => {
+                return new THREE.DirectionalLightHelper(this.object, helperOptions.size)
+            }
+        })
     }
 }

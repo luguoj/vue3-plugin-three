@@ -8,25 +8,35 @@ export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Objec
     readonly id: string;
     readonly object: O;
 
-    readonly helperEnabled: Ref<boolean> = ref(false)
+    readonly helperOptions: Ref<any | false> = ref(false)
     helper: H | undefined
-    protected buildHelper?: () => H = undefined
+    readonly buildHelper?: (helperOptions?: any) => H
 
-    constructor(id: string, object: O) {
+    constructor(id: string, object: O, options?: { buildHelper?: (helperOptions?: any) => H }) {
         this.id = id
         this.object = object
-        watch(this.helperEnabled, enabled => {
-            if (enabled && this.buildHelper) {
-                this.helper = this.buildHelper()
-                if (this.helper) {
-                    object.children.push(this.helper)
+        this.buildHelper = options?.buildHelper
+        if (this.buildHelper) {
+            watch(this.helperOptions, newOptions => {
+                if (newOptions && this.buildHelper) {
+                    this.initHelper(this.buildHelper(newOptions))
+                } else {
+                    this.initHelper()
                 }
-            } else if (this.helper) {
-                object.children.splice(object.children.indexOf(this.helper), 1)
-                Object3DUtils.dispose(this.helper)
-                delete this.helper
-            }
-        })
+            }, {deep: true})
+        }
+    }
+
+    private initHelper(newHelper?: H) {
+        if (this.helper) {
+            this.object.children.splice(this.object.children.indexOf(this.helper), 1)
+            Object3DUtils.dispose(this.helper)
+            delete this.helper
+        }
+        if (newHelper) {
+            this.helper = newHelper
+            this.object.children.push(newHelper)
+        }
     }
 
 }
