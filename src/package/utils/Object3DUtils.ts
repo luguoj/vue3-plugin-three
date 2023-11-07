@@ -3,12 +3,9 @@ import * as THREE from "three"
 export namespace Object3DUtils {
     export function dispose(object?: THREE.Object3D & { dispose?: () => void, geometry?: THREE.BufferGeometry, material?: THREE.Material | THREE.Material[] }) {
         if (object) {
-            // 递归释放子对象
-            for (const child of object.children) {
-                Object3DUtils.dispose(child)
+            if (object.dispose) {
+                object.dispose()
             }
-            // 清空子对象
-            object.clear()
             if (object.geometry instanceof THREE.BufferGeometry) {
                 object.geometry.dispose()
             }
@@ -19,9 +16,12 @@ export namespace Object3DUtils {
                     materialElement.dispose()
                 }
             }
-            if (object.dispose) {
-                object.dispose()
+            // 递归释放子对象
+            for (const child of object.children) {
+                Object3DUtils.dispose(child)
             }
+            // 清空子对象
+            object.clear()
         }
     }
 }
