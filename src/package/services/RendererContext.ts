@@ -1,4 +1,4 @@
-import {Ref, ref, shallowRef, ShallowRef, watch} from "vue";
+import {computed, ComputedRef, Ref, ref, shallowRef, ShallowRef, watch} from "vue";
 import {createEventHook} from "@vueuse/core";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
@@ -8,6 +8,12 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     readonly renderer: THREE.WebGLRenderer
     readonly running: Ref<boolean> = ref(false)
     readonly scene: ShallowRef<PsrThreePluginTypes.SceneContext | undefined> = shallowRef<PsrThreePluginTypes.SceneContext>()
+    readonly activatedCameraId = ref<string>()
+    readonly activatedCamera: ComputedRef<PsrThreePluginTypes.CameraContext<any> | undefined> = computed(() => {
+            let camera = this.activatedCameraId.value && this.scene.value?.objectById.value[this.activatedCameraId.value] as PsrThreePluginTypes.CameraContext<any> || undefined
+            return camera?.object.isCamera ? camera : undefined
+        }
+    )
     readonly size: Ref<PsrThreePluginTypes.Size | undefined> = ref()
     readonly events = {
         update: createEventHook<number>(),
@@ -67,7 +73,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                 this.events.beginUpdate.trigger().then()
                 // 绘制场景
                 const scene = this.scene.value?.scene
-                const camera = this.scene.value?.activatedCamera.value?.object
+                const camera = this.activatedCamera.value?.object
                 if (scene && camera) {
                     this.renderer.render(scene, camera)
                 }

@@ -40,6 +40,10 @@ export namespace PsrThreePluginTypes {
         readonly containerRef: ShallowRef<HTMLElement | undefined>
         // 渲染器
         readonly renderer: THREE.WebGLRenderer
+        // 激活的摄像机Id
+        readonly activatedCameraId: Ref<string | undefined>
+        // 激活的摄像机
+        readonly activatedCamera: ComputedRef<CameraContext<any> | undefined>
         // 运行标识
         readonly running: Ref<boolean>
         // 场景上下文
@@ -106,11 +110,7 @@ export namespace PsrThreePluginTypes {
         // 3d对象
         readonly objects: ShallowUnwrapRef<Object3DContext<any, any>[]>
         // 3d对象与id映射
-        objectById: ComputedRef<Record<string, Object3DContext<any, any>>>
-        // 激活的摄像机Id
-        readonly activatedCameraId: Ref<string | undefined>
-        // 激活的摄像机
-        readonly activatedCamera: ComputedRef<CameraContext<any> | undefined>
+        readonly objectById: ComputedRef<Record<string, Object3DContext<any, any>>>
     }
 
     export interface LightContext<L extends THREE.Light, H extends THREE.Object3D = THREE.BoxHelper> extends Object3DContext<L, H> {

@@ -1,4 +1,4 @@
-import {computed, ComputedRef, markRaw, ref, shallowReactive, ShallowUnwrapRef, watch} from "vue";
+import {computed, ComputedRef, markRaw, shallowReactive, ShallowUnwrapRef, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 
@@ -13,10 +13,6 @@ export class SceneContextImpl implements PsrThreePluginTypes.SceneContext {
         }
         return objectByName
     })
-    readonly activatedCameraId = ref<string>()
-    readonly activatedCamera: ComputedRef<PsrThreePluginTypes.CameraContext<any> | undefined> = computed(() =>
-        this.activatedCameraId.value && this.objectById.value[this.activatedCameraId.value] as PsrThreePluginTypes.CameraContext<any> || undefined
-    )
 
     constructor() {
         // 更新需要渲染的3d对象
