@@ -12,7 +12,8 @@ export function createExampleContext() {
     // 创建相机
     const camera = context.usePerspectiveCamera('camera').autoAspect(renderer.size)
     scene.objects.push(camera)
-    scene.activatedCameraId.value = camera.id
+    // 设置默认相机
+    renderer.activatedCameraId.value = camera.id
     return {
         context, renderer, scene, camera
     }
