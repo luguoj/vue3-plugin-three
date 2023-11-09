@@ -1,4 +1,4 @@
-import {ComputedRef, Ref, ShallowRef, ShallowUnwrapRef} from "vue";
+import {ComputedRef, Ref, ShallowRef, ShallowUnwrapRef, UnwrapRef} from "vue";
 import {EventHook} from "@vueuse/core/index";
 import * as THREE from "three"
 
@@ -21,6 +21,8 @@ export namespace PsrThreePluginTypes {
         usePerspectiveCamera(id: string): PerspectiveCameraContext;
 
         useOrthographicCamera(id: string): OrthographicCameraContext;
+
+        useArrayCamera(id: string): ArrayCameraContext;
 
         useLight<L extends THREE.Light>(id: string, light: L): LightContext<L>
 
@@ -65,6 +67,7 @@ export namespace PsrThreePluginTypes {
         | 'Camera'
         | 'PerspectiveCamera'
         | 'OrthographicCamera'
+        | 'ArrayCamera'
         | 'Light'
         | 'DirectionalLight'
         | 'HemisphereLight'
@@ -102,6 +105,15 @@ export namespace PsrThreePluginTypes {
         bottom: Ref<number>;
         near: Ref<number>;
         far: Ref<number>;
+    }
+
+    export type CameraViewport = { left?: number, right?: number, top?: number, bottom?: number, width: number, height: number }
+
+    export interface ArrayCameraContext extends CameraContext<THREE.ArrayCamera> {
+        readonly cameras: ShallowUnwrapRef<PerspectiveCameraContext[]>
+        readonly viewports: UnwrapRef<CameraViewport[]>
+
+        adaptingSizing(size?: Ref<Size | undefined>): ArrayCameraContext
     }
 
     export interface SceneContext {

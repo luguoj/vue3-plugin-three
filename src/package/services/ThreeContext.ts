@@ -12,6 +12,7 @@ import {DirectionalLightContextImpl} from "./DirectionalLightContext.ts";
 import {HemisphereLightContextImpl} from "./HemisphereLightContext.ts";
 import {PointLightContextImpl} from "./PointLightContext.ts";
 import {SpotLightContextImpl} from "./SpotLightContext.ts";
+import {ArrayCameraContextImpl} from "./ArrayCameraContext.ts";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
@@ -55,6 +56,10 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
 
     useOrthographicCamera(id: string): PsrThreePluginTypes.OrthographicCameraContext {
         return this.getObject(id, 'OrthographicCamera', () => new OrthographicCameraContextImpl(id))
+    }
+
+    useArrayCamera(id: string): PsrThreePluginTypes.ArrayCameraContext {
+        return this.getObject(id, 'ArrayCamera', () => new ArrayCameraContextImpl(id))
     }
 
     useLight<L extends THREE.Light>(id: string, light: L): PsrThreePluginTypes.LightContext<L> {
