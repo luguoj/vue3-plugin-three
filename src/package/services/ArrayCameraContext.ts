@@ -17,7 +17,10 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
             const newCameras: THREE.PerspectiveCamera[] = []
             for (let i = 0; i < this.cameras.length && i < this.viewports.length; i++) {
                 const cameraObj = this.cameras[i].object as any
-                cameraObj.viewport = calcViewport(this.viewports[i], this.size?.value)
+                const viewport = calcViewport(this.viewports[i], this.size?.value)
+                cameraObj.viewport = viewport
+                cameraObj.aspect = viewport.height ? viewport.width / viewport.height : 1
+                cameraObj.updateProjectionMatrix()
                 newCameras.push(cameraObj)
             }
             this.object.cameras = newCameras
@@ -33,7 +36,10 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
             this.stopAdaptingSizing = watch(this.size, newSize => {
                 for (let i = 0; i < this.cameras.length && i < this.viewports.length; i++) {
                     const cameraObj = this.cameras[i].object as any
-                    cameraObj.viewport = calcViewport(this.viewports[i], newSize)
+                    const viewport = calcViewport(this.viewports[i], newSize)
+                    cameraObj.viewport = viewport
+                    cameraObj.aspect = viewport.height ? viewport.width / viewport.height : 1
+                    cameraObj.updateProjectionMatrix()
                 }
             })
         }
