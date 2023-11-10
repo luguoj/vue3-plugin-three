@@ -32,7 +32,7 @@ export class OrthographicCameraContextImpl extends CameraContextImpl<THREE.Ortho
 
     private stopAutoAspectHandle?: WatchStopHandle = undefined
 
-    autoAspect(size: false | Ref<PsrThreePluginTypes.Size | undefined>): PsrThreePluginTypes.OrthographicCameraContext {
+    autoAspect(size?: Ref<PsrThreePluginTypes.Size | undefined>): PsrThreePluginTypes.OrthographicCameraContext {
         if (this.stopAutoAspectHandle) {
             this.stopAutoAspectHandle()
         }

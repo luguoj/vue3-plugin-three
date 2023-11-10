@@ -3,17 +3,16 @@ import {createEventHook} from "@vueuse/core";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 import {ViewportUtils} from "../utils/ViewportUtils.ts";
+import {OrthographicCameraContextImpl} from "./OrthographicCameraContext.ts";
+import {PerspectiveCameraContextImpl} from "./PerspectiveCameraContext.ts";
+import {ArrayCameraContextImpl} from "./ArrayCameraContext.ts";
 
 export class RendererViewportContextImpl implements PsrThreePluginTypes.RendererViewportContext {
     readonly renderer: PsrThreePluginTypes.RendererContext
     readonly id: string
     readonly scene: PsrThreePluginTypes.SceneContext
     readonly activatedCameraId = ref<string>()
-    readonly activatedCamera: ComputedRef<PsrThreePluginTypes.CameraContext<any> | undefined> = computed(() => {
-            let camera = this.activatedCameraId.value && this.scene.objectById.value[this.activatedCameraId.value] as PsrThreePluginTypes.CameraContext<any> || undefined
-            return camera?.object.isCamera ? camera : undefined
-        }
-    )
+    readonly activatedCamera: ShallowRef<PsrThreePluginTypes.CameraContext<any> | undefined> = ref<PsrThreePluginTypes.CameraContext<any>>()
     readonly viewport: Ref<PsrThreePluginTypes.Viewport | undefined> = ref<PsrThreePluginTypes.Viewport>()
     visible: boolean = true
     readonly viewportRect: ComputedRef<THREE.Vector4> = computed<THREE.Vector4>(() =>
@@ -25,6 +24,28 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         this.id = id
         this.scene = scene
         this.viewport.value = viewport
+        watch(this.activatedCameraId, activatedCameraId => {
+            const cameraOld = this.activatedCamera.value
+            this.activatedCamera.value = undefined
+            if (cameraOld instanceof OrthographicCameraContextImpl) {
+                cameraOld.autoAspect()
+            } else if (cameraOld instanceof PerspectiveCameraContextImpl) {
+                cameraOld.autoAspect()
+            } else if (cameraOld instanceof ArrayCameraContextImpl) {
+                cameraOld.adaptingSizing()
+            }
+            let camera = activatedCameraId && this.scene.objectById.value[activatedCameraId] as PsrThreePluginTypes.CameraContext<any> || undefined
+            if (camera?.object.isCamera) {
+                this.activatedCamera.value = camera
+                if (camera instanceof OrthographicCameraContextImpl) {
+                    camera.autoAspect(this.viewportRect)
+                } else if (camera instanceof PerspectiveCameraContextImpl) {
+                    camera.autoAspect(this.viewportRect)
+                } else if (camera instanceof ArrayCameraContextImpl) {
+                    camera.adaptingSizing(this.viewportRect)
+                }
+            }
+        })
     }
 }
 

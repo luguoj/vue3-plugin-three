@@ -70,7 +70,7 @@ export namespace PsrThreePluginTypes {
         // 激活的摄像机Id
         readonly activatedCameraId: Ref<string | undefined>
         // 激活的摄像机
-        readonly activatedCamera: ComputedRef<CameraContext<any> | undefined>
+        readonly activatedCamera: ShallowRef<CameraContext<any> | undefined>
         // 视口
         readonly viewport: Ref<Viewport | undefined>
         readonly viewportRect: ComputedRef<THREE.Vector4>
@@ -109,8 +109,6 @@ export namespace PsrThreePluginTypes {
         aspect: Ref<number>;
         near: Ref<number>;
         far: Ref<number>;
-
-        autoAspect(size: false | Ref<Size | undefined>): PerspectiveCameraContext;
     }
 
     export interface OrthographicCameraContext extends CameraContext<THREE.OrthographicCamera> {
@@ -118,15 +116,11 @@ export namespace PsrThreePluginTypes {
         aspect: Ref<number>;
         near: Ref<number>;
         far: Ref<number>;
-
-        autoAspect(size: false | Ref<Size | undefined>): OrthographicCameraContext;
     }
 
     export interface ArrayCameraContext extends CameraContext<THREE.ArrayCamera> {
         readonly cameras: ShallowUnwrapRef<PerspectiveCameraContext[]>
         readonly viewports: UnwrapRef<Viewport[]>
-
-        adaptingSizing(size?: Ref<Size | undefined>): ArrayCameraContext
     }
 
     export interface SceneContext {
