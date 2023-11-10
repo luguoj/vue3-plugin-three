@@ -2,6 +2,7 @@ import {reactive, Ref, shallowReactive, ShallowUnwrapRef, UnwrapRef, watch, watc
 import * as THREE from "three"
 import {PsrThreePluginTypes} from "../types";
 import {CameraContextImpl} from "./CameraContext.ts";
+import {ViewportUtils} from "../utils/ViewportUtils.ts";
 
 export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera> implements PsrThreePluginTypes.ArrayCameraContext {
     readonly type: PsrThreePluginTypes.Object3DType = 'ArrayCamera';
@@ -17,7 +18,7 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
             const newCameras: THREE.PerspectiveCamera[] = []
             for (let i = 0; i < this.cameras.length && i < this.viewports.length; i++) {
                 const cameraObj = this.cameras[i].object as any
-                const viewport = calcViewport(this.viewports[i], this.size?.value)
+                const viewport = ViewportUtils.calcViewport(this.viewports[i], this.size?.value)
                 cameraObj.viewport = viewport
                 cameraObj.aspect = viewport.height ? viewport.width / viewport.height : 1
                 cameraObj.updateProjectionMatrix()
@@ -36,7 +37,7 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
             this.stopAdaptingSizing = watch(this.size, newSize => {
                 for (let i = 0; i < this.cameras.length && i < this.viewports.length; i++) {
                     const cameraObj = this.cameras[i].object as any
-                    const viewport = calcViewport(this.viewports[i], newSize)
+                    const viewport = ViewportUtils.calcViewport(this.viewports[i], newSize)
                     cameraObj.viewport = viewport
                     cameraObj.aspect = viewport.height ? viewport.width / viewport.height : 1
                     cameraObj.updateProjectionMatrix()
@@ -45,27 +46,4 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
         }
         return this
     }
-}
-
-function calcLength(value: number, range: number): number {
-    return value > 1 ? value : Math.floor(range * value)
-}
-
-function calcViewport(viewport: PsrThreePluginTypes.Viewport, size?: PsrThreePluginTypes.Size): THREE.Vector4 {
-    const {width: fullWidth, height: fullHeight} = size || {width: 0, height: 0}
-    const {left, right, top, bottom, width, height} = viewport;
-    let x = 0, y = 0,
-        w = calcLength(width, fullWidth),
-        h = calcLength(height, fullHeight)
-    if (left != undefined) {
-        x = calcLength(left, w)
-    } else if (right != undefined) {
-        x = fullWidth - w - calcLength(right, w)
-    }
-    if (top != undefined) {
-        y = calcLength(top, h)
-    } else if (bottom != undefined) {
-        y = fullHeight - h - calcLength(bottom, h)
-    }
-    return new THREE.Vector4(x, y, w, h)
 }
