@@ -8,13 +8,14 @@ export function createExampleContext() {
     })
     // 创建场景
     const scene = context.useScene('scene')
-    renderer.scene.value = scene
+    const viewport = renderer.createViewport('viewport', scene)
     // 创建相机
-    const camera = context.usePerspectiveCamera('camera').autoAspect(renderer.size)
+    const camera = context.usePerspectiveCamera('camera')
     scene.objects.push(camera)
     // 设置默认相机
-    renderer.activatedCameraId.value = camera.id
+    viewport.activatedCameraId.value = camera.id
+    camera.autoAspect(viewport.viewportRect)
     return {
-        context, renderer, scene, camera
+        context, renderer, scene, camera, viewport
     }
 }

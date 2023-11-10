@@ -23,8 +23,7 @@ camera2.object.updateProjectionMatrix()
 scene.objects.push(camera2)
 
 const renderer2 = context.useRenderer('render-2')
-renderer2.scene.value = scene
-renderer2.activatedCameraId.value = 'c2'
+renderer2.createViewport('vp-1',scene).activatedCameraId.value='c2'
 
 const controls = new OrbitControls(camera2.object, renderer2.renderer.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)

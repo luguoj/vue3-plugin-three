@@ -5,7 +5,7 @@ import {createExampleContext} from "./createExampleContext.ts";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {createCube} from "./createCube.ts";
 
-const {renderer, context, scene, camera} = createExampleContext()
+const {renderer, context, scene, camera,viewport} = createExampleContext()
 camera.autoAspect(false)
 camera.object.position.set(5, 5, 5);
 camera.object.lookAt(0, 0, 0);
@@ -29,10 +29,10 @@ scene.objects.push(camera2)
 
 const cameraArr = context.useArrayCamera('c-arr')
 cameraArr.cameras.push(camera, camera2)
-cameraArr.viewports.push({width: 0.3, height: 0.3, top: 0.1, right: 0.1}, {width: 1, height: 1})
+cameraArr.viewports.push({width: 0.3, height: 0.3, top: 0.5, right: 0.5}, {width: 1, height: 1})
 cameraArr.adaptingSizing(renderer.size)
 scene.objects.push(cameraArr)
-renderer.activatedCameraId.value = 'c-arr'
+viewport.activatedCameraId.value = 'c-arr'
 
 const controls = new OrbitControls(camera2.object, renderer.renderer.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
