@@ -6,7 +6,7 @@ import {CameraContextImpl} from "./CameraContext.ts";
 export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera> implements PsrThreePluginTypes.ArrayCameraContext {
     readonly type: PsrThreePluginTypes.Object3DType = 'ArrayCamera';
     readonly cameras: ShallowUnwrapRef<PsrThreePluginTypes.PerspectiveCameraContext[]> = shallowReactive<PsrThreePluginTypes.PerspectiveCameraContext[]>([]);
-    readonly viewports: UnwrapRef<PsrThreePluginTypes.CameraViewport[]> = reactive<PsrThreePluginTypes.CameraViewport[]>([]);
+    readonly viewports: UnwrapRef<PsrThreePluginTypes.Viewport[]> = reactive<PsrThreePluginTypes.Viewport[]>([]);
     size?: Ref<PsrThreePluginTypes.Size | undefined>
 
     private stopAdaptingSizing?: WatchStopHandle = undefined
@@ -51,7 +51,7 @@ function calcLength(value: number, range: number): number {
     return value > 1 ? value : Math.floor(range * value)
 }
 
-function calcViewport(viewport: PsrThreePluginTypes.CameraViewport, size?: PsrThreePluginTypes.Size): THREE.Vector4 {
+function calcViewport(viewport: PsrThreePluginTypes.Viewport, size?: PsrThreePluginTypes.Size): THREE.Vector4 {
     const {width: fullWidth, height: fullHeight} = size || {width: 0, height: 0}
     const {left, right, top, bottom, width, height} = viewport;
     let x = 0, y = 0,

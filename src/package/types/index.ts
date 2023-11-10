@@ -8,6 +8,8 @@ export namespace PsrThreePluginTypes {
         height: number
     }
 
+    export type Viewport = { left?: number, right?: number, top?: number, bottom?: number, width: number, height: number }
+
     export interface ThreeContext {
 
         useRenderer(id: string, params?: THREE.WebGLRendererParameters): RendererContext;
@@ -107,11 +109,9 @@ export namespace PsrThreePluginTypes {
         far: Ref<number>;
     }
 
-    export type CameraViewport = { left?: number, right?: number, top?: number, bottom?: number, width: number, height: number }
-
     export interface ArrayCameraContext extends CameraContext<THREE.ArrayCamera> {
         readonly cameras: ShallowUnwrapRef<PerspectiveCameraContext[]>
-        readonly viewports: UnwrapRef<CameraViewport[]>
+        readonly viewports: UnwrapRef<Viewport[]>
 
         adaptingSizing(size?: Ref<Size | undefined>): ArrayCameraContext
     }
