@@ -14,7 +14,6 @@ export function createExampleContext() {
     scene.objects.push(camera)
     // 设置默认相机
     viewport.activatedCameraId.value = camera.id
-    camera.autoAspect(viewport.viewportRect)
     return {
         context, renderer, scene, camera, viewport
     }

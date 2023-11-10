@@ -6,7 +6,6 @@ import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {createCube} from "./createCube.ts";
 
 const {renderer, context, scene, camera,viewport} = createExampleContext()
-camera.autoAspect(false)
 camera.object.position.set(5, 5, 5);
 camera.object.lookAt(0, 0, 0);
 camera.object.updateProjectionMatrix();
@@ -30,7 +29,6 @@ scene.objects.push(camera2)
 const cameraArr = context.useArrayCamera('c-arr')
 cameraArr.cameras.push(camera, camera2)
 cameraArr.viewports.push({width: 0.3, height: 0.3, top: 0.5, right: 0.5}, {width: 1, height: 1})
-cameraArr.adaptingSizing(renderer.size)
 scene.objects.push(cameraArr)
 viewport.activatedCameraId.value = 'c-arr'
 
