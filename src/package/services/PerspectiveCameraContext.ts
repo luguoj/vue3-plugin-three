@@ -44,12 +44,8 @@ export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.Perspe
         if (size) {
             this.stopAutoAspectHandle = watch(size, newSize => {
                 const {width, height} = newSize || {width: 0, height: 0}
-                if (this.object instanceof THREE.ArrayCamera) {
-
-                } else {
-                    // 更新透视相机长宽比
-                    this.aspect.value = height != 0 ? (width / height) : 1
-                }
+                // 更新透视相机长宽比
+                this.aspect.value = height != 0 ? (width / height) : 1
             })
         }
         return this
