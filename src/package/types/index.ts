@@ -75,6 +75,8 @@ export namespace PsrThreePluginTypes {
         readonly viewport: Ref<Viewport | undefined>
         readonly viewportRect: ComputedRef<THREE.Vector4>
         visible: boolean
+
+        getObjectCssPosition(object: THREE.Object3D, camera: THREE.Camera): { left: string, bottom: string }
     }
 
     export type Object3DType =
