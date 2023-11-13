@@ -48,22 +48,27 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         })
     }
 
-    getObjectCssPosition(object: THREE.Object3D, camera: THREE.Camera): { left: string, bottom: string } {
-        // 获取对象位置
-        const tempV = new THREE.Vector3()
-        // 更新模型在世界坐标系中的位置（updateWorldMatrix(true, false)在getWorldPosition中调用了，无需单独调用）
-        object.getWorldPosition(tempV)
-        // 获取标准化屏幕坐标（x,y在-1~1之间）
-        // x = -1 标识最左侧
-        // y = -1 标识最底部
-        tempV.project(camera)
-        // 转换为CSS坐标
-        const left = (tempV.x * 0.5 + 0.5) * this.viewportRect.value.width
-        const bottom = (tempV.y * 0.5 + 0.5) * this.viewportRect.value.height
-        return {
-            left: left + 'px',
-            bottom: bottom + 'px'
+    getObjectCssPosition(objectId: string): { left: string, bottom: string } | undefined {
+        const camera = this.activatedCamera.value?.object
+        const object = this.scene.objectById.value[objectId]?.object
+        if (camera && object) {
+            // 获取对象位置
+            const tempV = new THREE.Vector3()
+            // 更新模型在世界坐标系中的位置（updateWorldMatrix(true, false)在getWorldPosition中调用了，无需单独调用）
+            object.getWorldPosition(tempV)
+            // 获取标准化屏幕坐标（x,y在-1~1之间）
+            // x = -1 标识最左侧
+            // y = -1 标识最底部
+            tempV.project(camera)
+            // 转换为CSS坐标
+            const left = (tempV.x * 0.5 + 0.5) * this.viewportRect.value.width
+            const bottom = (tempV.y * 0.5 + 0.5) * this.viewportRect.value.height
+            return {
+                left: left + 'px',
+                bottom: bottom + 'px'
+            }
         }
+        return undefined
     }
 }
 
