@@ -5,6 +5,7 @@ import {createExampleContext} from "./createExampleContext.ts";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {createCube} from "./createCube.ts";
 import {ref} from "vue";
+import {PsrThreePluginTypes} from "../../package/types";
 
 const {renderer, context, scene, camera, viewport} = createExampleContext()
 camera.object.position.set(5, 5, 5);
@@ -24,10 +25,10 @@ renderer.events.update.on(() => {
 })
 const {cube} = createCube(context, scene)
 
-const titlePos = ref({left: '0px', bottom: '0px'})
+const titlePos = ref<PsrThreePluginTypes.ObjectCssPosition>()
 
 renderer.events.endUpdate.on(() => {
-  titlePos.value = viewport.getObjectCssPosition(cube.object, camera.object)
+  titlePos.value = viewport.getObjectCssPosition(cube.id)
 })
 </script>
 
@@ -40,6 +41,7 @@ renderer.events.endUpdate.on(() => {
     >
       <template #[`viewport-${viewport.id}`]>
         <div
+            v-if="titlePos"
             style="position: absolute"
             :style="{
               ...titlePos
