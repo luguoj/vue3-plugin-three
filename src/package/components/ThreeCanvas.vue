@@ -38,6 +38,7 @@ watch(canvasRef, canvas => {
           :height="StateContext.PANEL_SIZE.HEIGHT*3"
           style="width:80px;height:144px;position: absolute;"
           ref="canvasRef"/>
+      <slot/>
     </div>
     <div v-else>WebGL is not available!</div>
   </div>
