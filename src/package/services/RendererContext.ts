@@ -48,7 +48,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         })
     }
 
-    getObjectCssPosition(objectId: string): { left: string, bottom: string } | undefined {
+    getObjectCssPosition(objectId: string): PsrThreePluginTypes.ObjectCssPosition | undefined {
         const camera = this.activatedCamera.value?.object
         const object = this.scene.objectById.value[objectId]?.object
         if (camera && object) {
