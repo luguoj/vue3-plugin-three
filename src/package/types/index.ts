@@ -1,4 +1,4 @@
-import {ComputedRef, Ref, ShallowRef, ShallowUnwrapRef, UnwrapRef} from "vue";
+import {ComputedRef, Ref, ShallowReactive, ShallowRef, ShallowUnwrapRef, UnwrapRef} from "vue";
 import {EventHook} from "@vueuse/core/index";
 import * as THREE from "three"
 
@@ -56,6 +56,8 @@ export namespace PsrThreePluginTypes {
             beginUpdate: EventHook<void>
             endUpdate: EventHook<void>
         }
+        // 视口
+        readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]>
         // 视口与ID映射
         readonly viewportById: Record<string, PsrThreePluginTypes.RendererViewportContext>
 

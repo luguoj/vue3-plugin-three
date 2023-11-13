@@ -1,4 +1,4 @@
-import {computed, ComputedRef, Ref, ref, shallowRef, ShallowRef, watch} from "vue";
+import {computed, ComputedRef, Ref, ref, shallowReactive, ShallowReactive, shallowRef, ShallowRef, watch} from "vue";
 import {createEventHook} from "@vueuse/core";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
@@ -81,7 +81,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     }
     // 时钟
     private readonly clock: THREE.Clock = new THREE.Clock()
-
+    readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]> = shallowReactive([])
     readonly viewportById: Record<string, PsrThreePluginTypes.RendererViewportContext> = {}
 
     constructor(params?: THREE.WebGLRendererParameters) {
@@ -123,6 +123,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         }
         const viewportCtx = new RendererViewportContextImpl(this, id, scene, viewport)
         this.viewportById[id] = viewportCtx
+        this.viewports.push(viewportCtx)
         return viewportCtx
     }
 

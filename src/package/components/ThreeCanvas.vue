@@ -31,13 +31,25 @@ watch(canvasRef, canvas => {
 
 <template>
   <div>
-    <div style="height: 100%;width: 100%;position: relative;" v-if="isWebGLAvailable" ref="containerRef">
+    <div style="height: 100%;width: 100%;position: relative;overflow:hidden;" v-if="isWebGLAvailable" ref="containerRef">
       <canvas
           v-if="stateEnabled"
           :width="StateContext.PANEL_SIZE.WIDTH"
           :height="StateContext.PANEL_SIZE.HEIGHT*3"
           style="width:80px;height:144px;position: absolute;"
           ref="canvasRef"/>
+      <div
+          v-for="viewport in rendererContext.viewports" :key="viewport.id"
+          style="pointer-events: none; position: absolute;overflow:hidden;"
+          :style="{
+            width:viewport.viewportRect.value.width+'px',
+            height:viewport.viewportRect.value.height+'px',
+            left:viewport.viewportRect.value.x+'px',
+            bottom:viewport.viewportRect.value.y+'px'
+          }"
+      >
+        <slot :name="`viewport-${viewport.id}`"/>
+      </div>
       <slot/>
     </div>
     <div v-else>WebGL is not available!</div>
