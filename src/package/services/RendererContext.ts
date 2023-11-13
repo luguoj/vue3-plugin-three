@@ -12,7 +12,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
     readonly id: string
     readonly scene: PsrThreePluginTypes.SceneContext
     readonly activatedCameraId = ref<string>()
-    readonly activatedCamera: ShallowRef<PsrThreePluginTypes.CameraContext<any> | undefined> = ref<PsrThreePluginTypes.CameraContext<any>>()
+    readonly activatedCamera: ShallowRef<PsrThreePluginTypes.CameraContext<any> | undefined> = shallowRef<PsrThreePluginTypes.CameraContext<any>>()
     readonly viewport: Ref<PsrThreePluginTypes.Viewport | undefined> = ref<PsrThreePluginTypes.Viewport>()
     visible: boolean = true
     readonly viewportRect: ComputedRef<THREE.Vector4> = computed<THREE.Vector4>(() =>
