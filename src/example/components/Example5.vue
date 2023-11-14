@@ -8,8 +8,8 @@ import {createExampleContext} from "./createExampleContext.ts";
 
 const {context, renderer, scene, camera} = createExampleContext()
 
-scene.scene.background = new THREE.Color(0x000000);
-scene.scene.fog = new THREE.Fog(0x000000, 250, 1400);
+scene.object.background = new THREE.Color(0x000000);
+scene.object.fog = new THREE.Fog(0x000000, 250, 1400);
 
 camera.fov.value = 30
 camera.object.position.set(0, 400, 700);

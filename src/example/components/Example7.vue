@@ -20,9 +20,9 @@ const cube = context.useObject('c1', createCube());
 scene.children.push(cube)
 const cube2 = context.useObject('c2', createCube());
 cube2.object.position.set(2, 0, 0)
-cube2.updateHandlers.add((delta, ctx) => {
-  ctx.object.rotation.x += delta
-  ctx.object.rotation.y += delta
+cube2.updateHandlers.add((delta) => {
+  cube2.object.rotation.x += delta
+  cube2.object.rotation.y += delta
   return true
 })
 scene.children.push(cube2)

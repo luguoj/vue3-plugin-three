@@ -74,8 +74,8 @@ onBeforeUnmount(() => {
 
 function dispose() {
   renderer.running.value = false
-  scene.scene.traverse(object => Object3DUtils.dispose(object))
-  scene.scene.clear()
+  scene.object.traverse(object => Object3DUtils.dispose(object))
+  scene.object.clear()
   renderer.renderer.dispose()
   THREE.Cache.clear()
   console.log('dispose')
