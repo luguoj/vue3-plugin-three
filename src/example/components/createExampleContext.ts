@@ -11,7 +11,7 @@ export function createExampleContext() {
     const viewport = renderer.createViewport('viewport', scene)
     // 创建相机
     const camera = context.usePerspectiveCamera('camera')
-    scene.objects.push(camera)
+    scene.children.push(camera)
     // 设置默认相机
     viewport.activatedCameraId.value = camera.id
     return {

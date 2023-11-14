@@ -12,7 +12,7 @@ camera.object.lookAt(new THREE.Vector3(0, 0, 0))
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 const cube = new THREE.Mesh(geometry, material);
-scene.objects.push(context.useObject('cube', cube))
+scene.children.push(context.useObject('cube', cube))
 
 // 为模型添加动画
 renderer.events.update.on(delta => {

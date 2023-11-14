@@ -18,12 +18,12 @@ camera.object.lookAt(new THREE.Vector3(0, 150, 0))
 // 创建光源
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
 dirLight.position.set(0, 0, 1).normalize();
-scene.objects.push(context.useObject('dir-l', dirLight))
+scene.children.push(context.useObject('dir-l', dirLight))
 
 const pointLight = new THREE.PointLight(0xffffff, 4.5, 0, 0);
 pointLight.color.setHSL(Math.random(), 1, 0.5);
 pointLight.position.set(0, 100, 90);
-scene.objects.push(context.useObject('point-l', pointLight));
+scene.children.push(context.useObject('point-l', pointLight));
 
 // 创建材质
 const materials: THREE.MeshPhongMaterial[] = [
@@ -34,7 +34,7 @@ const materials: THREE.MeshPhongMaterial[] = [
 // 创建3d对象组
 const group = new THREE.Group();
 group.position.y = 100;
-scene.objects.push(context.useObject('text-g', group));
+scene.children.push(context.useObject('text-g', group));
 
 // 创建背景平面
 const plane = new THREE.Mesh(
@@ -43,7 +43,7 @@ const plane = new THREE.Mesh(
 );
 plane.position.y = 100;
 plane.rotation.x = -Math.PI / 2;
-scene.objects.push(context.useObject('bg-p', plane));
+scene.children.push(context.useObject('bg-p', plane));
 
 const text = ref('three.js'),
     bevelEnabled = true,

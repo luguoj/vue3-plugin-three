@@ -14,7 +14,7 @@ const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 // const material = new THREE.MeshLambertMaterial()
 const cube = context.useObject('cube', new THREE.Mesh(geometry, material));
 cube.helperOptions.value = true
-scene.objects.push(cube)
+scene.children.push(cube)
 renderer.events.update.on(delta => {
   cube.object.rotation.x += delta
   cube.object.rotation.y += delta
@@ -30,7 +30,7 @@ const lineModel = context.useObject('l', new THREE.LineSegments(
       transparent: true
     })
 ))
-scene.objects.push(lineModel)
+scene.children.push(lineModel)
 renderer.events.update.on(delta => {
   lineModel.object.rotation.x += delta
   lineModel.object.rotation.y += delta

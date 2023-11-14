@@ -8,7 +8,7 @@ export function createCube(context: PsrThreePluginTypes.ThreeContext, scene: Psr
 // const material = new THREE.MeshLambertMaterial()
     const cubeModel = context.useObject('cube', new THREE.Mesh(geometry, material));
     cubeModel.helperOptions.value = true
-    scene.objects.push(cubeModel)
+    scene.children.push(cubeModel)
 
     const edges = new THREE.EdgesGeometry(geometry)
     const lineModel = context.useObject('l', new THREE.LineSegments(
@@ -19,7 +19,7 @@ export function createCube(context: PsrThreePluginTypes.ThreeContext, scene: Psr
             transparent: true
         })
     ))
-    scene.objects.push(lineModel)
+    scene.children.push(lineModel)
     return {
         cube: cubeModel,lineModel
     }

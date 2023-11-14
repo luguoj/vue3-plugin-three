@@ -12,7 +12,7 @@ camera.object.position.z = 5;
 const geometry = new THREE.BoxGeometry(1, 1, 1);
 const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 const cube = new THREE.Mesh(geometry, material);
-scene.objects.push(context.useObject('cube', cube))
+scene.children.push(context.useObject('cube', cube))
 
 const edges = new THREE.EdgesGeometry(geometry)
 const lineModel = new THREE.LineSegments(
@@ -23,7 +23,7 @@ const lineModel = new THREE.LineSegments(
       transparent: true
     })
 )
-scene.objects.push(context.useObject('line', lineModel))
+scene.children.push(context.useObject('line', lineModel))
 
 // 添加动画
 function animate(delta: number) {

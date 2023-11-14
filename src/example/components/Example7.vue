@@ -16,20 +16,22 @@ function createCube() {
   return new THREE.Mesh(geometry, material);
 }
 
-const cube = createCube();
-const cube2 = createCube();
-cube2.position.set(2, 0, 0)
-scene.objects.push(context.useObject('c1', cube))
-scene.objects.push(context.useObject('c2', cube2))
-
-// 为模型添加动画
-renderer.events.update.on(delta => {
-  cube.rotation.x += delta
-  cube.rotation.y += delta
+const cube = context.useObject('c1', createCube());
+scene.children.push(cube)
+const cube2 = context.useObject('c2', createCube());
+cube2.object.position.set(2, 0, 0)
+cube2.updateHandlers.add((delta, ctx) => {
+  ctx.object.rotation.x += delta
+  ctx.object.rotation.y += delta
+  return true
 })
+scene.children.push(cube2)
 
 // 对需要拖拽的组件创建拖拽控制器
-const controls = new DragControls(scene.objects.map(object => object.object), camera.object, renderer.renderer.domElement);
+const controls = new DragControls([], camera.object, renderer.renderer.domElement);
+controls.getObjects().push(...scene.children.map(object => object.object))
+controls.addEventListener('drag', function (event) {
+});
 // 添加拖拽开始结束事件监听
 controls.addEventListener('dragstart', function (event) {
   if (event.object instanceof THREE.Mesh) {
@@ -57,6 +59,7 @@ controls.addEventListener('hoveroff', function (event) {
 <template>
   <psr-three-canvas
       :renderer-context="renderer"
+      state-enabled
   />
 </template>
 

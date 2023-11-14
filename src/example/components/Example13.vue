@@ -10,7 +10,7 @@ camera.object.lookAt(0, 0, 0)
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.objects.push(context.useObject('grid', gridHelper))
+scene.children.push(context.useObject('grid', gridHelper))
 
 const camera2 = context.usePerspectiveCamera('c2')
 camera2.object.fov = 15
@@ -20,7 +20,7 @@ camera2.object.far = 10
 camera2.helperOptions.value = true
 camera2.object.position.set(3, 1, 0)
 camera2.object.updateProjectionMatrix()
-scene.objects.push(camera2)
+scene.children.push(camera2)
 
 const renderer2 = context.useRenderer('render-2')
 renderer2.createViewport('vp-1',scene).activatedCameraId.value='c2'

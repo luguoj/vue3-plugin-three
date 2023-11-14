@@ -16,7 +16,7 @@ viewport.viewport.value = {height: 0.5, width: 0.5, left: 0.25, top: 0.25}
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.objects.push(context.useObject('grid', gridHelper))
+scene.children.push(context.useObject('grid', gridHelper))
 
 const controls = new OrbitControls(camera.object, renderer.renderer.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)

@@ -18,7 +18,7 @@ points.push(new THREE.Vector3(10, 0, 0));
 const geometry = new THREE.BufferGeometry().setFromPoints(points);
 // 创建线段（连接几何结构中的连续顶点）
 const line = new THREE.Line(geometry, material);
-scene.objects.push(context.useObject('l', line))
+scene.children.push(context.useObject('l', line))
 </script>
 
 <template>

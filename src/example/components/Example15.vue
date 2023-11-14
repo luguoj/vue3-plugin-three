@@ -14,7 +14,7 @@ viewport.viewport.value = {height: 1, width: 0.5, left: 0.5}
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.objects.push(context.useObject('grid', gridHelper))
+scene.children.push(context.useObject('grid', gridHelper))
 
 const camera2 = context.usePerspectiveCamera('c2')
 camera2.object.fov = 15
@@ -24,7 +24,7 @@ camera2.object.far = 10
 camera2.helperOptions.value = true
 camera2.object.position.set(3, 1, 0);
 camera2.object.updateProjectionMatrix();
-scene.objects.push(camera2)
+scene.children.push(camera2)
 
 const controls = new OrbitControls(camera2.object, renderer.renderer.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
@@ -35,11 +35,11 @@ const {lineModel} = createCube(context, scene)
 
 
 const scene2 = context.useScene('scene-2')
-scene2.objects.push(lineModel)
+scene2.children.push(lineModel)
 const camera3 = context.useOrthographicCamera('camera-3')
 camera3.object.position.set(3, 1, 2);
 camera3.object.lookAt(new THREE.Vector3(0, 0, 0))
-scene2.objects.push(camera3)
+scene2.children.push(camera3)
 const viewport2 = renderer.createViewport('v-2', scene2, {width: 0.5, height: 1})
 viewport2.activatedCameraId.value = camera3.id
 </script>
