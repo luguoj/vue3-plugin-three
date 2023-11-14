@@ -78,6 +78,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     readonly running: Ref<boolean> = ref(false)
 
     readonly size: Ref<PsrThreePluginTypes.Size | undefined> = ref()
+    private dirty: boolean = false
     readonly events = {
         update: createEventHook<number>(),
         mounted: createEventHook<THREE.WebGLRenderer>(),
@@ -93,6 +94,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         this.renderer = this.buildRenderer(params)
         watch(this.containerRef, container => {
             if (container) {
+                this.dirty = true
                 // 将画布追加到容器
                 container.appendChild(this.renderer.domElement);
                 // 监控容器resize
@@ -109,11 +111,13 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         })
         // 更新渲染器尺寸
         watch(this.size, size => {
+            this.dirty = true
             const {width, height} = size || {width: 0, height: 0}
             this.renderer.setSize(Math.floor(width / this.renderer.getPixelRatio()), Math.floor(height / this.renderer.getPixelRatio()), false);
         })
         let animationId: number | undefined = undefined
         watch(this.running, running => {
+            this.dirty = true
             if (running) {
                 // 重置时钟
                 this.clock.getDelta()
@@ -121,6 +125,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                 animationId = requestAnimationFrame(() => this.update());
             } else if (animationId) {
                 cancelAnimationFrame(animationId)
+                requestAnimationFrame(() => this.clear())
             }
         })
     }
@@ -153,27 +158,19 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
             // 触发渲染器更新事件
             this.events.update.trigger(delta).then()
             // 更新场景
-            let callDraw = false
-            // 场景关联的对象集合
-            const objects = new Set<PsrThreePluginTypes.Object3DContext<any, any>>()
+            let dirty = this.dirty
+            this.dirty = false
             for (const viewportId in this.viewportById) {
                 const viewport = this.viewportById[viewportId]
                 if (viewport.visible) {
                     const scene = viewport.scene
-                    callDraw = callDraw || scene.update(delta)
+                    dirty = dirty || scene.update(delta)
                     for (const object of scene.children) {
-                        callDraw = callDraw || object.update(delta)
-                    }
-                    for (const object of scene.children) {
-                        objects.add(object)
+                        dirty = dirty || object.update(delta)
                     }
                 }
             }
-            // 更新对象
-            for (const object of objects) {
-                callDraw = callDraw || object.update(delta)
-            }
-            if (callDraw) {
+            if (dirty) {
                 this.draw()
             }
             this.events.endUpdate.trigger().then()
@@ -182,13 +179,17 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         }
     }
 
-    // 帧绘制
-    private draw() {
+    private clear() {
         // 清空画布
         this.renderer.setScissorTest(false)
-        this.renderer.setClearColor(this.clearColor, 0)
+        this.renderer.setClearColor(this.clearColor, 1)
         this.renderer.clear(true, true)
         this.renderer.setScissorTest(true)
+    }
+
+    // 帧绘制
+    private draw() {
+        this.clear()
         // 绘制场景
         for (const viewportId in this.viewportById) {
             const viewport = this.viewportById[viewportId]
