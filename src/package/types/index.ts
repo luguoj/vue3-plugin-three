@@ -26,7 +26,7 @@ export namespace PsrThreePluginTypes {
 
         useRenderer(id: string, params?: THREE.WebGLRendererParameters): RendererContext;
 
-        useScene(id: string): SceneContext;
+        useScene(id: string, scene?: THREE.Scene): SceneContext;
 
         useObject<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper>(id: string, object: O): Object3DContext<O, H>;
 
@@ -95,6 +95,7 @@ export namespace PsrThreePluginTypes {
 
     export type Object3DType =
         'Object3D'
+        | 'Scene'
         | 'Camera'
         | 'PerspectiveCamera'
         | 'OrthographicCamera'
@@ -105,17 +106,21 @@ export namespace PsrThreePluginTypes {
         | 'PointLight'
         | 'SpotLight'
 
-    export interface Object3DContext<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper> {
+    export interface Object3DContext<O extends THREE.Object3D, H extends THREE.Object3D | void = void> {
         readonly type: Object3DType
         readonly id: string
-        // 摄像机
+        // 3D对象
         readonly object: O;
         // 启用辅助器
         readonly helperOptions: Ref<any | false>
         // 辅助器对象
         helper: H | undefined
+        // 3d对象
+        readonly children: ShallowUnwrapRef<Object3DContext<any, any>[]>
+        // 3d对象与id映射
+        readonly childById: ComputedRef<Record<string, Object3DContext<any, any>>>
         // 更新处理器
-        readonly updateHandlers: Set<(delta: number, ctx: Object3DContext<O, H>) => boolean>
+        updateHandlers: Set<(delta: number) => boolean>
 
         // 更新对象
         update(delta: number): boolean
@@ -144,18 +149,7 @@ export namespace PsrThreePluginTypes {
         readonly viewports: UnwrapRef<Viewport[]>
     }
 
-    export interface SceneContext {
-        // 场景
-        readonly scene: THREE.Scene
-        // 3d对象
-        readonly children: ShallowUnwrapRef<Object3DContext<any, any>[]>
-        // 3d对象与id映射
-        readonly childById: ComputedRef<Record<string, Object3DContext<any, any>>>
-        // 更新处理器
-        readonly updateHandlers: Set<(delta: number, ctx: SceneContext) => boolean>
-
-        // 更新场景
-        update(delta: number): boolean
+    export interface SceneContext extends Object3DContext<THREE.Scene> {
     }
 
     export interface LightContext<L extends THREE.Light, H extends THREE.Object3D = THREE.BoxHelper> extends Object3DContext<L, H> {

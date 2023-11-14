@@ -193,7 +193,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         for (const viewportId in this.viewportById) {
             const viewport = this.viewportById[viewportId]
             if (viewport.visible) {
-                const scene = viewport.scene.scene
+                const scene = viewport.scene.object
                 const camera = viewport.activatedCamera.value?.object
                 if (scene && camera && this.size.value) {
                     const {x, y, width, height} = viewport.viewportRect.value

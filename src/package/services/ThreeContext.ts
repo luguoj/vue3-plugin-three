@@ -16,7 +16,6 @@ import {ArrayCameraContextImpl} from "./ArrayCameraContext.ts";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
-    private readonly scenes: Record<string, PsrThreePluginTypes.SceneContext> = {}
     private readonly objects: Record<string, PsrThreePluginTypes.Object3DContext<any>> = {}
 
     useRenderer(id: string, params?: THREE.WebGLRendererParameters): PsrThreePluginTypes.RendererContext {
@@ -24,13 +23,6 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
             this.renderers[id] = new RendererContextImpl(params)
         }
         return this.renderers[id]
-    }
-
-    useScene(id: string): PsrThreePluginTypes.SceneContext {
-        if (!this.scenes[id]) {
-            this.scenes[id] = new SceneContextImpl()
-        }
-        return this.scenes[id]
     }
 
     private getObject<O extends PsrThreePluginTypes.Object3DContext<any, any>>(id: string, type: PsrThreePluginTypes.Object3DType, provider: () => O): O {
@@ -44,6 +36,10 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
 
     useObject<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper>(id: string, object: O): PsrThreePluginTypes.Object3DContext<O, H> {
         return this.getObject(id, 'Object3D', () => new Object3DContextImpl(id, object))
+    }
+
+    useScene(id: string, scene?: THREE.Scene): PsrThreePluginTypes.SceneContext {
+        return this.getObject(id, 'Scene', () => new SceneContextImpl(id, scene))
     }
 
     useCamera<C extends THREE.Camera>(id: string, camera: C): PsrThreePluginTypes.CameraContext<C> {
@@ -85,11 +81,6 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     dispose() {
         for (const rendererId in this.renderers) {
             this.renderers[rendererId].running.value = false
-        }
-        for (const sceneId in this.scenes) {
-            const scene = this.scenes[sceneId].scene
-            Object3DUtils.dispose(scene)
-            delete this.scenes[sceneId]
         }
         for (const objectId in this.objects) {
             const object = this.objects[objectId]
