@@ -5,28 +5,28 @@ import {PsrThreePluginTypes} from "../types";
 
 export class SceneContextImpl implements PsrThreePluginTypes.SceneContext {
     readonly scene: THREE.Scene = new THREE.Scene()
-    readonly objects: ShallowUnwrapRef<PsrThreePluginTypes.Object3DContext<any>[]> = shallowReactive<PsrThreePluginTypes.Object3DContext<any>[]>([])
-    readonly objectById: ComputedRef<Record<string, PsrThreePluginTypes.Object3DContext<any>>> = computed(() => {
-        const objectByName: Record<string, PsrThreePluginTypes.Object3DContext<any>> = {}
-        for (const object of this.objects) {
-            objectByName[object.id] = markRaw(object)
+    readonly children: ShallowUnwrapRef<PsrThreePluginTypes.Object3DContext<any>[]> = shallowReactive<PsrThreePluginTypes.Object3DContext<any>[]>([])
+    readonly childById: ComputedRef<Record<string, PsrThreePluginTypes.Object3DContext<any>>> = computed(() => {
+        const childById: Record<string, PsrThreePluginTypes.Object3DContext<any>> = {}
+        for (const child of this.children) {
+            childById[child.id] = markRaw(child)
         }
-        return objectByName
+        return childById
     })
     // 更新处理器
     readonly updateHandlers: Set<(delta: number, ctx: PsrThreePluginTypes.SceneContext) => boolean> = new Set()
 
     constructor() {
         // 更新需要渲染的3d对象
-        watch(this.objectById, (newObjectById, oldObjectById) => {
-            for (const oldObjectId in oldObjectById) {
-                if (!newObjectById[oldObjectId]) {
-                    this.scene.remove(oldObjectById[oldObjectId].object)
+        watch(this.childById, (newChildById, oldChildById) => {
+            for (const oldObjectId in oldChildById) {
+                if (!newChildById[oldObjectId]) {
+                    this.scene.remove(oldChildById[oldObjectId].object)
                 }
             }
-            for (const newObjectId in newObjectById) {
-                if (!oldObjectById[newObjectId]) {
-                    this.scene.add(newObjectById[newObjectId].object)
+            for (const newObjectId in newChildById) {
+                if (!oldChildById[newObjectId]) {
+                    this.scene.add(newChildById[newObjectId].object)
                 }
             }
         })

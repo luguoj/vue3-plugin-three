@@ -148,9 +148,9 @@ export namespace PsrThreePluginTypes {
         // 场景
         readonly scene: THREE.Scene
         // 3d对象
-        readonly objects: ShallowUnwrapRef<Object3DContext<any, any>[]>
+        readonly children: ShallowUnwrapRef<Object3DContext<any, any>[]>
         // 3d对象与id映射
-        readonly objectById: ComputedRef<Record<string, Object3DContext<any, any>>>
+        readonly childById: ComputedRef<Record<string, Object3DContext<any, any>>>
         // 更新处理器
         readonly updateHandlers: Set<(delta: number, ctx: SceneContext) => boolean>
 
