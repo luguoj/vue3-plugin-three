@@ -13,6 +13,8 @@ export class SceneContextImpl implements PsrThreePluginTypes.SceneContext {
         }
         return objectByName
     })
+    // 更新处理器
+    readonly updateHandlers: Set<(delta: number, ctx: PsrThreePluginTypes.SceneContext) => boolean> = new Set()
 
     constructor() {
         // 更新需要渲染的3d对象
@@ -28,5 +30,13 @@ export class SceneContextImpl implements PsrThreePluginTypes.SceneContext {
                 }
             }
         })
+    }
+
+    update(delta: number): boolean {
+        let flag = false
+        for (const updateHandler of this.updateHandlers) {
+            flag = flag || updateHandler(delta, this)
+        }
+        return flag
     }
 }

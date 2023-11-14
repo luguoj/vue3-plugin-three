@@ -13,7 +13,14 @@ export namespace PsrThreePluginTypes {
         bottom: string
     }
 
-    export type Viewport = { left?: number, right?: number, top?: number, bottom?: number, width: number, height: number }
+    export type Viewport = {
+        left?: number,
+        right?: number,
+        top?: number,
+        bottom?: number,
+        width: number,
+        height: number
+    }
 
     export interface ThreeContext {
 
@@ -107,6 +114,11 @@ export namespace PsrThreePluginTypes {
         readonly helperOptions: Ref<any | false>
         // 辅助器对象
         helper: H | undefined
+        // 更新处理器
+        readonly updateHandlers: Set<(delta: number, ctx: Object3DContext<O, H>) => boolean>
+
+        // 更新对象
+        update(delta: number): boolean
     }
 
     export interface CameraContext<C extends THREE.Camera> extends Object3DContext<C, THREE.CameraHelper> {
@@ -139,6 +151,11 @@ export namespace PsrThreePluginTypes {
         readonly objects: ShallowUnwrapRef<Object3DContext<any, any>[]>
         // 3d对象与id映射
         readonly objectById: ComputedRef<Record<string, Object3DContext<any, any>>>
+        // 更新处理器
+        readonly updateHandlers: Set<(delta: number, ctx: SceneContext) => boolean>
+
+        // 更新场景
+        update(delta: number): boolean
     }
 
     export interface LightContext<L extends THREE.Light, H extends THREE.Object3D = THREE.BoxHelper> extends Object3DContext<L, H> {

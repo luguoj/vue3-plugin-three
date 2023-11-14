@@ -1,6 +1,6 @@
+import {ref, Ref, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
-import {ref, Ref, watch} from "vue";
 import {Object3DUtils} from "../utils/Object3DUtils.ts";
 
 export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper> implements PsrThreePluginTypes.Object3DContext<O, H> {
@@ -11,6 +11,8 @@ export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Objec
     readonly helperOptions: Ref<any | false> = ref(false)
     helper: H | undefined
     readonly buildHelper?: (helperOptions?: any) => H
+    // 更新处理器
+    readonly updateHandlers: Set<(delta: number, ctx: PsrThreePluginTypes.Object3DContext<O, H>) => boolean> = new Set()
 
     constructor(id: string, object: O, options?: {
         buildHelper?: (helperOptions?: any) => H
@@ -43,4 +45,11 @@ export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Objec
         }
     }
 
+    update(delta: number): boolean {
+        let flag = false
+        for (const updateHandler of this.updateHandlers) {
+            flag = flag || updateHandler(delta, this)
+        }
+        return flag
+    }
 }
