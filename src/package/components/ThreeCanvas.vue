@@ -22,8 +22,8 @@ watch(containerRef, container => {
 
 const canvasRef = shallowRef<HTMLCanvasElement>()
 const state = new StateContext()
-props.rendererContext.events.beginUpdate.on(() => props.stateEnabled && state.begin())
-props.rendererContext.events.endUpdate.on(() => props.stateEnabled && state.end())
+props.rendererContext.context.events.beginUpdate.on(() => props.stateEnabled && state.begin())
+props.rendererContext.context.events.endUpdate.on(() => props.stateEnabled && state.end())
 watch(canvasRef, canvas => {
   state.canvasRef.value = canvas
 })

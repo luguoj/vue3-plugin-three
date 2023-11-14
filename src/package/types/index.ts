@@ -23,6 +23,14 @@ export namespace PsrThreePluginTypes {
     }
 
     export interface ThreeContext {
+        // 运行标识
+        readonly running: Ref<boolean>
+        // 事件
+        readonly events: {
+            // 更新场景
+            beginUpdate: EventHook<void>
+            endUpdate: EventHook<void>
+        }
 
         useRenderer(id: string, params?: THREE.WebGLRendererParameters): RendererContext;
 
@@ -52,6 +60,7 @@ export namespace PsrThreePluginTypes {
     }
 
     export interface RendererContext {
+        readonly context: ThreeContext
         // 画布容器引用
         readonly containerRef: ShallowRef<HTMLElement | undefined>
         // 渲染器
@@ -59,15 +68,6 @@ export namespace PsrThreePluginTypes {
         // 运行标识
         readonly running: Ref<boolean>
         readonly size: Ref<Size | undefined>
-        // 事件
-        readonly events: {
-            // 更新场景
-            update: EventHook<number>
-            // 完成挂载
-            mounted: EventHook<THREE.WebGLRenderer>
-            beginUpdate: EventHook<void>
-            endUpdate: EventHook<void>
-        }
         // 视口
         readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]>
         // 视口与ID映射
@@ -75,6 +75,10 @@ export namespace PsrThreePluginTypes {
 
         // 创建视口
         createViewport(id: string, scene: SceneContext, viewport?: Viewport): RendererViewportContext
+
+        draw(): void
+
+        clear(): void
     }
 
     export interface RendererViewportContext {
@@ -88,7 +92,8 @@ export namespace PsrThreePluginTypes {
         // 视口
         readonly viewport: Ref<Viewport | undefined>
         readonly viewportRect: ComputedRef<THREE.Vector4>
-        visible: boolean
+        // 运行标识
+        readonly running: Ref<boolean>
 
         getObjectCssPosition(objectId: string): ObjectCssPosition | undefined
     }
@@ -120,10 +125,12 @@ export namespace PsrThreePluginTypes {
         // 3d对象与id映射
         readonly childById: ComputedRef<Record<string, Object3DContext<any, any>>>
         // 更新处理器
-        updateHandlers: Set<(delta: number) => boolean>
+        updateHandlers: Set<(delta: number) => boolean | void>
+        // 脏标识
+        readonly dirty: { flag: boolean; time: number };
 
         // 更新对象
-        update(delta: number): boolean
+        update(delta: number, time: number): void
     }
 
     export interface CameraContext<C extends THREE.Camera> extends Object3DContext<C, THREE.CameraHelper> {

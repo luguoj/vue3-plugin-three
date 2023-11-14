@@ -20,8 +20,8 @@ export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Objec
         return childById
     })
     // 更新处理器
-    readonly updateHandlers: Set<(delta: number) => boolean> = new Set()
-    private dirty = false
+    readonly updateHandlers: Set<(delta: number) => boolean | void> = new Set<(delta: number) => boolean | void>()
+    readonly dirty = {flag: false, time: 0}
 
     constructor(id: string, object: O, options?: {
         buildHelper?: (helperOptions?: any) => H
@@ -43,13 +43,13 @@ export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Objec
             for (const oldObjectId in oldChildById) {
                 if (!newChildById[oldObjectId]) {
                     this.object.remove(oldChildById[oldObjectId].object)
-                    this.dirty = true
+                    this.dirty.flag = true
                 }
             }
             for (const newObjectId in newChildById) {
                 if (!oldChildById[newObjectId]) {
                     this.object.add(newChildById[newObjectId].object)
-                    this.dirty = true
+                    this.dirty.flag = true
                 }
             }
         })
@@ -67,15 +67,19 @@ export class Object3DContextImpl<O extends THREE.Object3D, H extends THREE.Objec
         }
     }
 
-    update(delta: number): boolean {
-        let flag = this.dirty
-        this.dirty = false
+    update(delta: number, time: number): void {
+        if (this.dirty.time == time) {
+            return
+        }
+        this.dirty.time = time
+        let flag = false
         for (const updateHandler of this.updateHandlers) {
-            flag = flag || updateHandler(delta)
+            flag = flag || (updateHandler(delta) !== false)
         }
         for (const child of this.children) {
-            flag = flag || child.update(delta)
+            child.update(delta, time)
+            flag = flag || child.dirty.flag
         }
-        return flag
+        this.dirty.flag = flag
     }
 }

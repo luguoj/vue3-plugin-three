@@ -1,3 +1,4 @@
+import {ref, Ref, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 import {Object3DUtils} from "../utils/Object3DUtils.ts";
@@ -13,14 +14,80 @@ import {HemisphereLightContextImpl} from "./HemisphereLightContext.ts";
 import {PointLightContextImpl} from "./PointLightContext.ts";
 import {SpotLightContextImpl} from "./SpotLightContext.ts";
 import {ArrayCameraContextImpl} from "./ArrayCameraContext.ts";
+import {createEventHook} from "@vueuse/core";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
+    // 运行标识
+    readonly running: Ref<boolean> = ref(false)
+    readonly events = {
+        beginUpdate: createEventHook<void>(),
+        endUpdate: createEventHook<void>()
+    }
+    // 时钟
+    private readonly clock: THREE.Clock = new THREE.Clock()
+
     private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
     private readonly objects: Record<string, PsrThreePluginTypes.Object3DContext<any>> = {}
 
+    // 动画帧请求ID
+    private animationId: number | undefined = undefined
+
+    constructor() {
+        watch(() => {
+            if (!this.running.value) {
+                return false
+            }
+            let running = false
+            for (const renderersKey in this.renderers) {
+                running = running || this.renderers[renderersKey].running.value
+            }
+            return running
+        }, running => {
+            if (running) {
+                // 重置时钟
+                this.clock.getDelta()
+                // 在浏览器下一帧进行重绘
+                this.animationId = requestAnimationFrame(() => this.update());
+            } else if (this.animationId) {
+                cancelAnimationFrame(this.animationId)
+                this.animationId = requestAnimationFrame(() => this.clear())
+            }
+        })
+    }
+
+    private update() {
+        if (this.running.value) {
+            this.events.beginUpdate.trigger().then()
+            // 获取两次绘制的时间差
+            const time = this.clock.elapsedTime
+            const delta = this.clock.getDelta()
+            for (const objectsKey in this.objects) {
+                const object = this.objects[objectsKey]
+                object.update(delta, time)
+            }
+            for (const renderersKey in this.renderers) {
+                this.renderers[renderersKey].draw()
+            }
+            for (const objectsKey in this.objects) {
+                const object = this.objects[objectsKey]
+                object.dirty.flag = false
+            }
+            this.events.endUpdate.trigger().then()
+            // 在浏览器下一帧进行重绘
+            this.animationId = requestAnimationFrame(() => this.update());
+        }
+    }
+
+    private clear() {
+        for (const renderersKey in this.renderers) {
+            const renderer = this.renderers[renderersKey]
+            renderer.clear()
+        }
+    }
+
     useRenderer(id: string, params?: THREE.WebGLRendererParameters): PsrThreePluginTypes.RendererContext {
         if (!this.renderers[id]) {
-            this.renderers[id] = new RendererContextImpl(params)
+            this.renderers[id] = new RendererContextImpl(this, params)
         }
         return this.renderers[id]
     }
@@ -79,6 +146,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     }
 
     dispose() {
+        this.running.value = false
         for (const rendererId in this.renderers) {
             this.renderers[rendererId].running.value = false
         }
