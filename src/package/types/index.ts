@@ -36,7 +36,7 @@ export namespace PsrThreePluginTypes {
 
         useScene(id: string, scene?: THREE.Scene): SceneContext;
 
-        useObject<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper>(id: string, object: O): Object3DContext<O, H>;
+        useObject<O extends THREE.Object3D>(id: string, object: O): Object3DContext<O>;
 
         useCamera<C extends THREE.Camera>(id: string, camera: C): CameraContext<C>;
 
@@ -45,8 +45,6 @@ export namespace PsrThreePluginTypes {
         useOrthographicCamera(id: string): OrthographicCameraContext;
 
         useArrayCamera(id: string): ArrayCameraContext;
-
-        useLight<L extends THREE.Light>(id: string, light: L): LightContext<L>
 
         useDirectionalLight(id: string): DirectionalLightContext
 
@@ -111,19 +109,15 @@ export namespace PsrThreePluginTypes {
         | 'PointLight'
         | 'SpotLight'
 
-    export interface Object3DContext<O extends THREE.Object3D, H extends THREE.Object3D | void = void> {
+    export interface AbstractObject3DContext<O extends THREE.Object3D, H extends THREE.Object3D | void = void> {
         readonly type: Object3DType
         readonly id: string
         // 3D对象
         readonly object: O;
-        // 启用辅助器
-        readonly helperOptions: Ref<any | false>
-        // 辅助器对象
-        helper: H | undefined
         // 3d对象
-        readonly children: ShallowUnwrapRef<Object3DContext<any, any>[]>
+        readonly children: ShallowUnwrapRef<AbstractObject3DContext<any, any>[]>
         // 3d对象与id映射
-        readonly childById: ComputedRef<Record<string, Object3DContext<any, any>>>
+        readonly childById: ComputedRef<Record<string, AbstractObject3DContext<any, any>>>
         // 更新处理器
         updateHandlers: Set<(delta: number) => boolean | void>
         // 脏标识
@@ -131,9 +125,22 @@ export namespace PsrThreePluginTypes {
 
         // 更新对象
         update(delta: number, time: number): void
+
+        // 辅助器对象选项
+        readonly helperOptions: Ref<any | undefined>
+
+        // 获取辅助器对象
+        getHelper(): H | undefined
+
+        buildHelper(options: any): H;
     }
 
-    export interface CameraContext<C extends THREE.Camera> extends Object3DContext<C, THREE.CameraHelper> {
+    export interface Object3DContext<O extends THREE.Object3D> extends AbstractObject3DContext<O, THREE.BoxHelper> {
+        // 辅助器对象选项
+        readonly helperOptions: Ref<{ color?: THREE.ColorRepresentation } | undefined>
+    }
+
+    export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C, THREE.CameraHelper> {
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -156,30 +163,30 @@ export namespace PsrThreePluginTypes {
         readonly viewports: UnwrapRef<Viewport[]>
     }
 
-    export interface SceneContext extends Object3DContext<THREE.Scene> {
+    export interface SceneContext extends AbstractObject3DContext<THREE.Scene> {
     }
 
-    export interface LightContext<L extends THREE.Light, H extends THREE.Object3D = THREE.BoxHelper> extends Object3DContext<L, H> {
+    export interface AbstractLightContext<L extends THREE.Light, H extends THREE.Object3D | void = void> extends AbstractObject3DContext<L, H> {
     }
 
-    export interface DirectionalLightContext extends LightContext<THREE.DirectionalLight, THREE.DirectionalLightHelper> {
-        helperOptions: Ref<{
+    export interface DirectionalLightContext extends AbstractLightContext<THREE.DirectionalLight, THREE.DirectionalLightHelper> {
+        readonly helperOptions: Ref<{
             size?: number
-        } | false>
+        } | undefined>
     }
 
-    export interface HemisphereLightContext extends LightContext<THREE.HemisphereLight, THREE.HemisphereLightHelper> {
+    export interface HemisphereLightContext extends AbstractLightContext<THREE.HemisphereLight, THREE.HemisphereLightHelper> {
+        readonly helperOptions: Ref<{
+            size: number
+        } | undefined>
+    }
+
+    export interface PointLightContext extends AbstractLightContext<THREE.PointLight, THREE.PointLightHelper> {
         helperOptions: Ref<{
             size: number
-        } | false>
+        } | undefined>
     }
 
-    export interface PointLightContext extends LightContext<THREE.PointLight, THREE.PointLightHelper> {
-        helperOptions: Ref<{
-            size: number
-        } | false>
-    }
-
-    export interface SpotLightContext extends LightContext<THREE.SpotLight, THREE.SpotLightHelper> {
+    export interface SpotLightContext extends AbstractLightContext<THREE.SpotLight, THREE.SpotLightHelper> {
     }
 }

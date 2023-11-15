@@ -2,9 +2,9 @@ import {computed, ComputedRef, Ref, ref, shallowReactive, ShallowReactive, shall
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 import {ViewportUtils} from "../utils/ViewportUtils.ts";
-import {OrthographicCameraContextImpl} from "./OrthographicCameraContext.ts";
-import {PerspectiveCameraContextImpl} from "./PerspectiveCameraContext.ts";
-import {ArrayCameraContextImpl} from "./ArrayCameraContext.ts";
+import {OrthographicCameraContextImpl} from "./camera/OrthographicCameraContext.ts";
+import {PerspectiveCameraContextImpl} from "./camera/PerspectiveCameraContext.ts";
+import {ArrayCameraContextImpl} from "./camera/ArrayCameraContext.ts";
 
 export class RendererViewportContextImpl implements PsrThreePluginTypes.RendererViewportContext {
     readonly renderer: PsrThreePluginTypes.RendererContext

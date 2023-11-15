@@ -1,6 +1,6 @@
 import {Ref, ref, watch, WatchStopHandle} from "vue";
 import * as THREE from "three"
-import {PsrThreePluginTypes} from "../types";
+import {PsrThreePluginTypes} from "../../types";
 import {CameraContextImpl} from "./CameraContext.ts";
 
 export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.PerspectiveCamera> implements PsrThreePluginTypes.PerspectiveCameraContext {

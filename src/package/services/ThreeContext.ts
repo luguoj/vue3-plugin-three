@@ -3,17 +3,16 @@ import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 import {Object3DUtils} from "../utils/Object3DUtils.ts";
 import {RendererContextImpl} from "./RendererContext.ts";
-import {CameraContextImpl} from "./CameraContext.ts";
-import {PerspectiveCameraContextImpl} from "./PerspectiveCameraContext.ts";
-import {OrthographicCameraContextImpl} from "./OrthographicCameraContext.ts";
+import {CameraContextImpl} from "./camera/CameraContext.ts";
+import {PerspectiveCameraContextImpl} from "./camera/PerspectiveCameraContext.ts";
+import {OrthographicCameraContextImpl} from "./camera/OrthographicCameraContext.ts";
+import {ArrayCameraContextImpl} from "./camera/ArrayCameraContext.ts";
 import {SceneContextImpl} from "./SceneContext.ts";
 import {Object3DContextImpl} from "./Object3DContext.ts";
-import {LightContextImpl} from "./LightContext.ts";
-import {DirectionalLightContextImpl} from "./DirectionalLightContext.ts";
-import {HemisphereLightContextImpl} from "./HemisphereLightContext.ts";
-import {PointLightContextImpl} from "./PointLightContext.ts";
-import {SpotLightContextImpl} from "./SpotLightContext.ts";
-import {ArrayCameraContextImpl} from "./ArrayCameraContext.ts";
+import {DirectionalLightContextImpl} from "./light/DirectionalLightContext.ts";
+import {HemisphereLightContextImpl} from "./light/HemisphereLightContext.ts";
+import {PointLightContextImpl} from "./light/PointLightContext.ts";
+import {SpotLightContextImpl} from "./light/SpotLightContext.ts";
 import {createEventHook} from "@vueuse/core";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
@@ -92,7 +91,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.renderers[id]
     }
 
-    private getObject<O extends PsrThreePluginTypes.Object3DContext<any, any>>(id: string, type: PsrThreePluginTypes.Object3DType, provider: () => O): O {
+    private getObject<O extends PsrThreePluginTypes.AbstractObject3DContext<any, any>>(id: string, type: PsrThreePluginTypes.Object3DType, provider: () => O): O {
         if (!this.objects[id]) {
             this.objects[id] = provider()
         } else if (this.objects[id].type !== type) {
@@ -101,7 +100,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.objects[id] as O
     }
 
-    useObject<O extends THREE.Object3D, H extends THREE.Object3D = THREE.BoxHelper>(id: string, object: O): PsrThreePluginTypes.Object3DContext<O, H> {
+    useObject<O extends THREE.Object3D>(id: string, object: O): PsrThreePluginTypes.Object3DContext<O> {
         return this.getObject(id, 'Object3D', () => new Object3DContextImpl(id, object))
     }
 
@@ -123,10 +122,6 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
 
     useArrayCamera(id: string): PsrThreePluginTypes.ArrayCameraContext {
         return this.getObject(id, 'ArrayCamera', () => new ArrayCameraContextImpl(id))
-    }
-
-    useLight<L extends THREE.Light>(id: string, light: L): PsrThreePluginTypes.LightContext<L> {
-        return this.getObject(id, 'Light', () => new LightContextImpl(id, light))
     }
 
     useDirectionalLight(id: string): PsrThreePluginTypes.DirectionalLightContext {

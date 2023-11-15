@@ -1,6 +1,6 @@
 import {Ref, ref, watch, watchEffect, WatchStopHandle} from "vue";
 import * as THREE from "three"
-import {PsrThreePluginTypes} from "../types";
+import {PsrThreePluginTypes} from "../../types";
 import {CameraContextImpl} from "./CameraContext.ts";
 
 export class OrthographicCameraContextImpl extends CameraContextImpl<THREE.OrthographicCamera> implements PsrThreePluginTypes.OrthographicCameraContext {

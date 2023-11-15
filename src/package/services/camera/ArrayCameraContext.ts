@@ -1,8 +1,8 @@
 import {reactive, Ref, shallowReactive, ShallowUnwrapRef, UnwrapRef, watch, watchEffect, WatchStopHandle} from "vue";
 import * as THREE from "three"
-import {PsrThreePluginTypes} from "../types";
+import {PsrThreePluginTypes} from "../../types";
 import {CameraContextImpl} from "./CameraContext.ts";
-import {ViewportUtils} from "../utils/ViewportUtils.ts";
+import {ViewportUtils} from "../../utils/ViewportUtils.ts";
 
 export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera> implements PsrThreePluginTypes.ArrayCameraContext {
     readonly type: PsrThreePluginTypes.Object3DType = 'ArrayCamera';
