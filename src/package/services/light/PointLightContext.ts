@@ -1,13 +1,9 @@
-import {ref, Ref} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../../types";
 import {AbstractLightContextImpl} from "./AbstractLightContext.ts";
 
 export class PointLightContextImpl extends AbstractLightContextImpl<THREE.PointLight, THREE.PointLightHelper> implements PsrThreePluginTypes.PointLightContext {
     readonly type: PsrThreePluginTypes.Object3DType = 'PointLight';
-    readonly helperOptions: Ref<{
-        size: number
-    } | undefined> = ref()
 
     constructor(id: string) {
         super(id, new THREE.PointLight());
