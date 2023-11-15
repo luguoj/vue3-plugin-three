@@ -15,9 +15,6 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D, H ex
         }
         return childById
     })
-    // 更新处理器
-    readonly updateHandlers: Set<(delta: number) => boolean | void> = new Set<(delta: number) => boolean | void>()
-    readonly dirty = {flag: false, time: 0}
 
     readonly helperOptions: Ref<any | undefined> = ref()
     private helper: H | undefined
@@ -59,13 +56,35 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D, H ex
         }, {deep: true})
     }
 
+    // 更新处理器
+    private readonly updateHandlers: Map<any, (delta: number) => boolean | void> = new Map<any, (delta: number) => boolean | void>()
+    readonly dirty = {flag: false, time: 0}
+
+    // 添加更新处理器
+    addUpdateHandler(handler: (delta: number) => boolean | void, options?: { once?: boolean }): void {
+        const {once} = options || {}
+        if (once && !this.updateHandlers.get(handler)) {
+            const handlerOnce = (delta: number) => {
+                handler(delta)
+                this.updateHandlers.delete(handler)
+            }
+            this.updateHandlers.set(handler, handlerOnce)
+        } else {
+            this.updateHandlers.set(handler, handler)
+        }
+    }
+
+    removeUpdateHandler(handler: (delta: number) => (boolean | void)) {
+        this.updateHandlers.delete(handler)
+    }
+
     update(delta: number, time: number): void {
         if (this.dirty.time == time) {
             return
         }
         this.dirty.time = time
         let flag = false
-        for (const updateHandler of this.updateHandlers) {
+        for (const updateHandler of this.updateHandlers.values()) {
             flag = flag || (updateHandler(delta) !== false)
         }
         for (const child of this.children) {

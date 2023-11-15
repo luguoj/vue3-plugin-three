@@ -118,10 +118,15 @@ export namespace PsrThreePluginTypes {
         readonly children: ShallowUnwrapRef<AbstractObject3DContext<any, any>[]>
         // 3d对象与id映射
         readonly childById: ComputedRef<Record<string, AbstractObject3DContext<any, any>>>
-        // 更新处理器
-        updateHandlers: Set<(delta: number) => boolean | void>
+
+
         // 脏标识
         readonly dirty: { flag: boolean; time: number };
+
+        // 添加更新处理器
+        addUpdateHandler(handler: (delta: number) => boolean | void, options?: { once?: boolean }): void
+        // 移除更新处理器
+        removeUpdateHandler(handler: (delta: number) => boolean | void): void
 
         // 更新对象
         update(delta: number, time: number): void
