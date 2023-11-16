@@ -150,12 +150,12 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                 const scene = viewport.scene
                 const camera = viewport.activatedCamera.value
                 if (scene && camera && this.size.value) {
-                    dirty = dirty || scene.dirty.flag || camera.dirty.flag
+                    dirty = dirty || scene.isDirty() || camera.isDirty()
                     if (dirty) {
                         return dirty
                     }
                     for (const object of scene.getChildren()) {
-                        dirty = dirty || object.dirty.flag
+                        dirty = dirty || object.isDirty()
                         if (dirty) {
                             return dirty
                         }

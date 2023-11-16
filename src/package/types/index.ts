@@ -118,8 +118,9 @@ export namespace PsrThreePluginTypes {
         // 3D对象
         readonly object: O;
         parent?: AbstractObject3DContext<any>
+
         // 脏标识
-        readonly dirty: { flag: boolean; time: number };
+        isDirty(): boolean
 
         addChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void
 

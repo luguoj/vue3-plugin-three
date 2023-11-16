@@ -27,7 +27,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
                 this.children.push(objectCtx)
                 this.childById[objectCtx.id] = objectCtx
                 this.object.add(objectCtx.object)
-                this.dirty.flag = true
+                this.dirty = true
             }
         }
     }
@@ -39,7 +39,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
                 this.children.splice(this.children.indexOf(objectCtx), 1)
                 delete this.childById[objectCtx.id]
                 this.object.remove(objectCtx.object)
-                this.dirty.flag = true
+                this.dirty = true
             }
         }
     }
@@ -54,7 +54,6 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
 
     // 更新处理器
     private readonly updateHandlers: Map<any, (delta: number) => boolean | void> = new Map<any, (delta: number) => boolean | void>()
-    readonly dirty = {flag: false, time: 0}
 
     // 添加更新处理器
     addUpdateHandler(handler: (delta: number) => boolean | void, options?: { once?: boolean }): void {
@@ -74,20 +73,29 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         this.updateHandlers.delete(handler)
     }
 
+    private dirty = true
+    private lastUpdatedTime: number = 0
+
+    isDirty() {
+        return this.dirty
+    }
+
     update(delta: number, time: number): void {
-        if (this.dirty.time == time) {
+        // 如果更新事件与当前时间一致则跳过（由上级对象触发过更新）
+        if (this.lastUpdatedTime == time) {
             return
         }
-        this.dirty.time = time
+        this.lastUpdatedTime = time
+        // 接受更新处理器外部的更新标识
         let flag = false
         for (const updateHandler of this.updateHandlers.values()) {
             flag = flag || (updateHandler(delta) !== false)
         }
         for (const child of this.children) {
             child.update(delta, time)
-            flag = flag || child.dirty.flag
+            flag = flag || child.isDirty()
         }
-        this.dirty.flag = flag
+        this.dirty = flag
     }
 
     useHelper(options?: any): PsrThreePluginTypes.AbstractObject3DContext<any> {

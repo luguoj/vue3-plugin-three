@@ -67,10 +67,6 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
             for (const renderersKey in this.renderers) {
                 this.renderers[renderersKey].draw()
             }
-            for (const objectsKey in this.objects) {
-                const object = this.objects[objectsKey]
-                object.dirty.flag = false
-            }
             this.events.endUpdate.trigger().then()
             // 在浏览器下一帧进行重绘
             this.animationId = requestAnimationFrame(() => this.update());
@@ -99,6 +95,10 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         }
         this.objects[id].object.name = id
         return this.objects[id] as O
+    }
+
+    retrieveObject(id: string): PsrThreePluginTypes.Object3DContext<any> {
+        return this.objects[id]
     }
 
     useObject<O extends THREE.Object3D>(id: string, provider: () => O): PsrThreePluginTypes.Object3DContext<O> {
