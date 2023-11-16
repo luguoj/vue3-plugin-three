@@ -82,6 +82,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     private dirty: boolean = false
     readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]> = shallowReactive([])
     readonly viewportById: Record<string, PsrThreePluginTypes.RendererViewportContext> = {}
+    drawOnDemand: boolean = true
 
     constructor(context: PsrThreePluginTypes.ThreeContext, params?: THREE.WebGLRendererParameters) {
         this.context = context
@@ -140,8 +141,8 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     private checkDirty(): boolean {
         let dirty = this.dirty
         this.dirty = false
-        if (dirty) {
-            return dirty
+        if (dirty || !this.drawOnDemand) {
+            return true
         }
         for (const viewportId in this.viewportById) {
             const viewport = this.viewportById[viewportId]
