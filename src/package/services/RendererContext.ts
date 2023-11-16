@@ -115,6 +115,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         const viewportCtx = new RendererViewportContextImpl(this, id, scene, viewport)
         this.viewportById[id] = viewportCtx
         this.viewports.push(viewportCtx)
+        this.dirty = true
         return viewportCtx
     }
 
@@ -139,6 +140,9 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     private checkDirty(): boolean {
         let dirty = this.dirty
         this.dirty = false
+        if (dirty) {
+            return dirty
+        }
         for (const viewportId in this.viewportById) {
             const viewport = this.viewportById[viewportId]
             if (viewport.running.value) {
@@ -146,13 +150,19 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                 const camera = viewport.activatedCamera.value
                 if (scene && camera && this.size.value) {
                     dirty = dirty || scene.dirty.flag || camera.dirty.flag
+                    if (dirty) {
+                        return dirty
+                    }
                     for (const object of scene.children) {
                         dirty = dirty || object.dirty.flag
+                        if (dirty) {
+                            return dirty
+                        }
                     }
                 }
             }
         }
-        return dirty
+        return false
     }
 
     // 帧绘制
