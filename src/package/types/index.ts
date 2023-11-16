@@ -117,12 +117,17 @@ export namespace PsrThreePluginTypes {
         readonly id: string
         // 3D对象
         readonly object: O;
-        // 3d对象
-        readonly children: ShallowUnwrapRef<AbstractObject3DContext<any>[]>
-        // 3d对象与id映射
-        readonly childById: ComputedRef<Record<string, AbstractObject3DContext<any>>>
+        parent?: AbstractObject3DContext<any>
         // 脏标识
         readonly dirty: { flag: boolean; time: number };
+
+        addChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void
+
+        deleteChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void
+
+        getChildren(): AbstractObject3DContext<any>[]
+
+        getChild(id: string): AbstractObject3DContext<any> | undefined
 
         // 添加更新处理器
         addUpdateHandler(handler: (delta: number) => boolean | void, options?: { once?: boolean }): void

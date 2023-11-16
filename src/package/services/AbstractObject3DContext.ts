@@ -1,4 +1,3 @@
-import {computed, ComputedRef, markRaw, shallowReactive, ShallowUnwrapRef, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 
@@ -7,34 +6,50 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
     readonly abstract type: PsrThreePluginTypes.Object3DType
     readonly id: string;
     readonly object: O;
-    readonly children: ShallowUnwrapRef<PsrThreePluginTypes.AbstractObject3DContext<any>[]> = shallowReactive<PsrThreePluginTypes.AbstractObject3DContext<any>[]>([])
-    readonly childById: ComputedRef<Record<string, PsrThreePluginTypes.AbstractObject3DContext<any>>> = computed(() => {
-        const childById: Record<string, PsrThreePluginTypes.AbstractObject3DContext<any>> = {}
-        for (const child of this.children) {
-            childById[child.id] = markRaw(child)
-        }
-        return childById
-    })
+    parent?: PsrThreePluginTypes.AbstractObject3DContext<any>
 
     constructor(context: PsrThreePluginTypes.ThreeContext, id: string, object: O) {
         this.context = context
         this.id = id
         this.object = object
-        // 更新需要渲染的3d对象
-        watch(this.childById, (newChildById, oldChildById) => {
-            for (const oldObjectId in oldChildById) {
-                if (!newChildById[oldObjectId]) {
-                    this.object.remove(oldChildById[oldObjectId].object)
-                    this.dirty.flag = true
+    }
+
+    private children: PsrThreePluginTypes.AbstractObject3DContext<any>[] = []
+    private childById: Record<string, PsrThreePluginTypes.AbstractObject3DContext<any>> = {}
+
+    addChildren(...objectCtxArr: PsrThreePluginTypes.AbstractObject3DContext<any>[]): void {
+        for (const objectCtx of objectCtxArr) {
+            if (!this.childById[objectCtx.id]) {
+                if (objectCtx.parent) {
+                    objectCtx.parent.deleteChildren(objectCtx)
                 }
+                objectCtx.parent = this
+                this.children.push(objectCtx)
+                this.childById[objectCtx.id] = objectCtx
+                this.object.add(objectCtx.object)
+                this.dirty.flag = true
             }
-            for (const newObjectId in newChildById) {
-                if (!oldChildById[newObjectId]) {
-                    this.object.add(newChildById[newObjectId].object)
-                    this.dirty.flag = true
-                }
+        }
+    }
+
+    deleteChildren(...objectCtxArr: PsrThreePluginTypes.AbstractObject3DContext<any>[]): void {
+        for (const objectCtx of objectCtxArr) {
+            if (this.childById[objectCtx.id]) {
+                objectCtx.parent = undefined
+                this.children.splice(this.children.indexOf(objectCtx), 1)
+                delete this.childById[objectCtx.id]
+                this.object.remove(objectCtx.object)
+                this.dirty.flag = true
             }
-        })
+        }
+    }
+
+    getChildren(): PsrThreePluginTypes.AbstractObject3DContext<any>[] {
+        return [...this.children]
+    }
+
+    getChild(id: string): PsrThreePluginTypes.AbstractObject3DContext<any> | undefined {
+        return this.childById[id]
     }
 
     // 更新处理器

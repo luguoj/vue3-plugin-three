@@ -34,7 +34,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
             } else if (cameraOld instanceof ArrayCameraContextImpl) {
                 cameraOld.adaptingSizing()
             }
-            let camera = activatedCameraId && this.scene.childById.value[activatedCameraId] as PsrThreePluginTypes.CameraContext<any> || undefined
+            let camera = activatedCameraId && this.scene.getChild(activatedCameraId) as PsrThreePluginTypes.CameraContext<any> || undefined
             if (camera?.object.isCamera) {
                 this.activatedCamera.value = camera
                 if (camera instanceof OrthographicCameraContextImpl) {
@@ -50,7 +50,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
 
     getObjectCssPosition(objectId: string): PsrThreePluginTypes.ObjectCssPosition | undefined {
         const camera = this.activatedCamera.value?.object
-        const object = this.scene.childById.value[objectId]?.object
+        const object = this.scene.getChild(objectId)?.object
         if (camera && object) {
             // 获取对象位置
             const tempV = new THREE.Vector3()
@@ -154,7 +154,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                     if (dirty) {
                         return dirty
                     }
-                    for (const object of scene.children) {
+                    for (const object of scene.getChildren()) {
                         dirty = dirty || object.dirty.flag
                         if (dirty) {
                             return dirty
