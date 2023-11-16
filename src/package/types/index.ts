@@ -34,7 +34,7 @@ export namespace PsrThreePluginTypes {
 
         useRenderer(id: string, params?: THREE.WebGLRendererParameters): RendererContext;
 
-        useScene(id: string, scene?: THREE.Scene): SceneContext;
+        useScene(id: string): SceneContext;
 
         useObject<O extends THREE.Object3D>(id: string, provider: () => O): Object3DContext<O>;
 

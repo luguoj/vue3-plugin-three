@@ -104,8 +104,8 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.getObject(id, 'Object3D', () => new Object3DContextImpl(this, id, provider()))
     }
 
-    useScene(id: string, scene?: THREE.Scene): PsrThreePluginTypes.SceneContext {
-        return this.getObject(id, 'Scene', () => new SceneContextImpl(this, id, scene))
+    useScene(id: string): PsrThreePluginTypes.SceneContext {
+        return this.getObject(id, 'Scene', () => new SceneContextImpl(this, id))
     }
 
     useCamera<C extends THREE.Camera>(id: string, provider: () => C): PsrThreePluginTypes.CameraContext<C> {
