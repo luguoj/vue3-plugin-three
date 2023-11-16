@@ -10,8 +10,8 @@ export class OrthographicCameraContextImpl extends CameraContextImpl<THREE.Ortho
     readonly near = ref(0.1)
     readonly far = ref(2000)
 
-    constructor(id: string) {
-        super(id, new THREE.OrthographicCamera());
+    constructor(context: PsrThreePluginTypes.ThreeContext, id: string) {
+        super(context, id, new THREE.OrthographicCamera());
         watchEffect(() => {
             const radius = this.radius.value
             const aspect = this.aspect.value

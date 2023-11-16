@@ -1,29 +1,23 @@
-import {computed, ComputedRef, markRaw, ref, Ref, shallowReactive, ShallowUnwrapRef, watch} from "vue";
+import {computed, ComputedRef, markRaw, shallowReactive, ShallowUnwrapRef, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
-import {Object3DUtils} from "../utils/Object3DUtils.ts";
 
-export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D, H extends THREE.Object3D | void = void> implements PsrThreePluginTypes.AbstractObject3DContext<O, H> {
+export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> implements PsrThreePluginTypes.AbstractObject3DContext<O> {
+    readonly context: PsrThreePluginTypes.ThreeContext
     readonly abstract type: PsrThreePluginTypes.Object3DType
     readonly id: string;
     readonly object: O;
-    readonly children: ShallowUnwrapRef<PsrThreePluginTypes.AbstractObject3DContext<any, any>[]> = shallowReactive<PsrThreePluginTypes.AbstractObject3DContext<any, any>[]>([])
-    readonly childById: ComputedRef<Record<string, PsrThreePluginTypes.AbstractObject3DContext<any, any>>> = computed(() => {
-        const childById: Record<string, PsrThreePluginTypes.AbstractObject3DContext<any, any>> = {}
+    readonly children: ShallowUnwrapRef<PsrThreePluginTypes.AbstractObject3DContext<any>[]> = shallowReactive<PsrThreePluginTypes.AbstractObject3DContext<any>[]>([])
+    readonly childById: ComputedRef<Record<string, PsrThreePluginTypes.AbstractObject3DContext<any>>> = computed(() => {
+        const childById: Record<string, PsrThreePluginTypes.AbstractObject3DContext<any>> = {}
         for (const child of this.children) {
             childById[child.id] = markRaw(child)
         }
         return childById
     })
 
-    readonly helperOptions: Ref<any | undefined> = ref()
-    private helper: H | undefined
-
-    getHelper(): H | undefined {
-        return this.helper
-    }
-
-    constructor(id: string, object: O) {
+    constructor(context: PsrThreePluginTypes.ThreeContext, id: string, object: O) {
+        this.context = context
         this.id = id
         this.object = object
         // 更新需要渲染的3d对象
@@ -41,19 +35,6 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D, H ex
                 }
             }
         })
-        // 更新辅助器对象
-        watch(this.helperOptions, newHelperOptions => {
-            if (this.helper) {
-                this.object.children.splice(this.object.children.indexOf(this.helper), 1)
-                Object3DUtils.dispose(this.helper)
-            }
-            if (newHelperOptions) {
-                this.helper = this.buildHelper(newHelperOptions)
-                if (this.helper) {
-                    this.object.children.push(this.helper)
-                }
-            }
-        }, {deep: true})
     }
 
     // 更新处理器
@@ -94,5 +75,9 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D, H ex
         this.dirty.flag = flag
     }
 
-    abstract buildHelper(options: any): H
+    useHelper(options?: any): PsrThreePluginTypes.AbstractObject3DContext<any> {
+        return this.context.useObject(this.id + 'helper', this.buildHelper(options))
+    }
+
+    protected abstract buildHelper(options: any): THREE.Object3D
 }

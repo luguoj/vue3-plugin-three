@@ -109,43 +109,38 @@ export namespace PsrThreePluginTypes {
         | 'PointLight'
         | 'SpotLight'
 
-    export interface AbstractObject3DContext<O extends THREE.Object3D, H extends THREE.Object3D | void = void> {
+    export interface AbstractObject3DContext<O extends THREE.Object3D> {
+        readonly context: ThreeContext
         readonly type: Object3DType
         readonly id: string
         // 3D对象
         readonly object: O;
         // 3d对象
-        readonly children: ShallowUnwrapRef<AbstractObject3DContext<any, any>[]>
+        readonly children: ShallowUnwrapRef<AbstractObject3DContext<any>[]>
         // 3d对象与id映射
-        readonly childById: ComputedRef<Record<string, AbstractObject3DContext<any, any>>>
-
-
+        readonly childById: ComputedRef<Record<string, AbstractObject3DContext<any>>>
         // 脏标识
         readonly dirty: { flag: boolean; time: number };
 
         // 添加更新处理器
         addUpdateHandler(handler: (delta: number) => boolean | void, options?: { once?: boolean }): void
+
         // 移除更新处理器
         removeUpdateHandler(handler: (delta: number) => boolean | void): void
 
         // 更新对象
         update(delta: number, time: number): void
 
-        // 辅助器对象选项
-        readonly helperOptions: Ref<any | undefined>
-
         // 获取辅助器对象
-        getHelper(): H | undefined
-
-        buildHelper(options: any): H;
+        useHelper(options?: any): AbstractObject3DContext<any>
     }
 
-    export interface Object3DContext<O extends THREE.Object3D> extends AbstractObject3DContext<O, THREE.BoxHelper> {
-        // 辅助器对象选项
-        readonly helperOptions: Ref<{ color?: THREE.ColorRepresentation } | undefined>
+    export interface Object3DContext<O extends THREE.Object3D> extends AbstractObject3DContext<O> {
+        useHelper(options?: { color?: THREE.ColorRepresentation }): Object3DContext<THREE.BoxHelper>
     }
 
-    export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C, THREE.CameraHelper> {
+    export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C> {
+        useHelper(): Object3DContext<THREE.CameraHelper>
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -171,27 +166,22 @@ export namespace PsrThreePluginTypes {
     export interface SceneContext extends AbstractObject3DContext<THREE.Scene> {
     }
 
-    export interface AbstractLightContext<L extends THREE.Light, H extends THREE.Object3D | void = void> extends AbstractObject3DContext<L, H> {
+    export interface AbstractLightContext<L extends THREE.Light> extends AbstractObject3DContext<L> {
     }
 
-    export interface DirectionalLightContext extends AbstractLightContext<THREE.DirectionalLight, THREE.DirectionalLightHelper> {
-        readonly helperOptions: Ref<{
-            size?: number
-        } | undefined>
+    export interface DirectionalLightContext extends AbstractLightContext<THREE.DirectionalLight> {
+        useHelper(options?: { size?: number, color?: THREE.ColorRepresentation }): Object3DContext<THREE.DirectionalLightHelper>
     }
 
-    export interface HemisphereLightContext extends AbstractLightContext<THREE.HemisphereLight, THREE.HemisphereLightHelper> {
-        readonly helperOptions: Ref<{
-            size: number
-        } | undefined>
+    export interface HemisphereLightContext extends AbstractLightContext<THREE.HemisphereLight> {
+        useHelper(options: { size: number, color?: THREE.ColorRepresentation }): Object3DContext<THREE.HemisphereLightHelper>
     }
 
-    export interface PointLightContext extends AbstractLightContext<THREE.PointLight, THREE.PointLightHelper> {
-        helperOptions: Ref<{
-            size: number
-        } | undefined>
+    export interface PointLightContext extends AbstractLightContext<THREE.PointLight> {
+        useHelper(options: { size: number, color?: THREE.ColorRepresentation }): Object3DContext<THREE.PointLightHelper>
     }
 
-    export interface SpotLightContext extends AbstractLightContext<THREE.SpotLight, THREE.SpotLightHelper> {
+    export interface SpotLightContext extends AbstractLightContext<THREE.SpotLight> {
+        useHelper(options?: { color?: THREE.ColorRepresentation }): Object3DContext<THREE.SpotLightHelper>
     }
 }
