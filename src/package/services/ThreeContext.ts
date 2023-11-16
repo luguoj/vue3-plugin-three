@@ -97,6 +97,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         } else if (this.objects[id].type !== type) {
             throw new Error("type mismatch")
         }
+        this.objects[id].object.name = id
         return this.objects[id] as O
     }
 
