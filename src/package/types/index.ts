@@ -36,6 +36,8 @@ export namespace PsrThreePluginTypes {
 
         useScene(id: string): SceneContext;
 
+        retrieveObject(id: string): PsrThreePluginTypes.Object3DContext<any>
+
         useObject<O extends THREE.Object3D>(id: string, provider: () => O): Object3DContext<O>;
 
         useCamera<C extends THREE.Camera>(id: string, provider: () => C): CameraContext<C>;
