@@ -91,7 +91,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
     }
 
     useHelper(options?: any): PsrThreePluginTypes.AbstractObject3DContext<any> {
-        return this.context.useObject(this.id + 'helper', this.buildHelper(options))
+        return this.context.useObject(this.id + 'helper', () => this.buildHelper(options))
     }
 
     protected abstract buildHelper(options: any): THREE.Object3D

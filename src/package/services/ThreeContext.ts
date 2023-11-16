@@ -100,16 +100,16 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.objects[id] as O
     }
 
-    useObject<O extends THREE.Object3D>(id: string, object: O): PsrThreePluginTypes.Object3DContext<O> {
-        return this.getObject(id, 'Object3D', () => new Object3DContextImpl(this, id, object))
+    useObject<O extends THREE.Object3D>(id: string, provider: () => O): PsrThreePluginTypes.Object3DContext<O> {
+        return this.getObject(id, 'Object3D', () => new Object3DContextImpl(this, id, provider()))
     }
 
     useScene(id: string, scene?: THREE.Scene): PsrThreePluginTypes.SceneContext {
         return this.getObject(id, 'Scene', () => new SceneContextImpl(this, id, scene))
     }
 
-    useCamera<C extends THREE.Camera>(id: string, camera: C): PsrThreePluginTypes.CameraContext<C> {
-        return this.getObject(id, 'Camera', () => new CameraContextImpl<C>(this, id, camera))
+    useCamera<C extends THREE.Camera>(id: string, provider: () => C): PsrThreePluginTypes.CameraContext<C> {
+        return this.getObject(id, 'Camera', () => new CameraContextImpl<C>(this, id, provider()))
     }
 
     usePerspectiveCamera(id: string): PsrThreePluginTypes.PerspectiveCameraContext {
