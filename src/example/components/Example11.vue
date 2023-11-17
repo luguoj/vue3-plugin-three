@@ -2,74 +2,62 @@
 import * as THREE from "three";
 import {PsrThreeCanvas} from "../../package";
 import {createExampleContext} from "./createExampleContext.ts";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 const {renderer, context, scene, camera} = createExampleContext()
 camera.object.position.set(5, 5, 5);
 camera.object.lookAt(0, 0, 0)
 
-// 摄像机辅助器
-const camera1 = context.useCamera('c1', new THREE.OrthographicCamera(-1, 1, 1, -1))
-camera1.helperOptions.value = true
-camera1.object.position.set(3, 0, 0)
-camera1.object.lookAt(new THREE.Vector3(0, 0, 0))
-scene.children.push(camera1)
+// 坐标格辅助器
+const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
+scene.addChildren(context.useObject('grid', () => gridHelper))
 
-const camera2 = context.useCamera('c2', new THREE.PerspectiveCamera(15, 1, 0.1, 3))
-camera2.helperOptions.value = true
-camera2.object.position.set(3, 0, 0)
-camera2.object.lookAt(new THREE.Vector3(0, 0, 0))
-renderer.events.update.on(delta => {
-  console.log('camera2', delta)
-  camera2.object.position.applyAxisAngle(new THREE.Vector3(0, 1, 0), delta)
-  camera2.object.lookAt(new THREE.Vector3(0, 0, 0))
-  // camera2.object.updateProjectionMatrix()
-  // camera2.helper?.update()
+const camera2 = context.usePerspectiveCamera('c2')
+camera2.object.fov = 15
+camera2.object.aspect = 1
+camera2.object.near = 0.1
+camera2.object.far = 10
+camera2.object.position.set(3, 1, 0)
+camera2.object.updateProjectionMatrix()
+scene.addChildren(camera2)
+scene.addChildren(camera2.useHelper())
+
+const renderer2 = context.useRenderer('render-2')
+renderer2.createViewport('vp-1', scene).activatedCameraId.value = 'c2'
+
+const controls = new OrbitControls(camera2.object, renderer2.renderer.domElement)
+controls.target = new THREE.Vector3(0, 0, 0)
+controls.addEventListener('change', () => {
+  console.log('change')
 })
-scene.children.push(camera2)
+const controlHandler = () => {
+  controls.update()
+}
+controls.addEventListener('start', () => {
+  console.log('start')
+  camera2.addUpdateHandler(controlHandler)
+})
+controls.addEventListener('end', () => {
+  console.log('end')
+  camera2.removeUpdateHandler(controlHandler)
+})
 
-// 平行光辅助器
-const light = context.useDirectionalLight('dl')
-light.helperOptions.value = {size: 0.5}
-light.object.color = new THREE.Color(0xffffff)
-light.object.position.set(2, 0, 0)
-scene.children.push(light)
-const lightTarget = context.useObject('dl-t', new THREE.Object3D())
-lightTarget.object.position.set(1, 2, 0)
-scene.children.push(lightTarget)
-light.object.target = lightTarget.object
 
-// 半球形光源
-const hemisphereLight = context.useHemisphereLight('hl')
-hemisphereLight.helperOptions.value = {size: 1}
-hemisphereLight.object.color = new THREE.Color(0x00ffff)
-hemisphereLight.object.groundColor = new THREE.Color(0xff0000)
-hemisphereLight.object.intensity = 1
-scene.children.push(hemisphereLight)
-
-// 点光源
-const pointLight = context.usePointLight('pl')
-pointLight.helperOptions.value = {size: 0.2}
-pointLight.object.color = new THREE.Color(0xff0000)
-pointLight.object.distance = 100
-pointLight.object.position.set(0, 1, 0)
-scene.children.push(pointLight)
-
-// 聚光灯
-const spotLight = context.useSpotLight('sl')
-spotLight.object.color = new THREE.Color(0xffffff)
-spotLight.helperOptions.value = true
-spotLight.object.distance = 1
-spotLight.object.angle = Math.PI / 4
-spotLight.object.position.set(0, 1, 0)
-scene.children.push(spotLight)
 </script>
 
 <template>
-  <psr-three-canvas
-      v-if="renderer"
-      :renderer-context="renderer"
-      :state-enabled="true"
-  />
+  <div style="position: relative">
+    <psr-three-canvas
+        style="position: absolute;left: 0;top:0;width: 50%;height: 100%;"
+        :renderer-context="renderer"
+        :state-enabled="true"
+    />
+    <psr-three-canvas
+        style="position: absolute;left: 50%;top:0;width: 50%;height: 100%;"
+        :renderer-context="renderer2"
+        :state-enabled="true"
+    />
+  </div>
 </template>
 
 <style scoped>

@@ -3,47 +3,63 @@ import * as THREE from "three";
 import {PsrThreeCanvas} from "../../package";
 import {createExampleContext} from "./createExampleContext.ts";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import {createCube} from "./createCube.ts";
 
-const {renderer, context, scene, camera} = createExampleContext()
+const {renderer, context, scene, camera, viewport} = createExampleContext()
 camera.object.position.set(5, 5, 5);
-camera.object.lookAt(0, 0, 0)
+camera.object.lookAt(0, 0, 0);
+camera.object.updateProjectionMatrix();
+
+viewport.viewport.value = {height: 1, width: 0.5, left: 0.5}
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.children.push(context.useObject('grid', gridHelper))
+scene.addChildren(context.useObject('grid', () => gridHelper))
 
 const camera2 = context.usePerspectiveCamera('c2')
 camera2.object.fov = 15
 camera2.object.aspect = 1
 camera2.object.near = 0.1
 camera2.object.far = 10
-camera2.helperOptions.value = true
-camera2.object.position.set(3, 1, 0)
-camera2.object.updateProjectionMatrix()
-scene.children.push(camera2)
+camera2.object.position.set(3, 1, 0);
+camera2.object.updateProjectionMatrix();
+scene.addChildren(camera2)
+scene.addChildren(camera2.useHelper())
 
-const renderer2 = context.useRenderer('render-2')
-renderer2.createViewport('vp-1',scene).activatedCameraId.value='c2'
-
-const controls = new OrbitControls(camera2.object, renderer2.renderer.domElement)
+const controls = new OrbitControls(camera2.object, renderer.renderer.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
-renderer.events.update.on(() => {
+controls.addEventListener('change', () => {
+  console.log('change')
+})
+const controlHandler = () => {
   controls.update()
+}
+controls.addEventListener('start', () => {
+  console.log('start')
+  camera2.addUpdateHandler(controlHandler)
+})
+controls.addEventListener('end', () => {
+  console.log('end')
+  camera2.removeUpdateHandler(controlHandler)
 })
 
+const {lineCtx} = createCube(context, scene, {helper: true})
 
+const scene2 = context.useScene('scene-2')
+scene2.addChildren(lineCtx)
+const camera3 = context.useOrthographicCamera('camera-3')
+camera3.object.position.set(3, 1, 2);
+camera3.object.lookAt(new THREE.Vector3(0, 0, 0))
+scene2.addChildren(camera3)
+const viewport2 = renderer.createViewport('v-2', scene2, {width: 0.5, height: 1})
+viewport2.activatedCameraId.value = camera3.id
 </script>
 
 <template>
   <div style="position: relative">
     <psr-three-canvas
-        style="position: absolute;left: 0;top:0;width: 50%;height: 100%;"
+        style="position: absolute;left: 0;top:0;width: 100%;height: 100%;"
         :renderer-context="renderer"
-        :state-enabled="true"
-    />
-    <psr-three-canvas
-        style="position: absolute;left: 50%;top:0;width: 50%;height: 100%;"
-        :renderer-context="renderer2"
         :state-enabled="true"
     />
   </div>

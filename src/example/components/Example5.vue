@@ -18,12 +18,15 @@ camera.object.lookAt(new THREE.Vector3(0, 150, 0))
 // 创建光源
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
 dirLight.position.set(0, 0, 1).normalize();
-scene.children.push(context.useObject('dir-l', dirLight))
+scene.addChildren(context.useObject('dir-l', () => dirLight))
 
-const pointLight = new THREE.PointLight(0xffffff, 4.5, 0, 0);
-pointLight.color.setHSL(Math.random(), 1, 0.5);
-pointLight.position.set(0, 100, 90);
-scene.children.push(context.useObject('point-l', pointLight));
+
+scene.addChildren(context.useObject('point-l', () => {
+  const pointLight = new THREE.PointLight(0xffffff, 4.5, 0, 0);
+  pointLight.color.setHSL(Math.random(), 1, 0.5);
+  pointLight.position.set(0, 100, 90);
+  return pointLight
+}));
 
 // 创建材质
 const materials: THREE.MeshPhongMaterial[] = [
@@ -32,20 +35,25 @@ const materials: THREE.MeshPhongMaterial[] = [
 ];
 
 // 创建3d对象组
-const group = new THREE.Group();
-group.position.y = 100;
-scene.children.push(context.useObject('text-g', group));
+const group = context.useObject('text-g', () => {
+  const group = new THREE.Group();
+  group.position.y = 100;
+  return group
+})
+scene.addChildren(group);
 
 // 创建背景平面
-const plane = new THREE.Mesh(
-    new THREE.PlaneGeometry(10000, 10000),
-    new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 0.5, transparent: true})
-);
-plane.position.y = 100;
-plane.rotation.x = -Math.PI / 2;
-scene.children.push(context.useObject('bg-p', plane));
+scene.addChildren(context.useObject('bg-p', () => {
+  const plane = new THREE.Mesh(
+      new THREE.PlaneGeometry(10000, 10000),
+      new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 0.5, transparent: true})
+  );
+  plane.position.y = 100;
+  plane.rotation.x = -Math.PI / 2;
+  return plane
+}));
 
-const text = ref('three.js'),
+const textInput = ref('three.js'),
     bevelEnabled = true,
     fontName = 'optimer', // helvetiker, optimer, gentilis, droid sans, droid serif
     fontWeight = 'bold'; // normal bold
@@ -68,7 +76,7 @@ function loadFont() {
       'fonts/' + fontName + '_' + fontWeight + '.typeface.json',
       function (response) {
         font = response;
-        createText(text.value);
+        updateTextGroup()
       }
   );
 }
@@ -76,13 +84,14 @@ function loadFont() {
 let textMesh1: THREE.Mesh, textMesh2: THREE.Mesh, textGeo: TextGeometry;
 
 // 创建文本
-function createText(text: string) {
+function createText() {
+  const text: string = textInput.value
   // 删除现有文本
   if (textMesh1) {
-    group.remove(textMesh1);
+    group.object.remove(textMesh1);
   }
   if (mirror && textMesh2) {
-    group.remove(textMesh2);
+    group.object.remove(textMesh2);
   }
   if (!text) return;
 
@@ -107,7 +116,7 @@ function createText(text: string) {
   textMesh1.position.z = 0;
   textMesh1.rotation.x = 0;
   textMesh1.rotation.y = Math.PI * 2;
-  group.add(textMesh1);
+  group.object.add(textMesh1);
 
   if (mirror) {
     textMesh2 = new THREE.Mesh(textGeo, materials);
@@ -116,7 +125,7 @@ function createText(text: string) {
     textMesh2.position.z = height;
     textMesh2.rotation.x = Math.PI;
     textMesh2.rotation.y = Math.PI * 2;
-    group.add(textMesh2);
+    group.object.add(textMesh2);
   }
 }
 
@@ -124,9 +133,13 @@ onMounted(() => {
   loadFont()
 })
 
-watch(text, text => {
-  createText(text)
+watch(textInput, () => {
+  updateTextGroup()
 })
+
+function updateTextGroup() {
+  group.addUpdateHandler(createText, {once: true})
+}
 </script>
 
 <template>
@@ -135,7 +148,7 @@ watch(text, text => {
         style="height: 100%;"
         :renderer-context="renderer"
     />
-    <input v-model="text"/>
+    <input v-model="textInput"/>
   </div>
 </template>
 

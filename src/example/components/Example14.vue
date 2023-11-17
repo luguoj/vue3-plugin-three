@@ -4,51 +4,65 @@ import {PsrThreeCanvas} from "../../package";
 import {createExampleContext} from "./createExampleContext.ts";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {createCube} from "./createCube.ts";
+import {ref} from "vue";
+import {PsrThreePluginTypes} from "../../package/types";
 
-const {renderer, context, scene, camera,viewport} = createExampleContext()
+const {renderer, context, scene, camera, viewport} = createExampleContext()
 camera.object.position.set(5, 5, 5);
 camera.object.lookAt(0, 0, 0);
 camera.object.updateProjectionMatrix();
 
+viewport.viewport.value = {height: 0.5, width: 0.5, left: 0.25, top: 0.25}
+
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.children.push(context.useObject('grid', gridHelper))
+scene.addChildren(context.useObject('grid', () => gridHelper))
+const {cubeCtx} = createCube(context, scene)
 
-const camera2 = context.usePerspectiveCamera('c2')
-camera2.object.fov = 15
-camera2.object.aspect = 1
-camera2.object.near = 0.1
-camera2.object.far = 10
-camera2.helperOptions.value = true
-camera2.object.position.set(3, 1, 0);
-camera2.object.updateProjectionMatrix();
-
-
-scene.children.push(camera2)
-
-const cameraArr = context.useArrayCamera('c-arr')
-cameraArr.cameras.push(camera, camera2)
-cameraArr.viewports.push({width: 0.3, height: 0.3, top: 0.5, right: 0.5}, {width: 1, height: 1})
-scene.children.push(cameraArr)
-viewport.activatedCameraId.value = 'c-arr'
-
-const controls = new OrbitControls(camera2.object, renderer.renderer.domElement)
+const controls = new OrbitControls(camera.object, renderer.renderer.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
-renderer.events.update.on(() => {
+controls.addEventListener('change', () => {
+  console.log('change')
+})
+const controlHandler = () => {
   controls.update()
+  updateTitlePos()
+}
+controls.addEventListener('start', () => {
+  console.log('start')
+  camera.addUpdateHandler(controlHandler)
+})
+controls.addEventListener('end', () => {
+  console.log('end')
+  camera.removeUpdateHandler(controlHandler)
 })
 
-createCube(context, scene)
 
+const titlePos = ref<PsrThreePluginTypes.ObjectCssPosition>()
+const updateTitlePos = () => {
+  titlePos.value = viewport.getObjectCssPosition(cubeCtx.id)
+}
+camera.addUpdateHandler(updateTitlePos, {once: true})
 </script>
 
 <template>
-  <div style="position: relative">
+  <div>
     <psr-three-canvas
-        style="position: absolute;left: 0;top:0;width: 100%;height: 100%;"
+        style="height: 100%;"
         :renderer-context="renderer"
         :state-enabled="true"
-    />
+    >
+      <template #[`viewport-${viewport.id}`]>
+        <div
+            v-if="titlePos"
+            style="position: absolute;color: lightyellow;"
+            :style="{
+            ...titlePos
+          }"
+        >box
+        </div>
+      </template>
+    </psr-three-canvas>
   </div>
 </template>
 

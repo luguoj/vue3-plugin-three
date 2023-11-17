@@ -1,19 +1,22 @@
 import {PsrThree} from "../../package";
 
-export function createExampleContext() {
+export function createExampleContext(id?: string) {
+    id = id || 'default'
     const context = PsrThree.createContext()
     // 创建渲染器
-    const renderer = context.useRenderer('renderer', {
+    const renderer = context.useRenderer(id + '-renderer', {
         antialias: true, // 启用抗锯齿
     })
     // 创建场景
-    const scene = context.useScene('scene')
-    const viewport = renderer.createViewport('viewport', scene)
+    const scene = context.useScene(id + '-scene')
+    const viewport = renderer.createViewport(id + '-viewport', scene)
     // 创建相机
-    const camera = context.usePerspectiveCamera('camera')
-    scene.children.push(camera)
+    const camera = context.usePerspectiveCamera(id + '-camera')
+    scene.addChildren(camera)
     // 设置默认相机
     viewport.activatedCameraId.value = camera.id
+
+    context.running.value = true
     return {
         context, renderer, scene, camera, viewport
     }

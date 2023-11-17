@@ -3,56 +3,55 @@ import * as THREE from "three";
 import {PsrThreeCanvas} from "../../package";
 import {DragControls} from 'three/examples/jsm/Addons';
 import {createExampleContext} from "./createExampleContext.ts";
+import {createCube} from "./createCube.ts";
 
-const {context, renderer, scene, camera} = createExampleContext()
-
+const {context, renderer, scene, camera} = createExampleContext('1')
 camera.object.position.set(0, 0, 5);
 camera.object.lookAt(new THREE.Vector3(0, 0, 0))
 
 // 为场景添加模型
-function createCube() {
-  const geometry = new THREE.BoxGeometry(1, 1, 1);
-  const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-  return new THREE.Mesh(geometry, material);
-}
-
-const cube = context.useObject('c1', createCube());
-scene.children.push(cube)
-const cube2 = context.useObject('c2', createCube());
-cube2.object.position.set(2, 0, 0)
-cube2.updateHandlers.add((delta) => {
-  cube2.object.rotation.x += delta
-  cube2.object.rotation.y += delta
-  return true
-})
-scene.children.push(cube2)
+const {cubeCtx, lineCtx, helperCtx} = createCube(context, scene, {id: 'c2', helper: true})
+const {cubeCtx: cubeCtx2, lineCtx: lineCtx2, helperCtx: helperCtx2} = createCube(context, scene, {id: 'c1', helper: true})
+cubeCtx.addUpdateHandler(() => {
+  cubeCtx.object.position.set(2, 0, 0)
+  helperCtx?.object.update()
+}, {once: true})
+lineCtx.addUpdateHandler(() => {
+  lineCtx.object.position.set(2, 0, 0)
+}, {once: true})
+helperCtx?.addUpdateHandler(() => {
+  helperCtx?.object.update()
+}, {once: true})
 
 // 对需要拖拽的组件创建拖拽控制器
-const controls = new DragControls([], camera.object, renderer.renderer.domElement);
-controls.getObjects().push(...scene.children.map(object => object.object))
-controls.addEventListener('drag', function (event) {
-});
+const controls = new DragControls([cubeCtx.object, cubeCtx2.object], camera.object, renderer.renderer.domElement);
+const draggingHandler = () => {
+  helperCtx?.object.update()
+  helperCtx2?.object.update()
+}
 // 添加拖拽开始结束事件监听
-controls.addEventListener('dragstart', function (event) {
-  if (event.object instanceof THREE.Mesh) {
-    event.object.material.color.set(0xaaaaaa);
-  }
+controls.addEventListener('dragstart', function () {
+  scene.addUpdateHandler(draggingHandler)
 });
-controls.addEventListener('dragend', function (event) {
-  if (event.object instanceof THREE.Mesh) {
-    event.object.material.color.set(0x00ffff);
-  }
+controls.addEventListener('dragend', function () {
+  scene.removeUpdateHandler(draggingHandler)
 });
 // 添加鼠标覆盖事件
 controls.addEventListener('hoveron', function (event) {
-  if (event.object instanceof THREE.Mesh) {
-    event.object.material.color.set(0x00ffff);
-  }
+  const objCtx = context.retrieveObject(event.object.name)
+  objCtx.addUpdateHandler(() => {
+    if (objCtx.object instanceof THREE.Mesh) {
+      objCtx.object.material.color.set(0x00ffff);
+    }
+  }, {once: true})
 });
 controls.addEventListener('hoveroff', function (event) {
-  if (event.object instanceof THREE.Mesh) {
-    event.object.material.color.set(0x00ff00);
-  }
+  const objCtx = context.retrieveObject(event.object.name)
+  objCtx.addUpdateHandler(() => {
+    if (objCtx.object instanceof THREE.Mesh) {
+      objCtx.object.material.color.set(0x00ff00);
+    }
+  }, {once: true})
 });
 </script>
 

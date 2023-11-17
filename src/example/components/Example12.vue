@@ -2,47 +2,63 @@
 import * as THREE from "three";
 import {PsrThreeCanvas} from "../../package";
 import {createExampleContext} from "./createExampleContext.ts";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import {createCube} from "./createCube.ts";
 
-const {renderer, context, scene, camera} = createExampleContext()
+const {renderer, context, scene, camera, viewport} = createExampleContext()
 camera.object.position.set(5, 5, 5);
-camera.object.lookAt(0, 0, 0)
+camera.object.lookAt(0, 0, 0);
+camera.object.updateProjectionMatrix();
 
+// 坐标格辅助器
+const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
+scene.addChildren(context.useObject('grid', () => gridHelper))
 
-// 为场景添加模型
-const geometry = new THREE.BoxGeometry(1, 1, 1);
-const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-// const material = new THREE.MeshLambertMaterial()
-const cube = context.useObject('cube', new THREE.Mesh(geometry, material));
-cube.helperOptions.value = true
-scene.children.push(cube)
-renderer.events.update.on(delta => {
-  cube.object.rotation.x += delta
-  cube.object.rotation.y += delta
-  cube.helper?.update()
+const camera2 = context.usePerspectiveCamera('c2')
+camera2.object.fov = 15
+camera2.object.aspect = 1
+camera2.object.near = 0.1
+camera2.object.far = 10
+camera2.object.position.set(3, 1, 0);
+camera2.object.updateProjectionMatrix();
+scene.addChildren(camera2)
+scene.addChildren(camera2.useHelper())
+
+const cameraArr = context.useArrayCamera('c-arr')
+cameraArr.cameras.push(camera, camera2)
+cameraArr.viewports.push({width: 0.3, height: 0.3, top: 0.5, right: 0.5}, {width: 1, height: 1})
+scene.addChildren(cameraArr)
+viewport.activatedCameraId.value = 'c-arr'
+
+const controls = new OrbitControls(camera2.object, renderer.renderer.domElement)
+controls.target = new THREE.Vector3(0, 0, 0)
+controls.addEventListener('change', () => {
+  console.log('change')
+})
+const controlHandler = () => {
+  controls.update()
+}
+controls.addEventListener('start', () => {
+  console.log('start')
+  camera2.addUpdateHandler(controlHandler)
+})
+controls.addEventListener('end', () => {
+  console.log('end')
+  camera2.removeUpdateHandler(controlHandler)
 })
 
-const edges = new THREE.EdgesGeometry(geometry)
-const lineModel = context.useObject('l', new THREE.LineSegments(
-    edges,
-    new THREE.LineBasicMaterial({
-      color: 0x4b96ff,
-      depthTest: false,
-      transparent: true
-    })
-))
-scene.children.push(lineModel)
-renderer.events.update.on(delta => {
-  lineModel.object.rotation.x += delta
-  lineModel.object.rotation.y += delta
-})
+createCube(context, scene)
+
 </script>
 
 <template>
-  <psr-three-canvas
-      v-if="renderer"
-      :renderer-context="renderer"
-      :state-enabled="true"
-  />
+  <div style="position: relative">
+    <psr-three-canvas
+        style="position: absolute;left: 0;top:0;width: 100%;height: 100%;"
+        :renderer-context="renderer"
+        :state-enabled="true"
+    />
+  </div>
 </template>
 
 <style scoped>

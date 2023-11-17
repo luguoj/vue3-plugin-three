@@ -1,17 +1,26 @@
 import * as THREE from "three"
 import {PsrThreePluginTypes} from "../../package/types";
 
-export function createCube(context: PsrThreePluginTypes.ThreeContext, scene: PsrThreePluginTypes.SceneContext) {
+export function createCube(
+    context: PsrThreePluginTypes.ThreeContext,
+    scene: PsrThreePluginTypes.SceneContext,
+    options?: {
+        id?: string
+        helper?: boolean
+        ani?: boolean
+    }
+) {
+    const {id, helper, ani} = options || {}
     // 为场景添加模型
-    const geometry = new THREE.BoxGeometry(1, 1, 1);
-    const material = new THREE.MeshBasicMaterial({color: 0x00ff00});
-// const material = new THREE.MeshLambertMaterial()
-    const cubeModel = context.useObject('cube', new THREE.Mesh(geometry, material));
-    cubeModel.helperOptions.value = true
-    scene.children.push(cubeModel)
+    const box = new THREE.BoxGeometry(1, 1, 1);
+    const cubeCtx = context.useObject(id + '-cube', () => new THREE.Mesh(
+        box,
+        new THREE.MeshBasicMaterial({color: 0x00ff00})
+    ));
+    scene.addChildren(cubeCtx)
 
-    const edges = new THREE.EdgesGeometry(geometry)
-    const lineModel = context.useObject('l', new THREE.LineSegments(
+    const edges = new THREE.EdgesGeometry(box)
+    const lineCtx = context.useObject(id + '-line', () => new THREE.LineSegments(
         edges,
         new THREE.LineBasicMaterial({
             color: 0x4b96ff,
@@ -19,8 +28,25 @@ export function createCube(context: PsrThreePluginTypes.ThreeContext, scene: Psr
             transparent: true
         })
     ))
-    scene.children.push(lineModel)
-    return {
-        cube: cubeModel,lineModel
+    scene.addChildren(lineCtx)
+
+    let helperCtx: PsrThreePluginTypes.Object3DContext<THREE.BoxHelper> | undefined
+    if (helper) {
+        helperCtx = cubeCtx.useHelper()
+        scene.addChildren(helperCtx)
     }
+
+
+    if (ani) {
+        scene.addUpdateHandler(delta => {
+            cubeCtx.object.rotation.x += delta
+            cubeCtx.object.rotation.y += delta
+            lineCtx.object.rotation.x += delta
+            lineCtx.object.rotation.y += delta
+            if (helperCtx) {
+                helperCtx.object.update()
+            }
+        })
+    }
+    return {cubeCtx, lineCtx, helperCtx}
 }
