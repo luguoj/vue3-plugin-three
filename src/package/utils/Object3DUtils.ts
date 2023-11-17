@@ -1,20 +1,36 @@
 import * as THREE from "three"
 
 export namespace Object3DUtils {
-    export function dispose(object?: THREE.Object3D & { dispose?: () => void, geometry?: THREE.BufferGeometry, material?: THREE.Material | THREE.Material[] }) {
+    export function dispose(object?: THREE.Object3D & {
+        dispose?: () => void,
+        geometry?: THREE.BufferGeometry,
+        material?: THREE.Material | THREE.Material[]
+    }) {
         if (object) {
             const {geometry, material, children: [...children]} = object
             if (object.dispose) {
-                object.dispose()
+                try {
+                    object.dispose()
+                } catch (e) {
+                }
             }
             if (geometry instanceof THREE.BufferGeometry) {
-                geometry.dispose()
+                try {
+                    geometry.dispose()
+                } catch (e) {
+                }
             }
             if (material instanceof THREE.Material) {
-                material.dispose()
+                try {
+                    material.dispose()
+                } catch (e) {
+                }
             } else if (material) {
                 for (const materialElement of material) {
-                    materialElement.dispose()
+                    try {
+                        materialElement.dispose()
+                    } catch (e) {
+                    }
                 }
             }
             // 清空子对象
