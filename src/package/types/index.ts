@@ -126,7 +126,7 @@ export namespace PsrThreePluginTypes {
 
         addChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void
 
-        deleteChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void
+        removeChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void
 
         getChildren(): AbstractObject3DContext<any>[]
 

@@ -21,7 +21,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         for (const objectCtx of objectCtxArr) {
             if (!this.childById[objectCtx.id]) {
                 if (objectCtx.parent) {
-                    objectCtx.parent.deleteChildren(objectCtx)
+                    objectCtx.parent.removeChildren(objectCtx)
                 }
                 objectCtx.parent = this
                 this.children.push(objectCtx)
@@ -32,7 +32,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         }
     }
 
-    deleteChildren(...objectCtxArr: PsrThreePluginTypes.AbstractObject3DContext<any>[]): void {
+    removeChildren(...objectCtxArr: PsrThreePluginTypes.AbstractObject3DContext<any>[]): void {
         for (const objectCtx of objectCtxArr) {
             if (this.childById[objectCtx.id]) {
                 objectCtx.parent = undefined
