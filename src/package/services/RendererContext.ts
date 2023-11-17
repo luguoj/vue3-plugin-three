@@ -7,7 +7,7 @@ import {PerspectiveCameraContextImpl} from "./camera/PerspectiveCameraContext.ts
 import {ArrayCameraContextImpl} from "./camera/ArrayCameraContext.ts";
 
 export class RendererViewportContextImpl implements PsrThreePluginTypes.RendererViewportContext {
-    readonly renderer: PsrThreePluginTypes.RendererContext
+    readonly renderer: RendererContextImpl
     readonly id: string
     readonly scene: PsrThreePluginTypes.SceneContext
     readonly activatedCameraId = ref<string>()
@@ -19,7 +19,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         ViewportUtils.calcViewport(this.viewport.value, this.renderer.size.value)
     )
 
-    constructor(renderer: PsrThreePluginTypes.RendererContext, id: string, scene: PsrThreePluginTypes.SceneContext, viewport?: PsrThreePluginTypes.Viewport) {
+    constructor(renderer: RendererContextImpl, id: string, scene: PsrThreePluginTypes.SceneContext, viewport?: PsrThreePluginTypes.Viewport) {
         this.renderer = renderer
         this.id = id
         this.scene = scene
@@ -45,6 +45,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
                     camera.adaptingSizing(this.viewportRect)
                 }
             }
+            this.renderer.dirty = true
         })
     }
 
@@ -79,7 +80,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     readonly running: Ref<boolean> = ref(false)
 
     readonly size: Ref<PsrThreePluginTypes.Size | undefined> = ref()
-    private dirty: boolean = false
+    dirty: boolean = true
     readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]> = shallowReactive([])
     readonly viewportById: Record<string, PsrThreePluginTypes.RendererViewportContext> = {}
     drawOnDemand: boolean = true
