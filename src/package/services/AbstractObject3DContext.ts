@@ -26,8 +26,9 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
                 objectCtx.parent = this
                 this.children.push(objectCtx)
                 this.childById[objectCtx.id] = objectCtx
-                this.object.add(objectCtx.object)
-                this.dirty = true
+                this.addUpdateHandler(() => {
+                    this.object.add(objectCtx.object)
+                }, {once: true})
             }
         }
     }
@@ -38,8 +39,9 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
                 objectCtx.parent = undefined
                 this.children.splice(this.children.indexOf(objectCtx), 1)
                 delete this.childById[objectCtx.id]
-                this.object.remove(objectCtx.object)
-                this.dirty = true
+                this.addUpdateHandler(() => {
+                    this.object.remove(objectCtx.object)
+                }, {once: true})
             }
         }
     }
@@ -56,7 +58,12 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
     private readonly updateHandlers: Map<any, (delta: number) => boolean | void> = new Map<any, (delta: number) => boolean | void>()
 
     // 添加更新处理器
-    addUpdateHandler(handler: (delta: number) => boolean | void, options?: { once?: boolean }): void {
+    addUpdateHandler(
+        handler: (delta: number) => boolean | void,
+        options?: {
+            once?: boolean
+        }
+    ): void {
         const {once} = options || {}
         if (once && !this.updateHandlers.get(handler)) {
             const handlerOnce = (delta: number) => {
