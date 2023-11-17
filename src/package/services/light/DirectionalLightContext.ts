@@ -9,9 +9,9 @@ export class DirectionalLightContextImpl extends AbstractLightContextImpl<THREE.
         super(context, id, new THREE.DirectionalLight());
     }
 
-    protected buildHelper(options: {
+    protected buildHelper(options?: {
         size?: number
     }) {
-        return new THREE.DirectionalLightHelper(this.object, options.size);
+        return new THREE.DirectionalLightHelper(this.object, options?.size);
     }
 }
