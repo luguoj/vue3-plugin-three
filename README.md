@@ -16,3 +16,4 @@
 12. [摄像机组](src%2Fexample%2Fcomponents%2FExample12.vue)
 13. [多场景渲染](src%2Fexample%2Fcomponents%2FExample13.vue)
 14. [3DObject转CSS坐标](src%2Fexample%2Fcomponents%2FExample14.vue)
+15. [压缩模型文件加载](src%2Fexample%2Fcomponents%2FExample15.vue)
