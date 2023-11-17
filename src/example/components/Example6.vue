@@ -3,7 +3,6 @@ import {onMounted} from "vue";
 import * as THREE from "three";
 import {PsrThreeCanvas} from "../../package";
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
-import cathedralUrl from "../asserts/cathedral.glb?url"
 import horseUrl from "../asserts/horse.glb?url"
 import {createExampleContext} from "./createExampleContext.ts";
 
@@ -34,15 +33,6 @@ scene.addChildren(context.useObject('s-l', () => spotLight))
 
 const loader = new GLTFLoader();
 onMounted(() => {
-  loader.load(cathedralUrl, function (gltf) {
-    const model = gltf.scene
-    model.scale.set(0.05, 0.05, 0.05)
-    model.position.set(-0.8, 0, 0.8)
-    const modelCtx = context.useObject('m1', () => model)
-    scene.addChildren(modelCtx);
-  }, undefined, function (error) {
-    console.error(error);
-  });
   loader.load(horseUrl, function (gltf) {
     const model = gltf.scene
     model.scale.set(0.005, 0.005, 0.005)
