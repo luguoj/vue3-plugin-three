@@ -13,8 +13,8 @@ export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.Perspe
 
     private stopAutoAspectHandle?: WatchStopHandle = undefined
 
-    constructor(context: PsrThreePluginTypes.ThreeContext, id: string) {
-        super(context, id, new THREE.PerspectiveCamera());
+    constructor(context: PsrThreePluginTypes.ThreeContext) {
+        super(context, new THREE.PerspectiveCamera());
         watch(this.zoom, zoom => {
             this.object.zoom = zoom
             this.object.updateProjectionMatrix()

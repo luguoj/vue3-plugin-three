@@ -34,11 +34,11 @@ export namespace PsrThreePluginTypes {
 
         useRenderer(id: string, params?: THREE.WebGLRendererParameters): RendererContext;
 
-        useScene(id: string): SceneContext;
-
         retrieveObject(id: string): PsrThreePluginTypes.Object3DContext<any>
 
         useObject<O extends THREE.Object3D>(id: string, provider: () => O): Object3DContext<O>;
+
+        useScene(id: string): SceneContext;
 
         useCamera<C extends THREE.Camera>(id: string, provider: () => C): CameraContext<C>;
 

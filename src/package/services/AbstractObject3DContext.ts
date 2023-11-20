@@ -4,28 +4,28 @@ import {PsrThreePluginTypes} from "../types";
 export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> implements PsrThreePluginTypes.AbstractObject3DContext<O> {
     readonly context: PsrThreePluginTypes.ThreeContext
     readonly abstract type: PsrThreePluginTypes.Object3DType
-    readonly id: string;
     readonly object: O;
     parent?: PsrThreePluginTypes.AbstractObject3DContext<any>
 
-    constructor(context: PsrThreePluginTypes.ThreeContext, id: string, object: O) {
+    get id(): string {
+        return this.object.name
+    }
+
+    constructor(context: PsrThreePluginTypes.ThreeContext, object: O) {
         this.context = context
-        this.id = id
         this.object = object
     }
 
     private children: PsrThreePluginTypes.AbstractObject3DContext<any>[] = []
-    private childById: Record<string, PsrThreePluginTypes.AbstractObject3DContext<any>> = {}
 
     addChildren(...objectCtxArr: PsrThreePluginTypes.AbstractObject3DContext<any>[]): void {
         for (const objectCtx of objectCtxArr) {
-            if (!this.childById[objectCtx.id]) {
+            if (objectCtx.parent !== this) {
                 if (objectCtx.parent) {
                     objectCtx.parent.removeChildren(objectCtx)
                 }
                 objectCtx.parent = this
                 this.children.push(objectCtx)
-                this.childById[objectCtx.id] = objectCtx
                 this.addUpdateHandler(() => {
                     this.object.add(objectCtx.object)
                 }, {once: true})
@@ -35,10 +35,9 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
 
     removeChildren(...objectCtxArr: PsrThreePluginTypes.AbstractObject3DContext<any>[]): void {
         for (const objectCtx of objectCtxArr) {
-            if (this.childById[objectCtx.id]) {
+            if (objectCtx.parent == this) {
                 objectCtx.parent = undefined
                 this.children.splice(this.children.indexOf(objectCtx), 1)
-                delete this.childById[objectCtx.id]
                 this.addUpdateHandler(() => {
                     this.object.remove(objectCtx.object)
                 }, {once: true})
@@ -51,7 +50,9 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
     }
 
     getChild(id: string): PsrThreePluginTypes.AbstractObject3DContext<any> | undefined {
-        return this.childById[id]
+        if (this.object.getObjectByName(id)) {
+            return this.context.retrieveObject(id)
+        }
     }
 
     // 更新处理器

@@ -12,8 +12,8 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
 
     private stopAdaptingSizing?: WatchStopHandle = undefined
 
-    constructor(context: PsrThreePluginTypes.ThreeContext, id: string) {
-        super(context, id, new THREE.ArrayCamera());
+    constructor(context: PsrThreePluginTypes.ThreeContext) {
+        super(context, new THREE.ArrayCamera());
         watchEffect(() => {
             const newCameras: THREE.PerspectiveCamera[] = []
             for (let i = 0; i < this.cameras.length && i < this.viewports.length; i++) {

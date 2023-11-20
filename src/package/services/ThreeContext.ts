@@ -87,6 +87,10 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.renderers[id]
     }
 
+    retrieveObject(id: string): PsrThreePluginTypes.Object3DContext<any> {
+        return this.objects[id]
+    }
+
     private getObject<O extends PsrThreePluginTypes.AbstractObject3DContext<any>>(id: string, type: PsrThreePluginTypes.Object3DType, provider: () => O): O {
         if (!this.objects[id]) {
             this.objects[id] = provider()
@@ -97,48 +101,44 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.objects[id] as O
     }
 
-    retrieveObject(id: string): PsrThreePluginTypes.Object3DContext<any> {
-        return this.objects[id]
-    }
-
     useObject<O extends THREE.Object3D>(id: string, provider: () => O): PsrThreePluginTypes.Object3DContext<O> {
-        return this.getObject(id, 'Object3D', () => new Object3DContextImpl(this, id, provider()))
+        return this.getObject(id, 'Object3D', () => new Object3DContextImpl(this, provider()))
     }
 
     useScene(id: string): PsrThreePluginTypes.SceneContext {
-        return this.getObject(id, 'Scene', () => new SceneContextImpl(this, id))
+        return this.getObject(id, 'Scene', () => new SceneContextImpl(this))
     }
 
     useCamera<C extends THREE.Camera>(id: string, provider: () => C): PsrThreePluginTypes.CameraContext<C> {
-        return this.getObject(id, 'Camera', () => new CameraContextImpl<C>(this, id, provider()))
+        return this.getObject(id, 'Camera', () => new CameraContextImpl<C>(this, provider()))
     }
 
     usePerspectiveCamera(id: string): PsrThreePluginTypes.PerspectiveCameraContext {
-        return this.getObject(id, 'PerspectiveCamera', () => new PerspectiveCameraContextImpl(this, id))
+        return this.getObject(id, 'PerspectiveCamera', () => new PerspectiveCameraContextImpl(this))
     }
 
     useOrthographicCamera(id: string): PsrThreePluginTypes.OrthographicCameraContext {
-        return this.getObject(id, 'OrthographicCamera', () => new OrthographicCameraContextImpl(this, id))
+        return this.getObject(id, 'OrthographicCamera', () => new OrthographicCameraContextImpl(this))
     }
 
     useArrayCamera(id: string): PsrThreePluginTypes.ArrayCameraContext {
-        return this.getObject(id, 'ArrayCamera', () => new ArrayCameraContextImpl(this, id))
+        return this.getObject(id, 'ArrayCamera', () => new ArrayCameraContextImpl(this))
     }
 
     useDirectionalLight(id: string): PsrThreePluginTypes.DirectionalLightContext {
-        return this.getObject(id, 'DirectionalLight', () => new DirectionalLightContextImpl(this, id))
+        return this.getObject(id, 'DirectionalLight', () => new DirectionalLightContextImpl(this))
     }
 
     useHemisphereLight(id: string): PsrThreePluginTypes.HemisphereLightContext {
-        return this.getObject(id, 'HemisphereLight', () => new HemisphereLightContextImpl(this, id))
+        return this.getObject(id, 'HemisphereLight', () => new HemisphereLightContextImpl(this))
     }
 
     usePointLight(id: string): PsrThreePluginTypes.PointLightContext {
-        return this.getObject(id, 'PointLight', () => new PointLightContextImpl(this, id))
+        return this.getObject(id, 'PointLight', () => new PointLightContextImpl(this))
     }
 
     useSpotLight(id: string): PsrThreePluginTypes.SpotLightContext {
-        return this.getObject(id, 'SpotLight', () => new SpotLightContextImpl(this, id))
+        return this.getObject(id, 'SpotLight', () => new SpotLightContextImpl(this))
     }
 
     dispose() {

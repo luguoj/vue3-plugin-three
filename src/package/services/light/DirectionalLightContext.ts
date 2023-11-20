@@ -5,8 +5,8 @@ import {AbstractLightContextImpl} from "./AbstractLightContext.ts";
 export class DirectionalLightContextImpl extends AbstractLightContextImpl<THREE.DirectionalLight> implements PsrThreePluginTypes.DirectionalLightContext {
     readonly type: PsrThreePluginTypes.Object3DType = 'DirectionalLight';
 
-    constructor(context: PsrThreePluginTypes.ThreeContext, id: string) {
-        super(context, id, new THREE.DirectionalLight());
+    constructor(context: PsrThreePluginTypes.ThreeContext) {
+        super(context, new THREE.DirectionalLight());
     }
 
     protected buildHelper(options?: {

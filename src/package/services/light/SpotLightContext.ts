@@ -5,8 +5,8 @@ import {AbstractLightContextImpl} from "./AbstractLightContext.ts";
 export class SpotLightContextImpl extends AbstractLightContextImpl<THREE.SpotLight> implements PsrThreePluginTypes.SpotLightContext {
     readonly type: PsrThreePluginTypes.Object3DType = 'SpotLight';
 
-    constructor(context: PsrThreePluginTypes.ThreeContext, id: string) {
-        super(context, id, new THREE.SpotLight());
+    constructor(context: PsrThreePluginTypes.ThreeContext) {
+        super(context, new THREE.SpotLight());
     }
 
     protected buildHelper() {
