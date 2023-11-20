@@ -89,6 +89,10 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         return this.dirty
     }
 
+    protected setDirty(dirty: boolean) {
+        this.dirty = dirty
+    }
+
     update(delta: number, time: number): void {
         // 如果更新事件与当前时间一致则跳过（由上级对象触发过更新）
         if (this.lastUpdatedTime == time) {
@@ -104,7 +108,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
             child.update(delta, time)
             flag = flag || child.isDirty()
         }
-        this.dirty = flag
+        this.setDirty(flag)
     }
 
     useHelper(options?: any): PsrThreePluginTypes.AbstractObject3DContext<any> {
