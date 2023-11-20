@@ -66,7 +66,8 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         }
     ): void {
         const {once} = options || {}
-        if (once && !this.updateHandlers.get(handler)) {
+        this.updateHandlers.delete(handler)
+        if (once) {
             const handlerOnce = (delta: number) => {
                 handler(delta)
                 this.updateHandlers.delete(handler)
