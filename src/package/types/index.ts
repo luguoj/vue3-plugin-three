@@ -70,8 +70,6 @@ export namespace PsrThreePluginTypes {
         readonly size: Ref<Size | undefined>
         // 视口
         readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]>
-        // 视口与ID映射
-        readonly viewportById: Record<string, PsrThreePluginTypes.RendererViewportContext>
         // 按需绘制标识
         drawOnDemand: boolean
 

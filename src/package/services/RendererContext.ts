@@ -82,7 +82,6 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     readonly size: Ref<PsrThreePluginTypes.Size | undefined> = ref()
     dirty: boolean = true
     readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]> = shallowReactive([])
-    readonly viewportById: Record<string, PsrThreePluginTypes.RendererViewportContext> = {}
     drawOnDemand: boolean = true
 
     constructor(context: PsrThreePluginTypes.ThreeContext, params?: THREE.WebGLRendererParameters) {
@@ -111,11 +110,10 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     }
 
     createViewport(id: string, scene: PsrThreePluginTypes.SceneContext, viewport?: PsrThreePluginTypes.Viewport): PsrThreePluginTypes.RendererViewportContext {
-        if (this.viewportById[id]) {
+        if (this.viewports.findIndex(viewport => viewport.id == id) > -1) {
             throw new Error("conflict renderer viewport id:" + id)
         }
         const viewportCtx = new RendererViewportContextImpl(this, id, scene, viewport)
-        this.viewportById[id] = viewportCtx
         this.viewports.push(viewportCtx)
         this.dirty = true
         return viewportCtx
@@ -145,8 +143,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         if (dirty || !this.drawOnDemand) {
             return true
         }
-        for (const viewportId in this.viewportById) {
-            const viewport = this.viewportById[viewportId]
+        for (const viewport of this.viewports) {
             if (viewport.running.value) {
                 const scene = viewport.scene
                 const camera = viewport.activatedCamera.value
@@ -172,8 +169,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         if (this.running.value && this.checkDirty()) {
             this.clear()
             // 绘制场景
-            for (const viewportId in this.viewportById) {
-                const viewport = this.viewportById[viewportId]
+            for (const viewport of this.viewports) {
                 if (viewport.running.value) {
                     const scene = viewport.scene
                     const camera = viewport.activatedCamera.value
