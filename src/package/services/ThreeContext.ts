@@ -1,7 +1,6 @@
 import {ref, Ref, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
-import {Object3DUtils} from "../utils/Object3DUtils.ts";
 import {RendererContextImpl} from "./RendererContext.ts";
 import {CameraContextImpl} from "./camera/CameraContext.ts";
 import {PerspectiveCameraContextImpl} from "./camera/PerspectiveCameraContext.ts";
@@ -148,7 +147,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         }
         for (const objectId in this.objects) {
             const object = this.objects[objectId]
-            Object3DUtils.dispose(object.object)
+            object.dispose()
             delete this.objects[objectId]
         }
         for (const rendererId in this.renderers) {

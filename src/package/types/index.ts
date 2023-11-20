@@ -141,6 +141,8 @@ export namespace PsrThreePluginTypes {
 
         // 获取辅助器对象
         useHelper(options?: any): AbstractObject3DContext<any>
+        // 释放
+        dispose(): void
     }
 
     export interface Object3DContext<O extends THREE.Object3D> extends AbstractObject3DContext<O> {

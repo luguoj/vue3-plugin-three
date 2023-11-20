@@ -1,5 +1,6 @@
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
+import {Object3DUtils} from "../utils/Object3DUtils.ts";
 
 export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> implements PsrThreePluginTypes.AbstractObject3DContext<O> {
     readonly context: PsrThreePluginTypes.ThreeContext
@@ -116,4 +117,8 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
     }
 
     protected abstract buildHelper(options: any): THREE.Object3D
+
+    dispose(): void {
+        Object3DUtils.dispose(this.object)
+    }
 }
