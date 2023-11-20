@@ -15,25 +15,26 @@ export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.Perspe
 
     constructor(context: PsrThreePluginTypes.ThreeContext) {
         super(context, new THREE.PerspectiveCamera());
+        const updateProjectionHandler = () => this.object.updateProjectionMatrix()
         watch(this.zoom, zoom => {
             this.object.zoom = zoom
-            this.object.updateProjectionMatrix()
+            this.addUpdateHandler(updateProjectionHandler, {once: true})
         }, {immediate: true})
         watch(this.fov, fov => {
             this.object.fov = fov
-            this.object.updateProjectionMatrix()
+             this.addUpdateHandler(updateProjectionHandler, {once: true})
         }, {immediate: true})
         watch(this.aspect, aspect => {
             this.object.aspect = aspect
-            this.object.updateProjectionMatrix()
+            this.addUpdateHandler(updateProjectionHandler, {once: true})
         }, {immediate: true})
         watch(this.near, near => {
             this.object.near = near
-            this.object.updateProjectionMatrix()
+            this.addUpdateHandler(updateProjectionHandler, {once: true})
         }, {immediate: true})
         watch(this.far, far => {
             this.object.far = far
-            this.object.updateProjectionMatrix()
+            this.addUpdateHandler(updateProjectionHandler, {once: true})
         }, {immediate: true})
     }
 

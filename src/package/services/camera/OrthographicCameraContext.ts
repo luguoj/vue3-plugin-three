@@ -1,4 +1,4 @@
-import {Ref, ref, watch, watchEffect, WatchStopHandle} from "vue";
+import {Ref, ref, watch, WatchStopHandle} from "vue";
 import * as THREE from "three"
 import {PsrThreePluginTypes} from "../../types";
 import {CameraContextImpl} from "./CameraContext.ts";
@@ -12,9 +12,8 @@ export class OrthographicCameraContextImpl extends CameraContextImpl<THREE.Ortho
 
     constructor(context: PsrThreePluginTypes.ThreeContext) {
         super(context, new THREE.OrthographicCamera());
-        watchEffect(() => {
-            const radius = this.radius.value
-            const aspect = this.aspect.value
+        const updateProjectionHandler = () => this.object.updateProjectionMatrix()
+        const updateLRTBHandler = (radius: number, aspect: number) => {
             if (aspect > 1) {
                 this.object.left = -Math.floor(radius * aspect)
                 this.object.right = Math.floor(radius * aspect)
@@ -26,8 +25,18 @@ export class OrthographicCameraContextImpl extends CameraContextImpl<THREE.Ortho
                 this.object.top = -Math.floor(radius / aspect)
                 this.object.bottom = Math.floor(radius / aspect)
             }
-            this.object.updateProjectionMatrix()
-        })
+            this.addUpdateHandler(updateProjectionHandler, {once: true})
+        }
+        watch(this.radius, radius => updateLRTBHandler(radius, this.aspect.value), {immediate: true})
+        watch(this.aspect, aspect => updateLRTBHandler(this.radius.value, aspect), {immediate: true})
+        watch(this.near, near => {
+            this.object.near = near
+            this.addUpdateHandler(updateProjectionHandler, {once: true})
+        }, {immediate: true})
+        watch(this.far, far => {
+            this.object.far = far
+            this.addUpdateHandler(updateProjectionHandler, {once: true})
+        }, {immediate: true})
     }
 
     private stopAutoAspectHandle?: WatchStopHandle = undefined
