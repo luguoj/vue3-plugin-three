@@ -37,7 +37,7 @@ export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.Perspe
         }, {immediate: true})
     }
 
-    autoAspect(size?: Ref<PsrThreePluginTypes.Size | undefined>): PsrThreePluginTypes.PerspectiveCameraContext {
+    adaptingSizing(size?: Ref<PsrThreePluginTypes.Size | undefined>): PsrThreePluginTypes.PerspectiveCameraContext {
         if (this.stopAutoAspectHandle) {
             this.stopAutoAspectHandle()
         }

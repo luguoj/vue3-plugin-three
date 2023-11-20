@@ -28,9 +28,9 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
             const cameraOld = this.activatedCamera.value
             this.activatedCamera.value = undefined
             if (cameraOld instanceof OrthographicCameraContextImpl) {
-                cameraOld.autoAspect()
+                cameraOld.adaptingSizing()
             } else if (cameraOld instanceof PerspectiveCameraContextImpl) {
-                cameraOld.autoAspect()
+                cameraOld.adaptingSizing()
             } else if (cameraOld instanceof ArrayCameraContextImpl) {
                 cameraOld.adaptingSizing()
             }
@@ -38,9 +38,9 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
             if (camera?.object.isCamera) {
                 this.activatedCamera.value = camera
                 if (camera instanceof OrthographicCameraContextImpl) {
-                    camera.autoAspect(this.viewportRect)
+                    camera.adaptingSizing(this.viewportRect)
                 } else if (camera instanceof PerspectiveCameraContextImpl) {
-                    camera.autoAspect(this.viewportRect)
+                    camera.adaptingSizing(this.viewportRect)
                 } else if (camera instanceof ArrayCameraContextImpl) {
                     camera.adaptingSizing(this.viewportRect)
                 }
