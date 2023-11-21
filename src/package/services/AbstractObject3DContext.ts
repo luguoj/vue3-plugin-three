@@ -103,7 +103,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         // 接受更新处理器外部的更新标识
         let flag = false
         for (const updateHandler of this.updateHandlers.values()) {
-            flag = flag || (updateHandler(delta) !== false)
+            flag = (updateHandler(delta) !== false) || flag
         }
         for (const child of this.children) {
             child.update(delta, time)
