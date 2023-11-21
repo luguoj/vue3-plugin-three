@@ -122,6 +122,8 @@ export namespace PsrThreePluginTypes {
         // 脏标识
         isDirty(): boolean
 
+        markDirty(): void
+
         addChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void
 
         removeChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void

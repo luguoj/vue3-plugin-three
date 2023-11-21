@@ -2,6 +2,9 @@ import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 import {Object3DUtils} from "../utils/Object3DUtils.ts";
 
+const HANDLER_MARK_DIRTY = () => {
+}
+
 export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> implements PsrThreePluginTypes.AbstractObject3DContext<O> {
     readonly context: PsrThreePluginTypes.ThreeContext
     readonly abstract type: PsrThreePluginTypes.Object3DType
@@ -27,9 +30,8 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
                 }
                 objectCtx.parent = this
                 this.children.push(objectCtx)
-                this.addUpdateHandler(() => {
-                    this.object.add(objectCtx.object)
-                }, {once: true})
+                this.object.add(objectCtx.object)
+                this.markDirty()
             }
         }
     }
@@ -39,9 +41,8 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
             if (objectCtx.parent == this) {
                 objectCtx.parent = undefined
                 this.children.splice(this.children.indexOf(objectCtx), 1)
-                this.addUpdateHandler(() => {
-                    this.object.remove(objectCtx.object)
-                }, {once: true})
+                this.object.remove(objectCtx.object)
+                this.markDirty()
             }
         }
     }
@@ -90,8 +91,8 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         return this.dirty
     }
 
-    protected setDirty(dirty: boolean) {
-        this.dirty = dirty
+    markDirty() {
+        this.addUpdateHandler(HANDLER_MARK_DIRTY, {once: true})
     }
 
     update(delta: number, time: number): void {
@@ -109,7 +110,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
             child.update(delta, time)
             flag = flag || child.isDirty()
         }
-        this.setDirty(flag)
+        this.dirty = flag
     }
 
     useHelper(options?: any): PsrThreePluginTypes.AbstractObject3DContext<any> {
