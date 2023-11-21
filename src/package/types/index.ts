@@ -69,7 +69,7 @@ export namespace PsrThreePluginTypes {
         readonly running: Ref<boolean>
         readonly size: Ref<Size | undefined>
         // 视口
-        readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]>
+        readonly viewports: ShallowReactive<RendererViewportContext[]>
         // 按需绘制标识
         drawOnDemand: boolean
 
@@ -141,6 +141,7 @@ export namespace PsrThreePluginTypes {
 
         // 获取辅助器对象
         useHelper(options?: any): AbstractObject3DContext<any>
+
         // 释放
         dispose(): void
     }
