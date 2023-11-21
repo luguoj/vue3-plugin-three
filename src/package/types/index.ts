@@ -157,14 +157,13 @@ export namespace PsrThreePluginTypes {
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
         zoom: Ref<number>;
         fov: Ref<number>;
-        aspect: Ref<number>;
         near: Ref<number>;
         far: Ref<number>;
     }
 
     export interface OrthographicCameraContext extends CameraContext<THREE.OrthographicCamera> {
         radius: Ref<number>;
-        aspect: Ref<number>;
+        zoom: Ref<number>;
         near: Ref<number>;
         far: Ref<number>;
     }
