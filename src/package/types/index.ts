@@ -1,4 +1,4 @@
-import {ComputedRef, Ref, ShallowReactive, ShallowRef, ShallowUnwrapRef, UnwrapRef} from "vue";
+import {ComputedRef, Ref, ShallowReactive, ShallowRef} from "vue";
 import {EventHook} from "@vueuse/core/index";
 import * as THREE from "three"
 
@@ -171,9 +171,19 @@ export namespace PsrThreePluginTypes {
     }
 
     export interface ArrayCameraContext extends CameraContext<THREE.ArrayCamera> {
-        readonly cameras: ShallowUnwrapRef<PerspectiveCameraContext[]>
-        readonly viewports: UnwrapRef<Viewport[]>
+        // 视口
+        readonly viewports: ShallowReactive<ArrayCameraViewportContext[]>
+
+        // 创建视口
+        createViewport(id: string, viewport?: Viewport): ArrayCameraViewportContext
     }
+
+    export interface ArrayCameraViewportContext extends PerspectiveCameraContext {
+        // 视口
+        readonly viewport: Ref<Viewport | undefined>
+        readonly viewportRect: ComputedRef<THREE.Vector4>
+    }
+
 
     export interface SceneContext extends AbstractObject3DContext<THREE.Scene> {
     }
