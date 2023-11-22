@@ -32,29 +32,29 @@ export namespace PsrThreePluginTypes {
             endUpdate: EventHook<void>
         }
 
-        useRenderer(id: string, params?: THREE.WebGLRendererParameters): RendererContext;
+        useRenderer(name: string, params?: THREE.WebGLRendererParameters): RendererContext;
 
-        retrieveObject(id: string): PsrThreePluginTypes.Object3DContext<any>
+        retrieveObject(name: string): PsrThreePluginTypes.Object3DContext<any>
 
-        useObject<O extends THREE.Object3D>(id: string, provider: () => O): Object3DContext<O>;
+        useObject<O extends THREE.Object3D>(name: string, provider: () => O): Object3DContext<O>;
 
-        useScene(id: string): SceneContext;
+        useScene(name: string): SceneContext;
 
-        useCamera<C extends THREE.Camera>(id: string, provider: () => C): CameraContext<C>;
+        useCamera<C extends THREE.Camera>(name: string, provider: () => C): CameraContext<C>;
 
-        usePerspectiveCamera(id: string): PerspectiveCameraContext;
+        usePerspectiveCamera(name: string): PerspectiveCameraContext;
 
-        useOrthographicCamera(id: string): OrthographicCameraContext;
+        useOrthographicCamera(name: string): OrthographicCameraContext;
 
-        useArrayCamera(id: string): ArrayCameraContext;
+        useArrayCamera(name: string): ArrayCameraContext;
 
-        useDirectionalLight(id: string): DirectionalLightContext
+        useDirectionalLight(name: string): DirectionalLightContext
 
-        useHemisphereLight(id: string): HemisphereLightContext
+        useHemisphereLight(name: string): HemisphereLightContext
 
-        usePointLight(id: string): PointLightContext
+        usePointLight(name: string): PointLightContext
 
-        useSpotLight(id: string): SpotLightContext
+        useSpotLight(name: string): SpotLightContext
 
         dispose(): void;
     }
@@ -74,7 +74,7 @@ export namespace PsrThreePluginTypes {
         drawOnDemand: boolean
 
         // 创建视口
-        createViewport(id: string, scene: SceneContext, viewport?: Viewport): RendererViewportContext
+        createViewport(name: string, scene: SceneContext, viewport?: Viewport): RendererViewportContext
 
         draw(): void
 
@@ -82,7 +82,7 @@ export namespace PsrThreePluginTypes {
     }
 
     export interface RendererViewportContext {
-        readonly id: string
+        readonly name: string
         // 场景上下文
         readonly scene: SceneContext
         // 激活的摄像机Id
@@ -114,7 +114,7 @@ export namespace PsrThreePluginTypes {
     export interface AbstractObject3DContext<O extends THREE.Object3D> {
         readonly context: ThreeContext
         readonly type: Object3DType
-        readonly id: string
+        readonly name: string
         // 3D对象
         readonly object: O;
         parent?: AbstractObject3DContext<any>
@@ -130,7 +130,7 @@ export namespace PsrThreePluginTypes {
 
         getChildren(): AbstractObject3DContext<any>[]
 
-        getChild(id: string): AbstractObject3DContext<any> | undefined
+        getObjectByName(name: string): AbstractObject3DContext<any> | undefined
 
         // 添加更新处理器
         addUpdateHandler(handler: (delta: number) => boolean | void, options?: { once?: boolean }): void
@@ -175,7 +175,7 @@ export namespace PsrThreePluginTypes {
         readonly viewports: ShallowReactive<ArrayCameraViewportContext[]>
 
         // 创建视口
-        createViewport(id: string, viewport?: Viewport): ArrayCameraViewportContext
+        createViewport(name: string, viewport?: Viewport): ArrayCameraViewportContext
     }
 
     export interface ArrayCameraViewportContext extends PerspectiveCameraContext {

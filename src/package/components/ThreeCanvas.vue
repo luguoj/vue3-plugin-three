@@ -39,7 +39,7 @@ watch(canvasRef, canvas => {
           style="width:80px;height:144px;position: absolute;"
           ref="canvasRef"/>
       <div
-          v-for="viewport in rendererContext.viewports" :key="viewport.id"
+          v-for="viewport in rendererContext.viewports" :key="viewport.name"
           style="pointer-events: none; position: absolute;overflow:hidden;"
           :style="{
             width:viewport.viewportRect.value.width+'px',
@@ -48,7 +48,7 @@ watch(canvasRef, canvas => {
             bottom:viewport.viewportRect.value.y+'px'
           }"
       >
-        <slot :name="`viewport-${viewport.id}`"/>
+        <slot :name="`viewport-${viewport.name}`"/>
       </div>
       <slot/>
     </div>

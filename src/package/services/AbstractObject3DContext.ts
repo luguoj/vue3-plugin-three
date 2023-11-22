@@ -11,7 +11,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
     readonly object: O;
     parent?: PsrThreePluginTypes.AbstractObject3DContext<any>
 
-    get id(): string {
+    get name(): string {
         return this.object.name
     }
 
@@ -51,9 +51,9 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         return [...this.children]
     }
 
-    getChild(id: string): PsrThreePluginTypes.AbstractObject3DContext<any> | undefined {
-        if (this.object.getObjectByName(id)) {
-            return this.context.retrieveObject(id)
+    getObjectByName(name: string): PsrThreePluginTypes.AbstractObject3DContext<any> | undefined {
+        if (this.object.getObjectByName(name)) {
+            return this.context.retrieveObject(name)
         }
     }
 
@@ -114,7 +114,7 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
     }
 
     useHelper(options?: any): PsrThreePluginTypes.AbstractObject3DContext<any> {
-        return this.context.useObject(this.id + 'helper', () => this.buildHelper(options))
+        return this.context.useObject(this.name + 'helper', () => this.buildHelper(options))
     }
 
     protected abstract buildHelper(options: any): THREE.Object3D

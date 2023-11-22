@@ -52,12 +52,12 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
         return this
     }
 
-    createViewport(id: string, viewport?: PsrThreePluginTypes.Viewport): PsrThreePluginTypes.ArrayCameraViewportContext {
-        if (this.viewports.findIndex(viewport => viewport.id == id) > -1) {
-            throw new Error("conflict array camera viewport id:" + id)
+    createViewport(name: string, viewport?: PsrThreePluginTypes.Viewport): PsrThreePluginTypes.ArrayCameraViewportContext {
+        if (this.viewports.findIndex(viewport => viewport.name == name) > -1) {
+            throw new Error("conflict array camera viewport name:" + name)
         }
         const viewportCtx = new ArrayCameraViewportContextImpl(this, viewport)
-        viewportCtx.object.name = this.id + '-cam-' + id
+        viewportCtx.object.name = this.name + '-cam-' + name
         // this.addChildren(viewportCtx)
         this.viewports.push(viewportCtx)
         this.object.cameras.push(viewportCtx.object)

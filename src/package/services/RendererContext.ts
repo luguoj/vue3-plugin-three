@@ -8,7 +8,7 @@ import {ArrayCameraContextImpl} from "./camera/ArrayCameraContext.ts";
 
 export class RendererViewportContextImpl implements PsrThreePluginTypes.RendererViewportContext {
     readonly renderer: RendererContextImpl
-    readonly id: string
+    readonly name: string
     readonly scene: PsrThreePluginTypes.SceneContext
     readonly activatedCameraId = ref<string>()
     readonly activatedCamera: ShallowRef<PsrThreePluginTypes.CameraContext<any> | undefined> = shallowRef<PsrThreePluginTypes.CameraContext<any>>()
@@ -19,9 +19,9 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         ViewportUtils.calcViewport(this.viewport.value, this.renderer.size.value)
     )
 
-    constructor(renderer: RendererContextImpl, id: string, scene: PsrThreePluginTypes.SceneContext, viewport?: PsrThreePluginTypes.Viewport) {
+    constructor(renderer: RendererContextImpl, name: string, scene: PsrThreePluginTypes.SceneContext, viewport?: PsrThreePluginTypes.Viewport) {
         this.renderer = renderer
-        this.id = id
+        this.name = name
         this.scene = scene
         this.viewport.value = viewport
         watch(this.activatedCameraId, activatedCameraId => {
@@ -34,7 +34,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
             } else if (cameraOld instanceof ArrayCameraContextImpl) {
                 cameraOld.adaptingSizing()
             }
-            let camera = activatedCameraId && this.scene.getChild(activatedCameraId) as PsrThreePluginTypes.CameraContext<any> || undefined
+            let camera = activatedCameraId && this.scene.getObjectByName(activatedCameraId) as PsrThreePluginTypes.CameraContext<any> || undefined
             if (camera?.object.isCamera) {
                 this.activatedCamera.value = camera
                 if (camera instanceof OrthographicCameraContextImpl) {
@@ -51,7 +51,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
 
     getObjectCssPosition(objectId: string): PsrThreePluginTypes.ObjectCssPosition | undefined {
         const camera = this.activatedCamera.value?.object
-        const object = this.scene.getChild(objectId)?.object
+        const object = this.scene.getObjectByName(objectId)?.object
         if (camera && object) {
             // 获取对象位置
             const tempV = new THREE.Vector3()
@@ -109,11 +109,11 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         })
     }
 
-    createViewport(id: string, scene: PsrThreePluginTypes.SceneContext, viewport?: PsrThreePluginTypes.Viewport): PsrThreePluginTypes.RendererViewportContext {
-        if (this.viewports.findIndex(viewport => viewport.id == id) > -1) {
-            throw new Error("conflict renderer viewport id:" + id)
+    createViewport(name: string, scene: PsrThreePluginTypes.SceneContext, viewport?: PsrThreePluginTypes.Viewport): PsrThreePluginTypes.RendererViewportContext {
+        if (this.viewports.findIndex(viewport => viewport.name == name) > -1) {
+            throw new Error("conflict renderer viewport name:" + name)
         }
-        const viewportCtx = new RendererViewportContextImpl(this, id, scene, viewport)
+        const viewportCtx = new RendererViewportContextImpl(this, name, scene, viewport)
         this.viewports.push(viewportCtx)
         this.dirty = true
         return viewportCtx
