@@ -17,7 +17,7 @@ createCube(context, scene, {ani: true})
 
 
 // 对需要控制的摄像机创建第一人称控制器
-const controls = new FirstPersonControls(camera.object, renderer.renderer.domElement);
+const controls = new FirstPersonControls(camera.object, renderer.object.domElement);
 controls.lookSpeed = 0.05; //鼠标移动查看的速度
 controls.movementSpeed = 10; //相机移动速度
 controls.constrainVertical = true; //约束垂直

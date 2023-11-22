@@ -32,7 +32,7 @@ scene.addChildren(cameraArr)
 viewport.activatedCameraId.value = 'c-arr'
 
 
-const controls = new OrbitControls(viewport2.object, renderer.renderer.domElement)
+const controls = new OrbitControls(viewport2.object, renderer.object.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
 controls.addEventListener('change', () => {
   console.log('change')

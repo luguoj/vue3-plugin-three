@@ -15,7 +15,7 @@ camera.object.updateProjectionMatrix()
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
 scene.addChildren(context.useObject('grid', () => gridHelper))
 
-const controls = new OrbitControls(camera.object, renderer.renderer.domElement)
+const controls = new OrbitControls(camera.object, renderer.object.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
 controls.addEventListener('change', () => {
   console.log('change')

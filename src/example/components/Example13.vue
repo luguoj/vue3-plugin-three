@@ -26,7 +26,7 @@ camera2.object.updateProjectionMatrix();
 scene.addChildren(camera2)
 scene.addChildren(camera2.useHelper())
 
-const controls = new OrbitControls(camera2.object, renderer.renderer.domElement)
+const controls = new OrbitControls(camera2.object, renderer.object.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
 controls.addEventListener('change', () => {
   console.log('change')

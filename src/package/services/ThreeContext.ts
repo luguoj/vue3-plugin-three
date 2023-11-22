@@ -151,7 +151,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
             delete this.objects[objectId]
         }
         for (const rendererId in this.renderers) {
-            const renderer = this.renderers[rendererId].renderer
+            const renderer = this.renderers[rendererId].object
             renderer.dispose()
             renderer.forceContextLoss()
             delete this.renderers[rendererId]

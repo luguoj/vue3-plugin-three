@@ -64,7 +64,7 @@ export namespace PsrThreePluginTypes {
         // 画布容器引用
         readonly containerRef: ShallowRef<HTMLElement | undefined>
         // 渲染器
-        readonly renderer: THREE.WebGLRenderer
+        readonly object: THREE.WebGLRenderer
         // 运行标识
         readonly running: Ref<boolean>
         readonly size: Ref<Size | undefined>

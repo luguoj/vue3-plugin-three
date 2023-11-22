@@ -25,7 +25,7 @@ scene.addChildren(camera2.useHelper())
 const renderer2 = context.useRenderer('render-2')
 renderer2.createViewport('vp-1', scene).activatedCameraId.value = 'c2'
 
-const controls = new OrbitControls(camera2.object, renderer2.renderer.domElement)
+const controls = new OrbitControls(camera2.object, renderer2.object.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
 controls.addEventListener('change', () => {
   console.log('change')

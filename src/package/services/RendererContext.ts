@@ -76,7 +76,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
 export class RendererContextImpl implements PsrThreePluginTypes.RendererContext {
     readonly context: PsrThreePluginTypes.ThreeContext
     readonly containerRef: ShallowRef<HTMLElement | undefined> = shallowRef<HTMLElement>()
-    readonly renderer: THREE.WebGLRenderer
+    readonly object: THREE.WebGLRenderer
     readonly running: Ref<boolean> = ref(false)
 
     readonly size: Ref<PsrThreePluginTypes.Size | undefined> = ref()
@@ -86,12 +86,12 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
 
     constructor(context: PsrThreePluginTypes.ThreeContext, params?: THREE.WebGLRendererParameters) {
         this.context = context
-        this.renderer = new THREE.WebGLRenderer(params)
+        this.object = new THREE.WebGLRenderer(params)
         watch(this.containerRef, container => {
             if (container) {
                 this.dirty = true
                 // 将画布追加到容器
-                container.appendChild(this.renderer.domElement);
+                container.appendChild(this.object.domElement);
                 // 监控容器resize
                 const resizeObserver = new ResizeObserver(entries => this.size.value = {
                     width: entries[0].contentRect.width,
@@ -106,8 +106,8 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
             this.dirty = true
             const {width, height} = size || {width: 0, height: 0}
             // 设置设备像素比，避免HiDPI设备上绘图模糊
-            this.renderer.setPixelRatio(window.devicePixelRatio)
-            this.renderer.setSize(Math.floor(width / this.renderer.getPixelRatio()), Math.floor(height / this.renderer.getPixelRatio()), false);
+            this.object.setPixelRatio(window.devicePixelRatio)
+            this.object.setSize(Math.floor(width / this.object.getPixelRatio()), Math.floor(height / this.object.getPixelRatio()), false);
         })
     }
 
@@ -125,10 +125,10 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
 
     clear() {
         // 清空画布
-        this.renderer.setScissorTest(false)
-        this.renderer.setClearColor(this.clearColor, 1)
-        this.renderer.clear(true, true)
-        this.renderer.setScissorTest(true)
+        this.object.setScissorTest(false)
+        this.object.setClearColor(this.clearColor, 1)
+        this.object.clear(true, true)
+        this.object.setScissorTest(true)
     }
 
     private checkDirty(): boolean {
@@ -169,9 +169,9 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                             || x + width <= 0
                             || y + height <= 0
                         if (!outOfScreen) {
-                            this.renderer.setScissor(x, y, width, height)
-                            this.renderer.setViewport(x, y, width, height)
-                            this.renderer.render(scene.object, camera.object)
+                            this.object.setScissor(x, y, width, height)
+                            this.object.setViewport(x, y, width, height)
+                            this.object.render(scene.object, camera.object)
                         }
                     }
                 }

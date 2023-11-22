@@ -13,7 +13,7 @@ camera.object.lookAt(new THREE.Vector3(0, 0, 0))
 createCube(context, scene)
 
 // 对需要控制的摄像机创建指针锁定控制器
-let controls: PointerLockControls = new PointerLockControls(camera.object, renderer.renderer.domElement);
+let controls: PointerLockControls = new PointerLockControls(camera.object, renderer.object.domElement);
 camera.addUpdateHandler(() => {
   return controls.isLocked
 })

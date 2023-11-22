@@ -24,7 +24,7 @@ helperCtx?.addUpdateHandler(() => {
 }, {once: true})
 
 // 对需要拖拽的组件创建拖拽控制器
-const controls = new DragControls([cubeCtx.object, cubeCtx2.object], camera.object, renderer.renderer.domElement);
+const controls = new DragControls([cubeCtx.object, cubeCtx2.object], camera.object, renderer.object.domElement);
 const draggingHandler = () => {
   helperCtx?.object.update()
   helperCtx2?.object.update()
