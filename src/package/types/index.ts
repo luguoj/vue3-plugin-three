@@ -158,16 +158,18 @@ export namespace PsrThreePluginTypes {
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
         zoom: Ref<number>;
-        fov: Ref<number>;
         near: Ref<number>;
         far: Ref<number>;
+        fov: Ref<number>;
+        viewOffset: Ref<PsrThreePluginTypes.Viewport | undefined>;
     }
 
     export interface OrthographicCameraContext extends CameraContext<THREE.OrthographicCamera> {
-        radius: Ref<number>;
         zoom: Ref<number>;
         near: Ref<number>;
         far: Ref<number>;
+        radius: Ref<number>;
+        viewOffset: Ref<PsrThreePluginTypes.Viewport | undefined>;
     }
 
     export interface ArrayCameraContext extends CameraContext<THREE.ArrayCamera> {
