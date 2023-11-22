@@ -60,9 +60,9 @@ window.addEventListener('storage', ev => {
     case 'cam-pos':
     case 'cam-target':
     case 'cam-zoom':
-      const newPos = JSON.parse(localStorage.getItem('cam-pos'))
-      const newTarget = JSON.parse(localStorage.getItem('cam-target'))
-      const newZoom = JSON.parse(localStorage.getItem('cam-zoom'))
+      const newPos = JSON.parse(localStorage.getItem('cam-pos') || '{"x":0,"y":0,"z":0}')
+      const newTarget = JSON.parse(localStorage.getItem('cam-target') || '{"x":0,"y":0,"z":0}')
+      const newZoom = JSON.parse(localStorage.getItem('cam-zoom') || '1')
       scene.addUpdateHandler(() => {
         camera.object.position.set(newPos.x, newPos.y, newPos.z)
         camera.object.lookAt(newTarget.x, newTarget.y, newTarget.z)
