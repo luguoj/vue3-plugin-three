@@ -25,7 +25,7 @@ controls.addEventListener('change', () => {
   console.log('change')
 })
 const controlHandler = () => {
-  controls.update()
+  controls.update() // 提前更新防止抖动
   updateTitlePos()
 }
 controls.addEventListener('start', () => {
