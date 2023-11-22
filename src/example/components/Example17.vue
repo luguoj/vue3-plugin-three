@@ -67,6 +67,7 @@ window.addEventListener('storage', ev => {
         camera.object.position.set(newPos.x, newPos.y, newPos.z)
         camera.object.lookAt(newTarget.x, newTarget.y, newTarget.z)
         camera.object.zoom = newZoom
+        controls.target.set(newTarget.x, newTarget.y, newTarget.z)
       }, {once: true})
       break
   }
