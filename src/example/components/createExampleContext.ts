@@ -14,7 +14,7 @@ export function createExampleContext(id?: string) {
     const camera = context.usePerspectiveCamera(id + '-camera')
     scene.addChildren(camera)
     // 设置默认相机
-    viewport.activatedCameraId.value = camera.id
+    viewport.activatedCameraId.value = camera.name
 
     context.running.value = true
     return {

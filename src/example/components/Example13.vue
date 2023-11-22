@@ -52,7 +52,7 @@ camera3.object.position.set(3, 1, 2);
 camera3.object.lookAt(new THREE.Vector3(0, 0, 0))
 scene2.addChildren(camera3)
 const viewport2 = renderer.createViewport('v-2', scene2, {width: 0.5, height: 1})
-viewport2.activatedCameraId.value = camera3.id
+viewport2.activatedCameraId.value = camera3.name
 </script>
 
 <template>

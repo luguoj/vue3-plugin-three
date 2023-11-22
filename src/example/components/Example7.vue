@@ -11,7 +11,7 @@ camera.object.lookAt(new THREE.Vector3(0, 0, 0))
 
 // 为场景添加模型
 const {cubeCtx, lineCtx, helperCtx} = createCube(context, scene, {id: 'c2', helper: true})
-const {cubeCtx: cubeCtx2, lineCtx: lineCtx2, helperCtx: helperCtx2} = createCube(context, scene, {id: 'c1', helper: true})
+const {cubeCtx: cubeCtx2, helperCtx: helperCtx2} = createCube(context, scene, {id: 'c1', helper: true})
 cubeCtx.addUpdateHandler(() => {
   cubeCtx.object.position.set(2, 0, 0)
   helperCtx?.object.update()

@@ -40,7 +40,7 @@ controls.addEventListener('end', () => {
 
 const titlePos = ref<PsrThreePluginTypes.ObjectCssPosition>()
 const updateTitlePos = () => {
-  titlePos.value = viewport.getObjectCssPosition(cubeCtx.id)
+  titlePos.value = viewport.getObjectCssPosition(cubeCtx.name)
 }
 camera.addUpdateHandler(updateTitlePos, {once: true})
 </script>
@@ -52,7 +52,7 @@ camera.addUpdateHandler(updateTitlePos, {once: true})
         :renderer-context="renderer"
         :state-enabled="true"
     >
-      <template #[`viewport-${viewport.id}`]>
+      <template #[`viewport-${viewport.name}`]>
         <div
             v-if="titlePos"
             style="position: absolute;color: lightyellow;"
