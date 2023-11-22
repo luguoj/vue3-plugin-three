@@ -50,8 +50,10 @@ watch(containerRef, container => {
 })
 
 function handleResize(entry: ResizeObserverEntry) {
-  camera.viewOffset.value = {width: entry.contentRect.width, height: entry.contentRect.height}
-  camera2.viewOffset.value = {width: entry.contentRect.width, height: entry.contentRect.height, left: 0.5}
+  scene.addUpdateHandler(() => {
+    camera.viewOffset.value = {width: entry.contentRect.width, height: entry.contentRect.height}
+    camera2.viewOffset.value = {width: entry.contentRect.width, height: entry.contentRect.height, left: 0.5, top: 0.5}
+  }, {once: true})
 }
 
 </script>
@@ -59,12 +61,12 @@ function handleResize(entry: ResizeObserverEntry) {
 <template>
   <div style="position: relative" ref="containerRef" v-psr-resize-observer="handleResize">
     <psr-three-canvas
-        style="position: absolute;left: 0;top:0;width: 50%;height: 100%;border: 1px solid red;"
+        style="position: absolute;left: 0;top:0;width: 50%;height: 50%;border: 1px solid red;"
         :renderer-context="renderer"
         :state-enabled="true"
     />
     <psr-three-canvas
-        style="position: absolute;left: 50%;top:0;width: 50%;height: 100%;border: 1px solid red;"
+        style="position: absolute;left: 50%;top:50%;width: 50%;height: 50%;border: 1px solid red;"
         :renderer-context="renderer2"
         :state-enabled="true"
     />
