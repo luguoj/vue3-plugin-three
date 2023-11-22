@@ -152,12 +152,6 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                     if (dirty) {
                         return dirty
                     }
-                    for (const object of scene.getChildren()) {
-                        dirty = dirty || object.isDirty()
-                        if (dirty) {
-                            return dirty
-                        }
-                    }
                 }
             }
         }
