@@ -32,7 +32,6 @@ controls.addEventListener('change', () => {
   console.log('change')
 })
 const controlHandler = () => {
-  controls.update()
 }
 controls.addEventListener('start', () => {
   console.log('start')
