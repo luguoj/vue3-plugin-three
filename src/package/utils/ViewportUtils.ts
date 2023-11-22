@@ -13,14 +13,14 @@ export namespace ViewportUtils {
         let x = 0, y = 0,
             w = calcLength(width, fullWidth),
             h = calcLength(height, fullHeight)
-        if (left != undefined) {
-            x = calcLength(left, fullWidth)
-        } else if (right != undefined) {
+        if (left != undefined || right == undefined) {
+            x = calcLength(left || 0, fullWidth)
+        } else {
             x = fullWidth - w - calcLength(right, fullWidth)
         }
-        if (top != undefined) {
-            y = fullHeight - h - calcLength(top, fullHeight)
-        } else if (bottom != undefined) {
+        if (top != undefined || bottom == undefined) {
+            y = fullHeight - h - calcLength(top || 0, fullHeight)
+        } else {
             y = calcLength(bottom, fullHeight)
         }
         return new THREE.Vector4(x, y, w, h)
