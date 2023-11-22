@@ -86,7 +86,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
 
     constructor(context: PsrThreePluginTypes.ThreeContext, params?: THREE.WebGLRendererParameters) {
         this.context = context
-        this.renderer = this.buildRenderer(params)
+        this.renderer = new THREE.WebGLRenderer(params)
         watch(this.containerRef, container => {
             if (container) {
                 this.dirty = true
@@ -105,6 +105,8 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         watch(this.size, size => {
             this.dirty = true
             const {width, height} = size || {width: 0, height: 0}
+            // 设置设备像素比，避免HiDPI设备上绘图模糊
+            this.renderer.setPixelRatio(window.devicePixelRatio)
             this.renderer.setSize(Math.floor(width / this.renderer.getPixelRatio()), Math.floor(height / this.renderer.getPixelRatio()), false);
         })
     }
@@ -117,14 +119,6 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         this.viewports.push(viewportCtx)
         this.dirty = true
         return viewportCtx
-    }
-
-    // 构造渲染器
-    protected buildRenderer(params?: THREE.WebGLRendererParameters): THREE.WebGLRenderer {
-        const renderer = new THREE.WebGLRenderer(params);
-        // 设置设备像素比，避免HiDPI设备上绘图模糊
-        renderer.setPixelRatio(window.devicePixelRatio)
-        return renderer
     }
 
     readonly clearColor = new THREE.Color(0x000000)
