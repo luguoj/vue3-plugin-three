@@ -30,7 +30,7 @@ export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.Perspe
                 width,
                 height
             }, {width: fullWidth, height: fullHeight})
-            this.object.setViewOffset(fullWidth, fullHeight, x, y, width, height)
+            this.object.setViewOffset(fullWidth, fullHeight, x, fullHeight - height - y, width, height)
         } else {
             this.object.clearViewOffset()
         }
