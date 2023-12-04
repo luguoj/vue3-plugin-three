@@ -10,8 +10,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
     readonly renderer: RendererContextImpl
     readonly name: string
     readonly scene: PsrThreePluginTypes.SceneContext
-    readonly activatedCameraId = ref<string>()
-    readonly activatedCamera: ShallowRef<PsrThreePluginTypes.CameraContext<any> | undefined> = shallowRef<PsrThreePluginTypes.CameraContext<any>>()
+    readonly camera: ShallowRef<PsrThreePluginTypes.CameraContext<any> | undefined> = shallowRef<PsrThreePluginTypes.CameraContext<any>>()
     readonly viewport: Ref<PsrThreePluginTypes.Viewport | undefined> = ref<PsrThreePluginTypes.Viewport>()
     // 运行标识
     readonly running: Ref<boolean> = ref(true)
@@ -24,9 +23,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         this.name = name
         this.scene = scene
         this.viewport.value = viewport
-        watch(this.activatedCameraId, activatedCameraId => {
-            const cameraOld = this.activatedCamera.value
-            this.activatedCamera.value = undefined
+        watch(this.camera, (camera, cameraOld) => {
             if (cameraOld instanceof OrthographicCameraContextImpl) {
                 cameraOld.adaptingSizing()
             } else if (cameraOld instanceof PerspectiveCameraContextImpl) {
@@ -34,9 +31,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
             } else if (cameraOld instanceof ArrayCameraContextImpl) {
                 cameraOld.adaptingSizing()
             }
-            let camera = activatedCameraId && this.scene.getObjectByName(activatedCameraId) as PsrThreePluginTypes.CameraContext<any> || undefined
             if (camera?.object.isCamera) {
-                this.activatedCamera.value = camera
                 if (camera instanceof OrthographicCameraContextImpl) {
                     camera.adaptingSizing(this.viewportRect)
                 } else if (camera instanceof PerspectiveCameraContextImpl) {
@@ -50,7 +45,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
     }
 
     getObjectCssPosition(objectId: string): PsrThreePluginTypes.ObjectCssPosition | undefined {
-        const camera = this.activatedCamera.value?.object
+        const camera = this.camera.value?.object
         const object = this.scene.getObjectByName(objectId)?.object
         if (camera && object) {
             // 获取对象位置
@@ -140,7 +135,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
         for (const viewport of this.viewports) {
             if (viewport.running.value) {
                 const scene = viewport.scene
-                const camera = viewport.activatedCamera.value
+                const camera = viewport.camera.value
                 if (scene && camera && this.size.value) {
                     dirty = dirty || scene.isDirty() || camera.isDirty()
                     if (dirty) {
@@ -160,7 +155,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
             for (const viewport of this.viewports) {
                 if (viewport.running.value) {
                     const scene = viewport.scene
-                    const camera = viewport.activatedCamera.value
+                    const camera = viewport.camera.value
                     if (scene && camera && this.size.value) {
                         const {x, y, width, height} = viewport.viewportRect.value
                         const outOfScreen =

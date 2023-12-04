@@ -22,7 +22,7 @@ camera2.object.updateProjectionMatrix()
 scene.addChildren(camera2)
 
 const renderer2 = context.useRenderer('render-2')
-renderer2.createViewport('vp-1', scene).activatedCameraId.value = 'c2'
+renderer2.createViewport('vp-1', scene).camera.value = camera2
 
 const containerRef = ref<HTMLDivElement>()
 watch(containerRef, container => {

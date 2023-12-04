@@ -85,10 +85,8 @@ export namespace PsrThreePluginTypes {
         readonly name: string
         // 场景上下文
         readonly scene: SceneContext
-        // 激活的摄像机Id
-        readonly activatedCameraId: Ref<string | undefined>
         // 激活的摄像机
-        readonly activatedCamera: ShallowRef<CameraContext<any> | undefined>
+        readonly camera: ShallowRef<CameraContext<any> | undefined>
         // 视口
         readonly viewport: Ref<Viewport | undefined>
         readonly viewportRect: ComputedRef<THREE.Vector4>

@@ -12,6 +12,8 @@ const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
 scene.addChildren(context.useObject('grid', () => gridHelper))
 
 const cameraArr = context.useArrayCamera('c-arr')
+viewport.camera.value = cameraArr
+
 const viewport1 = cameraArr.createViewport('1', {width: 0.3, height: 0.3, top: 0.5, right: 0.5})
 scene.addChildren(viewport1.useHelper())
 viewport1.addUpdateHandler(() => {
@@ -28,14 +30,12 @@ viewport2.addUpdateHandler(() => {
   // 没有这行相机朝向会有问题
   viewport2.object.updateMatrixWorld()
 }, {once: true})
-scene.addChildren(cameraArr)
-viewport.activatedCameraId.value = 'c-arr'
 
 
 const controls = new OrbitControls(viewport2.object, renderer.object.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)
-controls.addEventListener('change', () => {
-  console.log('change')
+controls.addEventListener('change', ({target}) => {
+  console.log('change', target.target)
 })
 const controlHandler = () => {
 }
