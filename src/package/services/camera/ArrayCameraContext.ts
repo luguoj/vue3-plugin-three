@@ -59,6 +59,7 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
         const viewportCtx = new ArrayCameraViewportContextImpl(this, viewport)
         viewportCtx.object.name = this.name + '-cam-' + name
         this.viewports.push(viewportCtx)
+        this.addChildren(viewportCtx)
         this.object.cameras.push(viewportCtx.object)
         this.markDirty()
         return viewportCtx
