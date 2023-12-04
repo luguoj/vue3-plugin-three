@@ -22,7 +22,7 @@ export class ArrayCameraViewportContextImpl extends PerspectiveCameraContextImpl
         this.viewport.value = viewport
         this.adaptingSizing(this.viewportRect)
         watch(this.viewportRect, () => {
-            this.addUpdateHandler(this.updateViewportHandler)
+            this.addUpdateHandler(this.updateViewportHandler, {once: true})
         })
     }
 
@@ -58,7 +58,6 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
         }
         const viewportCtx = new ArrayCameraViewportContextImpl(this, viewport)
         viewportCtx.object.name = this.name + '-cam-' + name
-        // this.addChildren(viewportCtx)
         this.viewports.push(viewportCtx)
         this.object.cameras.push(viewportCtx.object)
         this.markDirty()
@@ -67,7 +66,7 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
 
     update(delta: number, time: number): void {
         // 更新子视图
-        let flag = this.isDirty()
+        let flag = false
         for (const viewport of this.viewports) {
             viewport.update(delta, time)
             flag = flag || viewport.isDirty()
