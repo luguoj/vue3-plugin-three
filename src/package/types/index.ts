@@ -1,6 +1,7 @@
 import {ComputedRef, Ref, ShallowReactive, ShallowRef} from "vue";
 import {EventHook} from "@vueuse/core/index";
 import * as THREE from "three"
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 export namespace PsrThreePluginTypes {
     export type Size = {
@@ -152,6 +153,8 @@ export namespace PsrThreePluginTypes {
 
     export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C> {
         useHelper(): Object3DContext<THREE.CameraHelper>
+
+        useOrbitControls(eventTarget: HTMLElement): OrbitControlsContext
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -205,5 +208,13 @@ export namespace PsrThreePluginTypes {
 
     export interface SpotLightContext extends AbstractLightContext<THREE.SpotLight> {
         useHelper(options?: { color?: THREE.ColorRepresentation }): Object3DContext<THREE.SpotLightHelper>
+    }
+
+    export interface OrbitControlsContext {
+        readonly camera: CameraContext<any>
+        readonly eventTarget: HTMLElement
+        readonly object: OrbitControls
+        autoRotate: Ref<boolean>
+        enableDamping: Ref<boolean>
     }
 }
