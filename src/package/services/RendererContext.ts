@@ -101,8 +101,8 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
             this.dirty = true
             const {width, height} = size || {width: 0, height: 0}
             // 设置设备像素比，避免HiDPI设备上绘图模糊
-            this.object.setPixelRatio(window.devicePixelRatio)
-            this.object.setSize(Math.floor(width / this.object.getPixelRatio()), Math.floor(height / this.object.getPixelRatio()), false);
+            this.object.setPixelRatio(window.devicePixelRatio);
+            this.object.setSize(width, height, true);
         })
     }
 
