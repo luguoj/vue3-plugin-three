@@ -1,10 +1,10 @@
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {PsrThreePluginTypes} from "../../../types";
 import {ref, Ref, watch} from "vue";
+import {AbstractCameraControlsContextImpl} from "./AbstractCameraControlsContext.ts";
 
-export class OrbitControlsContextImpl implements PsrThreePluginTypes.OrbitControlsContext {
-    readonly camera: PsrThreePluginTypes.CameraContext<any>
-    readonly eventTarget: HTMLElement
+export class OrbitControlsContextImpl extends AbstractCameraControlsContextImpl implements PsrThreePluginTypes.OrbitControlsContext {
+    readonly type: PsrThreePluginTypes.CameraControlsType = 'orbit'
     object: OrbitControls
     // 自动旋转
     readonly autoRotate: Ref<boolean> = ref(false)
@@ -12,8 +12,7 @@ export class OrbitControlsContextImpl implements PsrThreePluginTypes.OrbitContro
     readonly enableDamping: Ref<boolean> = ref(false)
 
     constructor(camera: PsrThreePluginTypes.CameraContext<any>, eventTarget: HTMLElement) {
-        this.camera = camera
-        this.eventTarget = eventTarget
+        super(camera, eventTarget)
         this.object = new OrbitControls(camera.object, eventTarget)
         const controlsInteractionHandler = () => {
         }

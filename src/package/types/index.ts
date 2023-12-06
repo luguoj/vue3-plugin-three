@@ -151,10 +151,15 @@ export namespace PsrThreePluginTypes {
         useHelper(options?: { color?: THREE.ColorRepresentation }): Object3DContext<THREE.BoxHelper>
     }
 
+    export type CameraControlsType = 'arcball' | 'orbit' | 'trackball' | 'first-person' | 'fly' | 'map' | 'point-lock'
+    export type CameraControlsCtxType = OrbitControlsContext
+
     export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C> {
         useHelper(): Object3DContext<THREE.CameraHelper>
 
-        useOrbitControls(eventTarget: HTMLElement): OrbitControlsContext
+        useControls(type: CameraControlsType, eventTarget: HTMLElement): CameraControlsCtxType
+
+        useControls(type: 'orbit', eventTarget: HTMLElement): OrbitControlsContext
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -210,9 +215,15 @@ export namespace PsrThreePluginTypes {
         useHelper(options?: { color?: THREE.ColorRepresentation }): Object3DContext<THREE.SpotLightHelper>
     }
 
-    export interface OrbitControlsContext {
+    export interface CameraControlsContext {
+        readonly type: CameraControlsType
         readonly camera: CameraContext<any>
         readonly eventTarget: HTMLElement
+
+        dispose(): void
+    }
+
+    export interface OrbitControlsContext extends CameraControlsContext {
         readonly object: OrbitControls
         autoRotate: Ref<boolean>
         enableDamping: Ref<boolean>
