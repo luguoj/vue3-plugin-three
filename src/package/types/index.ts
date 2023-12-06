@@ -152,14 +152,11 @@ export namespace PsrThreePluginTypes {
     }
 
     export type CameraControlsType = 'arcball' | 'orbit' | 'trackball' | 'first-person' | 'fly' | 'map' | 'point-lock'
-    export type CameraControlsCtxType = OrbitControlsContext
 
     export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C> {
         useHelper(): Object3DContext<THREE.CameraHelper>
 
-        useControls(type: CameraControlsType, eventTarget: HTMLElement): CameraControlsCtxType
-
-        useControls(type: 'orbit', eventTarget: HTMLElement): OrbitControlsContext
+        useOrbitControls(eventTarget: HTMLElement): OrbitControlsContext
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {

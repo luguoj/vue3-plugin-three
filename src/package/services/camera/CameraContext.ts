@@ -7,15 +7,8 @@ export class CameraContextImpl<C extends THREE.Camera> extends AbstractObject3DC
     readonly type: PsrThreePluginTypes.Object3DType = 'Camera';
     private readonly _allControls: PsrThreePluginTypes.CameraControlsContext[] = []
 
-    useControls(type: PsrThreePluginTypes.CameraControlsType, eventTarget: HTMLElement): PsrThreePluginTypes.CameraControlsCtxType {
-        let controls: PsrThreePluginTypes.CameraControlsCtxType
-        switch (type) {
-            case 'orbit':
-                controls = new OrbitControlsContextImpl(this, eventTarget)
-                break;
-            default:
-                throw new Error('Unsupported controls type')
-        }
+    useOrbitControls(eventTarget: HTMLElement): PsrThreePluginTypes.OrbitControlsContext {
+        const controls = new OrbitControlsContextImpl(this, eventTarget)
         this._allControls.push(controls)
         return controls
     }
