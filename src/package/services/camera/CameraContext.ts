@@ -3,6 +3,7 @@ import {PsrThreePluginTypes} from "../../types";
 import {AbstractObject3DContextImpl} from "./../AbstractObject3DContext.ts";
 import {OrbitControlsContextImpl} from "../controls/camera-controls/OrbitControlsContext.ts";
 import {ArcballControlsContextImpl} from "../controls/camera-controls/ArcballControlsContext.ts";
+import {FirstPersonControlsContextImpl} from "../controls/camera-controls/FirstPersonControlsContext.ts";
 
 export class CameraContextImpl<C extends THREE.Camera> extends AbstractObject3DContextImpl<C> implements PsrThreePluginTypes.CameraContext<C> {
     readonly type: PsrThreePluginTypes.Object3DType = 'Camera';
@@ -16,6 +17,12 @@ export class CameraContextImpl<C extends THREE.Camera> extends AbstractObject3DC
 
     useOrbitControls(eventTarget: HTMLElement): PsrThreePluginTypes.OrbitControlsContext {
         const controls = new OrbitControlsContextImpl(this, eventTarget)
+        this._allControls.push(controls)
+        return controls
+    }
+
+    useFirstPersonControls(eventTarget: HTMLElement): PsrThreePluginTypes.FirstPersonControlsContext {
+        const controls = new FirstPersonControlsContextImpl(this, eventTarget)
         this._allControls.push(controls)
         return controls
     }

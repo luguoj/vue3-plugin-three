@@ -3,6 +3,7 @@ import {EventHook} from "@vueuse/core/index";
 import * as THREE from "three"
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {ArcballControls} from "three/examples/jsm/controls/ArcballControls";
+import {FirstPersonControls} from "three/examples/jsm/controls/FirstPersonControls";
 
 export namespace PsrThreePluginTypes {
     export type Size = {
@@ -160,6 +161,8 @@ export namespace PsrThreePluginTypes {
         useArcballControls(eventTarget: HTMLElement, scene?: SceneContext): ArcballControlsContext
 
         useOrbitControls(eventTarget: HTMLElement): OrbitControlsContext
+
+        useFirstPersonControls(eventTarget: HTMLElement): FirstPersonControlsContext
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -223,13 +226,18 @@ export namespace PsrThreePluginTypes {
         dispose(): void
     }
 
+    export interface ArcballControlsContext extends CameraControlsContext {
+        readonly object: ArcballControls
+    }
+
     export interface OrbitControlsContext extends CameraControlsContext {
         readonly object: OrbitControls
         autoRotate: Ref<boolean>
         enableDamping: Ref<boolean>
     }
 
-    export interface ArcballControlsContext extends CameraControlsContext {
-        readonly object: ArcballControls
+    export interface FirstPersonControlsContext extends CameraControlsContext {
+        readonly object: FirstPersonControls
+        enabled: Ref<boolean>
     }
 }

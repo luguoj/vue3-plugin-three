@@ -1,4 +1,4 @@
-declare module 'three/addons' {
+declare module 'three/examples/jsm/controls/FirstPersonControls' {
     import {Camera, Vector3} from 'three';
 
     export class FirstPersonControls {
