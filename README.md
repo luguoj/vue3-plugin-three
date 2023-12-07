@@ -24,3 +24,4 @@
 20. [第一人称摄像机控制器](src%2Fexample%2Fcomponents%2FExample20.vue)
 21. [飞行摄像机控制器](src%2Fexample%2Fcomponents%2FExample21.vue)
 22. [地图摄像机控制器](src%2Fexample%2Fcomponents%2FExample22.vue)
+23. [锁定指针摄像机控制器](src%2Fexample%2Fcomponents%2FExample23.vue)
