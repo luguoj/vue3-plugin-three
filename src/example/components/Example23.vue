@@ -12,6 +12,7 @@ camera.object.lookAt(0, 0, 0)
 camera.object.updateProjectionMatrix()
 camera.object.updateMatrixWorld()
 const controls = camera.usePointerLockControls(renderer.object.domElement)
+controls.enabled.value = false
 
 createCube(context, scene)
 const stateEnabled = ref(true)
@@ -24,8 +25,7 @@ const stateEnabled = ref(true)
         style="height: 100%;"
         :renderer-context="renderer"
         :state-enabled="stateEnabled"
-        @click="controls.object.lock()"
-        @dblclick="controls.object.unlock()"
+        @click="controls.enabled.value = !controls.enabled.value"
     />
   </div>
 </template>
