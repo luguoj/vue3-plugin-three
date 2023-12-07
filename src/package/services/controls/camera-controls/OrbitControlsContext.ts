@@ -10,17 +10,16 @@ export class OrbitControlsContextImpl extends AbstractCameraControlsContextImpl 
     readonly autoRotate: Ref<boolean> = ref(false)
     // 启用阻尼
     readonly enableDamping: Ref<boolean> = ref(false)
-
+    readonly controlsInteractionHandler = () => {
+    }
     constructor(camera: PsrThreePluginTypes.CameraContext<any>, eventTarget: HTMLElement) {
         super(camera, eventTarget)
         this.object = new OrbitControls(camera.object, eventTarget)
-        const controlsInteractionHandler = () => {
-        }
         this.object.addEventListener('start', () => {
-            this.camera.addUpdateHandler(controlsInteractionHandler)
+            this.camera.addUpdateHandler(this.controlsInteractionHandler)
         })
         this.object.addEventListener('end', () => {
-            this.camera.removeUpdateHandler(controlsInteractionHandler)
+            this.camera.removeUpdateHandler(this.controlsInteractionHandler)
         })
         watch(this.autoRotate, autoRotate => {
             this.object.autoRotate = autoRotate
@@ -45,6 +44,8 @@ export class OrbitControlsContextImpl extends AbstractCameraControlsContextImpl 
     }
 
     dispose(): void {
+        this.camera.removeUpdateHandler(this.updateControlsHandler)
+        this.camera.removeUpdateHandler(this.controlsInteractionHandler)
         this.object.dispose()
     }
 }
