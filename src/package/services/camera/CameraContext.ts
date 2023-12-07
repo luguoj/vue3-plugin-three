@@ -7,6 +7,7 @@ import {FirstPersonControlsContextImpl} from "../controls/camera-controls/FirstP
 import {FlyControlsContextImpl} from "../controls/camera-controls/FlyControlsContext.ts";
 import {MapControlsContextImpl} from "../controls/camera-controls/MapControlsContext.ts";
 import {PointerLockControlsContextImpl} from "../controls/camera-controls/PointerLockControlsContext.ts";
+import {TrackballControlsContextImpl} from "../controls/camera-controls/TrackballControlsContext.ts";
 
 export class CameraContextImpl<C extends THREE.Camera> extends AbstractObject3DContextImpl<C> implements PsrThreePluginTypes.CameraContext<C> {
     readonly type: PsrThreePluginTypes.Object3DType = 'Camera';
@@ -44,6 +45,12 @@ export class CameraContextImpl<C extends THREE.Camera> extends AbstractObject3DC
 
     usePointerLockControls(eventTarget: HTMLElement): PsrThreePluginTypes.PointerLockControlsContext {
         const controls = new PointerLockControlsContextImpl(this, eventTarget)
+        this._allControls.push(controls)
+        return controls
+    }
+
+    useTrackballControls(eventTarget: HTMLElement): PsrThreePluginTypes.TrackballControlsContext {
+        const controls = new TrackballControlsContextImpl(this, eventTarget)
         this._allControls.push(controls)
         return controls
     }

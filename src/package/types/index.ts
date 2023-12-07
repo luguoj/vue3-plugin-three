@@ -7,6 +7,7 @@ import {FirstPersonControls} from "three/examples/jsm/controls/FirstPersonContro
 import {FlyControls} from "three/examples/jsm/controls/FlyControls";
 import {MapControls} from "three/examples/jsm/controls/MapControls";
 import {PointerLockControls} from "three/examples/jsm/Addons";
+import {TrackballControls} from "three/examples/jsm/controls/TrackballControls";
 
 export namespace PsrThreePluginTypes {
     export type Size = {
@@ -172,6 +173,8 @@ export namespace PsrThreePluginTypes {
         useMapControls(eventTarget: HTMLElement): MapControlsContext
 
         usePointerLockControls(eventTarget: HTMLElement): PointerLockControlsContext
+
+        useTrackballControls(eventTarget: HTMLElement): TrackballControlsContext
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -270,5 +273,10 @@ export namespace PsrThreePluginTypes {
 
     export interface PointerLockControlsContext extends CameraControlsContext {
         readonly object: PointerLockControls
+    }
+
+    export interface TrackballControlsContext extends CameraControlsContext {
+        readonly object: TrackballControls
+        enabled: Ref<boolean>
     }
 }
