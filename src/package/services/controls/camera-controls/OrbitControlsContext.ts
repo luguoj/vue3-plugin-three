@@ -1,20 +1,23 @@
-import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
-import {PsrThreePluginTypes} from "../../../types";
 import {ref, Ref, watch} from "vue";
+import {PsrThreePluginTypes} from "../../../types";
 import {AbstractCameraControlsContextImpl} from "./AbstractCameraControlsContext.ts";
+import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
 export class OrbitControlsContextImpl extends AbstractCameraControlsContextImpl implements PsrThreePluginTypes.OrbitControlsContext {
     readonly type: PsrThreePluginTypes.CameraControlsType = 'orbit'
-    object: OrbitControls
     // 自动旋转
     readonly autoRotate: Ref<boolean> = ref(false)
     // 启用阻尼
     readonly enableDamping: Ref<boolean> = ref(false)
+
+    protected buildObject(): any {
+        return new OrbitControls(this.camera.object, this.eventTarget)
+    }
+
     readonly controlsInteractionHandler = () => {
     }
-    constructor(camera: PsrThreePluginTypes.CameraContext<any>, eventTarget: HTMLElement) {
-        super(camera, eventTarget)
-        this.object = new OrbitControls(camera.object, eventTarget)
+
+    protected initialize(): void {
         this.object.addEventListener('start', () => {
             this.camera.addUpdateHandler(this.controlsInteractionHandler)
         })
@@ -46,6 +49,6 @@ export class OrbitControlsContextImpl extends AbstractCameraControlsContextImpl 
     dispose(): void {
         this.camera.removeUpdateHandler(this.updateControlsHandler)
         this.camera.removeUpdateHandler(this.controlsInteractionHandler)
-        this.object.dispose()
+        super.dispose()
     }
 }

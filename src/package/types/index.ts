@@ -225,11 +225,14 @@ export namespace PsrThreePluginTypes {
         readonly type: CameraControlsType
         readonly camera: CameraContext<any>
         readonly eventTarget: HTMLElement
+        readonly options?: any
+        readonly object: any & { dispose(): void }
 
         dispose(): void
     }
 
     export interface ArcballControlsContext extends CameraControlsContext {
+        readonly options?: SceneContext
         readonly object: ArcballControls
     }
 

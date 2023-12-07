@@ -1,16 +1,18 @@
-import {ArcballControls} from "three/examples/jsm/controls/ArcballControls";
 import {PsrThreePluginTypes} from "../../../types";
 import {AbstractCameraControlsContextImpl} from "./AbstractCameraControlsContext.ts";
+import {ArcballControls} from "three/examples/jsm/controls/ArcballControls";
 
 export class ArcballControlsContextImpl extends AbstractCameraControlsContextImpl implements PsrThreePluginTypes.ArcballControlsContext {
     readonly type: PsrThreePluginTypes.CameraControlsType = 'arcball'
-    object: ArcballControls
+
+    protected buildObject(): any {
+        return new ArcballControls(this.camera.object, this.eventTarget, this.options?.object)
+    }
+
     readonly controlsInteractionHandler = () => {
     }
 
-    constructor(camera: PsrThreePluginTypes.CameraContext<any>, eventTarget: HTMLElement, scene?: PsrThreePluginTypes.SceneContext) {
-        super(camera, eventTarget)
-        this.object = new ArcballControls(camera.object, eventTarget, scene?.object)
+    protected initialize() {
         this.object.addEventListener('start', () => {
             this.camera.addUpdateHandler(this.controlsInteractionHandler)
         })
@@ -21,6 +23,6 @@ export class ArcballControlsContextImpl extends AbstractCameraControlsContextImp
 
     dispose(): void {
         this.camera.removeUpdateHandler(this.controlsInteractionHandler)
-        this.object.dispose()
+        super.dispose()
     }
 }
