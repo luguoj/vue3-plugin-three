@@ -3,7 +3,6 @@ import {PsrThreeCanvas} from "../../package";
 import {createExampleContext} from "./createExampleContext.ts";
 import {ref} from "vue";
 import {createCube} from "./createCube.ts";
-import * as THREE from "three";
 
 const {context, renderer, scene, camera} = createExampleContext()
 
