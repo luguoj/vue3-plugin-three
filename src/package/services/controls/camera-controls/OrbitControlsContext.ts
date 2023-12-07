@@ -14,16 +14,8 @@ export class OrbitControlsContextImpl extends AbstractCameraControlsContextImpl 
         return new OrbitControls(this.camera.object, this.eventTarget)
     }
 
-    readonly controlsInteractionHandler = () => {
-    }
-
     protected initialize(): void {
-        this.object.addEventListener('start', () => {
-            this.camera.addUpdateHandler(this.controlsInteractionHandler)
-        })
-        this.object.addEventListener('end', () => {
-            this.camera.removeUpdateHandler(this.controlsInteractionHandler)
-        })
+        super.initialize()
         watch(this.autoRotate, autoRotate => {
             this.object.autoRotate = autoRotate
             this.updateControls()
@@ -48,7 +40,6 @@ export class OrbitControlsContextImpl extends AbstractCameraControlsContextImpl 
 
     dispose(): void {
         this.camera.removeUpdateHandler(this.updateControlsHandler)
-        this.camera.removeUpdateHandler(this.controlsInteractionHandler)
         super.dispose()
     }
 }

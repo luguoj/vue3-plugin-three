@@ -8,21 +8,4 @@ export class ArcballControlsContextImpl extends AbstractCameraControlsContextImp
     protected buildObject(): any {
         return new ArcballControls(this.camera.object, this.eventTarget, this.options?.object)
     }
-
-    readonly controlsInteractionHandler = () => {
-    }
-
-    protected initialize() {
-        this.object.addEventListener('start', () => {
-            this.camera.addUpdateHandler(this.controlsInteractionHandler)
-        })
-        this.object.addEventListener('end', () => {
-            this.camera.removeUpdateHandler(this.controlsInteractionHandler)
-        })
-    }
-
-    dispose(): void {
-        this.camera.removeUpdateHandler(this.controlsInteractionHandler)
-        super.dispose()
-    }
 }

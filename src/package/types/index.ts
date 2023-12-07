@@ -241,7 +241,8 @@ export namespace PsrThreePluginTypes {
         readonly camera: CameraContext<any>
         readonly eventTarget: HTMLElement
         readonly options?: any
-        readonly object: any & { dispose(): void }
+        readonly object: any
+        enabled: Ref<boolean>
 
         dispose(): void
     }
@@ -259,12 +260,10 @@ export namespace PsrThreePluginTypes {
 
     export interface FirstPersonControlsContext extends CameraControlsContext {
         readonly object: FirstPersonControls
-        enabled: Ref<boolean>
     }
 
     export interface FlyControlsContext extends CameraControlsContext {
         readonly object: FlyControls
-        enabled: Ref<boolean>
     }
 
     export interface MapControlsContext extends OrbitControlsContext {
@@ -277,6 +276,5 @@ export namespace PsrThreePluginTypes {
 
     export interface TrackballControlsContext extends CameraControlsContext {
         readonly object: TrackballControls
-        enabled: Ref<boolean>
     }
 }
