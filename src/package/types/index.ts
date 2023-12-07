@@ -6,6 +6,7 @@ import {ArcballControls} from "three/examples/jsm/controls/ArcballControls";
 import {FirstPersonControls} from "three/examples/jsm/controls/FirstPersonControls";
 import {FlyControls} from "three/examples/jsm/controls/FlyControls";
 import {MapControls} from "three/examples/jsm/controls/MapControls";
+import {PointerLockControls} from "three/examples/jsm/Addons";
 
 export namespace PsrThreePluginTypes {
     export type Size = {
@@ -155,7 +156,7 @@ export namespace PsrThreePluginTypes {
         useHelper(options?: { color?: THREE.ColorRepresentation }): Object3DContext<THREE.BoxHelper>
     }
 
-    export type CameraControlsType = 'arcball' | 'orbit' | 'trackball' | 'first-person' | 'fly' | 'map' | 'point-lock'
+    export type CameraControlsType = 'arcball' | 'orbit' | 'trackball' | 'first-person' | 'fly' | 'map' | 'pointer-lock'
 
     export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C> {
         useHelper(): Object3DContext<THREE.CameraHelper>
@@ -169,6 +170,8 @@ export namespace PsrThreePluginTypes {
         useFlyControls(eventTarget: HTMLElement): FlyControlsContext
 
         useMapControls(eventTarget: HTMLElement): MapControlsContext
+
+        usePointerLockControls(eventTarget: HTMLElement): PointerLockControlsContext
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -209,11 +212,17 @@ export namespace PsrThreePluginTypes {
     }
 
     export interface DirectionalLightContext extends AbstractLightContext<THREE.DirectionalLight> {
-        useHelper(options?: { size?: number, color?: THREE.ColorRepresentation }): Object3DContext<THREE.DirectionalLightHelper>
+        useHelper(options?: {
+            size?: number,
+            color?: THREE.ColorRepresentation
+        }): Object3DContext<THREE.DirectionalLightHelper>
     }
 
     export interface HemisphereLightContext extends AbstractLightContext<THREE.HemisphereLight> {
-        useHelper(options: { size: number, color?: THREE.ColorRepresentation }): Object3DContext<THREE.HemisphereLightHelper>
+        useHelper(options: {
+            size: number,
+            color?: THREE.ColorRepresentation
+        }): Object3DContext<THREE.HemisphereLightHelper>
     }
 
     export interface PointLightContext extends AbstractLightContext<THREE.PointLight> {
@@ -257,5 +266,9 @@ export namespace PsrThreePluginTypes {
 
     export interface MapControlsContext extends OrbitControlsContext {
         readonly object: MapControls
+    }
+
+    export interface PointerLockControlsContext extends CameraControlsContext {
+        readonly object: PointerLockControls
     }
 }
