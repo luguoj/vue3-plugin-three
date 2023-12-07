@@ -2,6 +2,7 @@ import {ComputedRef, Ref, ShallowReactive, ShallowRef} from "vue";
 import {EventHook} from "@vueuse/core/index";
 import * as THREE from "three"
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
+import {ArcballControls} from "three/examples/jsm/controls/ArcballControls";
 
 export namespace PsrThreePluginTypes {
     export type Size = {
@@ -156,6 +157,8 @@ export namespace PsrThreePluginTypes {
     export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C> {
         useHelper(): Object3DContext<THREE.CameraHelper>
 
+        useArcballControls(eventTarget: HTMLElement, scene?: SceneContext): ArcballControlsContext
+
         useOrbitControls(eventTarget: HTMLElement): OrbitControlsContext
     }
 
@@ -224,5 +227,9 @@ export namespace PsrThreePluginTypes {
         readonly object: OrbitControls
         autoRotate: Ref<boolean>
         enableDamping: Ref<boolean>
+    }
+
+    export interface ArcballControlsContext extends CameraControlsContext {
+        readonly object: ArcballControls
     }
 }
