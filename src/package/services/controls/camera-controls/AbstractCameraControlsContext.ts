@@ -14,7 +14,7 @@ export abstract class AbstractCameraControlsContextImpl implements PsrThreePlugi
         this.eventTarget = eventTarget
         this.options = options
         this.object = this.buildObject()
-        this.initialize()
+        setTimeout(() => this.initialize())
     }
 
     dispose(): void {
