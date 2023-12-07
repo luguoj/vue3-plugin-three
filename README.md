@@ -21,3 +21,4 @@
 17. [视图偏移-跨页签分屏](src%2Fexample%2Fcomponents%2FExample17.vue)
 18. [轨道摄像机控制器](src%2Fexample%2Fcomponents%2FExample18.vue)
 19. [弧线球摄像机控制器](src%2Fexample%2Fcomponents%2FExample19.vue)
+20. [第一人称摄像机控制器](src%2Fexample%2Fcomponents%2FExample20.vue)
