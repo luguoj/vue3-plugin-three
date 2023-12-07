@@ -5,6 +5,7 @@ import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 import {ArcballControls} from "three/examples/jsm/controls/ArcballControls";
 import {FirstPersonControls} from "three/examples/jsm/controls/FirstPersonControls";
 import {FlyControls} from "three/examples/jsm/controls/FlyControls";
+import {MapControls} from "three/examples/jsm/controls/MapControls";
 
 export namespace PsrThreePluginTypes {
     export type Size = {
@@ -166,6 +167,8 @@ export namespace PsrThreePluginTypes {
         useFirstPersonControls(eventTarget: HTMLElement): FirstPersonControlsContext
 
         useFlyControls(eventTarget: HTMLElement): FlyControlsContext
+
+        useMapControls(eventTarget: HTMLElement): MapControlsContext
     }
 
     export interface PerspectiveCameraContext extends CameraContext<THREE.PerspectiveCamera> {
@@ -250,5 +253,9 @@ export namespace PsrThreePluginTypes {
     export interface FlyControlsContext extends CameraControlsContext {
         readonly object: FlyControls
         enabled: Ref<boolean>
+    }
+
+    export interface MapControlsContext extends OrbitControlsContext {
+        readonly object: MapControls
     }
 }
