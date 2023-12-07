@@ -2,9 +2,9 @@
 import {watch} from "vue";
 import * as THREE from "three";
 import {PsrThreeCanvas} from "../../package";
-import {FirstPersonControls} from 'three/addons';
 import {createExampleContext} from "./createExampleContext.ts";
 import {createCube} from "./createCube.ts";
+import {FirstPersonControls} from "three/examples/jsm/controls/FirstPersonControls";
 
 
 const {context, renderer, scene, camera} = createExampleContext()
