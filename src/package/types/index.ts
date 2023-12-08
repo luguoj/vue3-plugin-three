@@ -38,6 +38,7 @@ export namespace PsrThreePluginTypes {
             beginUpdate: EventHook<void>
             endUpdate: EventHook<void>
         }
+        readonly objects: ShallowReactive<Record<string, PsrThreePluginTypes.Object3DContext<any>>>
 
         useRenderer(name: string, params?: THREE.WebGLRendererParameters): RendererContext;
 

@@ -1,4 +1,4 @@
-import {ref, Ref, watch} from "vue";
+import {ref, Ref, shallowReactive, ShallowReactive, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 import {RendererContextImpl} from "./RendererContext.ts";
@@ -25,7 +25,7 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     private readonly clock: THREE.Clock = new THREE.Clock()
 
     private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
-    private readonly objects: Record<string, PsrThreePluginTypes.Object3DContext<any>> = {}
+    readonly objects: ShallowReactive<Record<string, PsrThreePluginTypes.Object3DContext<any>>> = shallowReactive({})
 
     // 动画帧请求ID
     private animationId: number | undefined = undefined
