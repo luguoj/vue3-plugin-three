@@ -11,7 +11,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
     readonly name: string
     readonly scene: PsrThreePluginTypes.SceneContext
     readonly camera: ShallowRef<PsrThreePluginTypes.CameraContext<any> | undefined> = shallowRef<PsrThreePluginTypes.CameraContext<any>>()
-    readonly viewport: Ref<PsrThreePluginTypes.Viewport | undefined> = ref<PsrThreePluginTypes.Viewport>()
+    readonly viewport: Ref<PsrThreePluginTypes.Viewport> = ref<PsrThreePluginTypes.Viewport>({width: 1, height: 1})
     // 运行标识
     readonly running: Ref<boolean> = ref(true)
     readonly viewportRect: ComputedRef<THREE.Vector4> = computed<THREE.Vector4>(() =>
@@ -22,7 +22,7 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         this.renderer = renderer
         this.name = name
         this.scene = scene
-        this.viewport.value = viewport
+        this.viewport.value = viewport || {width: 1, height: 1}
         watch(this.camera, (camera, cameraOld) => {
             if (cameraOld instanceof OrthographicCameraContextImpl) {
                 cameraOld.adaptingSizing()

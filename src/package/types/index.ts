@@ -95,7 +95,7 @@ export namespace PsrThreePluginTypes {
         // 激活的摄像机
         readonly camera: ShallowRef<CameraContext<any> | undefined>
         // 视口
-        readonly viewport: Ref<Viewport | undefined>
+        readonly viewport: Ref<Viewport>
         readonly viewportRect: ComputedRef<THREE.Vector4>
         // 运行标识
         readonly running: Ref<boolean>
