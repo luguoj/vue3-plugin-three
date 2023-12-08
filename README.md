@@ -26,3 +26,4 @@
 22. [地图摄像机控制器](src%2Fexample%2Fcomponents%2FExample22.vue)
 23. [锁定指针摄像机控制器](src%2Fexample%2Fcomponents%2FExample23.vue)
 24. [轨迹球摄像机控制器](src%2Fexample%2Fcomponents%2FExample24.vue)
+25. [变换控制器（未封装）](src%2Fexample%2Fcomponents%2FExample25.vue)
