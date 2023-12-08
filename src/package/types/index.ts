@@ -104,18 +104,25 @@ export namespace PsrThreePluginTypes {
         getObjectCssPosition(objectId: string): ObjectCssPosition | undefined
     }
 
-    export type Object3DType =
-        'Object3D'
-        | 'Scene'
-        | 'Camera'
+    export type CameraType =
+        'Camera'
         | 'PerspectiveCamera'
         | 'OrthographicCamera'
         | 'ArrayCamera'
-        | 'Light'
+    export type LightType =
+        'Light'
         | 'DirectionalLight'
         | 'HemisphereLight'
         | 'PointLight'
         | 'SpotLight'
+    export type Object3DType =
+        'Object3D'
+        | 'Scene'
+        | LightType
+        | CameraType
+    export const CameraTypes: String[] = ['Camera', 'PerspectiveCamera', 'OrthographicCamera', 'ArrayCamera']
+    export const LightTypes: String[] = ['Light', 'DirectionalLight', 'HemisphereLight', 'PointLight', 'SpotLight']
+    export const Object3DTypes: String[] = ['Object3D', 'Scene', ...LightTypes, ...CameraTypes]
 
     export interface AbstractObject3DContext<O extends THREE.Object3D> {
         readonly context: ThreeContext
