@@ -17,20 +17,25 @@ import {createEventHook} from "@vueuse/core";
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     // 运行标识
     readonly running: Ref<boolean> = ref(false)
+    // 事件
     readonly events = {
+        // 开始更新
         beginUpdate: createEventHook<void>(),
+        // 结束更新
         endUpdate: createEventHook<void>()
     }
     // 时钟
     private readonly clock: THREE.Clock = new THREE.Clock()
-
+    // 渲染器集合
     private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
+    // 3D对象集合
     readonly objects: ShallowReactive<Record<string, PsrThreePluginTypes.Object3DContext<any>>> = shallowReactive({})
 
     // 动画帧请求ID
     private animationId: number | undefined = undefined
 
     constructor() {
+        // 监听运行状态，执行更新和绘制逻辑
         watch(() => {
             if (!this.running.value) {
                 return false
@@ -47,31 +52,45 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
                 // 在浏览器下一帧进行重绘
                 this.animationId = requestAnimationFrame(() => this.update());
             } else if (this.animationId) {
+                // 停止时取消下一次动画帧
                 cancelAnimationFrame(this.animationId)
+                // 在下一帧清空渲染器
                 this.animationId = requestAnimationFrame(() => this.clear())
             }
         })
     }
 
+    /**
+     * 更新逻辑
+     * @private
+     */
     private update() {
         if (this.running.value) {
+            // 触发开始更新事件
             this.events.beginUpdate.trigger().then()
             // 获取两次绘制的时间差
             const time = this.clock.elapsedTime
             const delta = this.clock.getDelta()
+            // 更新3D对象
             for (const objectsKey in this.objects) {
                 const object = this.objects[objectsKey]
                 object.update(delta, time)
             }
+            // 触发渲染器绘制
             for (const renderersKey in this.renderers) {
                 this.renderers[renderersKey].draw()
             }
+            // 触发结束更新事件
             this.events.endUpdate.trigger().then()
             // 在浏览器下一帧进行重绘
             this.animationId = requestAnimationFrame(() => this.update());
         }
     }
 
+    /**
+     * 清空渲染器
+     * @private
+     */
     private clear() {
         for (const renderersKey in this.renderers) {
             const renderer = this.renderers[renderersKey]
@@ -141,15 +160,19 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     }
 
     dispose() {
+        // 停止上下文运行
         this.running.value = false
+        // 停止所有渲染器运行
         for (const rendererId in this.renderers) {
             this.renderers[rendererId].running.value = false
         }
+        // 销毁所有对象
         for (const objectId in this.objects) {
             const object = this.objects[objectId]
             object.dispose()
             delete this.objects[objectId]
         }
+        // 销毁所有渲染器
         for (const rendererId in this.renderers) {
             const renderer = this.renderers[rendererId].object
             renderer.dispose()
