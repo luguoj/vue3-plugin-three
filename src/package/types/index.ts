@@ -39,6 +39,8 @@ export namespace PsrThreePluginTypes {
             endUpdate: EventHook<void>
         }
         readonly objects: ShallowReactive<Record<string, PsrThreePluginTypes.Object3DContext<any>>>
+        readonly geometries: ShallowReactive<Record<string, PsrThreePluginTypes.GeometryContext<any>>>
+        readonly materials: ShallowReactive<Record<string, PsrThreePluginTypes.MaterialContext<any>>>
 
         useRenderer(name: string, params?: THREE.WebGLRendererParameters): RendererContext;
 
@@ -63,6 +65,18 @@ export namespace PsrThreePluginTypes {
         usePointLight(name: string): PointLightContext
 
         useSpotLight(name: string): SpotLightContext
+
+        useGeometry<G extends THREE.BufferGeometry>(
+            name: string,
+            provider: () => Promise<G>,
+            fallback?: () => Promise<THREE.BufferGeometry>
+        ): GeometryContext<G>
+
+        useMaterial<M extends THREE.Material>(
+            name: string,
+            provider: () => Promise<M>,
+            fallback?: () => Promise<THREE.Material>
+        ): MaterialContext<M>
 
         dispose(): void;
     }
@@ -284,5 +298,21 @@ export namespace PsrThreePluginTypes {
 
     export interface TrackballControlsContext extends CameraControlsContext {
         readonly object: TrackballControls
+    }
+
+    export interface GeometryContext<G extends THREE.BufferGeometry> {
+        readonly context: PsrThreePluginTypes.ThreeContext
+        readonly object: ShallowRef<G | undefined>
+        readonly fallbackObject: ShallowRef<THREE.BufferGeometry | undefined>
+
+        dispose(): void
+    }
+
+    export interface MaterialContext<M extends THREE.Material> {
+        readonly context: PsrThreePluginTypes.ThreeContext
+        readonly object: ShallowRef<M | undefined>
+        readonly fallbackObject: ShallowRef<THREE.Material | undefined>
+
+        dispose(): void
     }
 }

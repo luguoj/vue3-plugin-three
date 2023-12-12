@@ -13,8 +13,13 @@ import {HemisphereLightContextImpl} from "./light/HemisphereLightContext.ts";
 import {PointLightContextImpl} from "./light/PointLightContext.ts";
 import {SpotLightContextImpl} from "./light/SpotLightContext.ts";
 import {createEventHook} from "@vueuse/core";
+import {GeometryContextImpl} from "./geometry/GeometryContext.ts";
+import {MaterialContextImpl} from "./material/MaterialContext.ts";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
+    static FALLBACK_GEOMETRY = new THREE.BoxGeometry(1, 1, 1);
+    static FALLBACK_MATERIAL = new THREE.MeshBasicMaterial({color: 0x00ff00});
+
     // 运行标识
     readonly running: Ref<boolean> = ref(false)
     // 事件
@@ -30,7 +35,10 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
     // 3D对象集合
     readonly objects: ShallowReactive<Record<string, PsrThreePluginTypes.Object3DContext<any>>> = shallowReactive({})
-
+    // 集合结构集合
+    readonly geometries: ShallowReactive<Record<string, PsrThreePluginTypes.GeometryContext<any>>> = shallowReactive({})
+    // 材质集合
+    readonly materials: ShallowReactive<Record<string, PsrThreePluginTypes.MaterialContext<any>>> = shallowReactive({})
     // 动画帧请求ID
     private animationId: number | undefined = undefined
 
@@ -159,6 +167,36 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         return this.getObject(name, 'SpotLight', () => new SpotLightContextImpl(this))
     }
 
+    useGeometry<G extends THREE.BufferGeometry>(
+        name: string,
+        provider: () => Promise<G>,
+        fallback?: () => Promise<THREE.BufferGeometry>
+    ): PsrThreePluginTypes.GeometryContext<G> {
+        if (!this.geometries[name]) {
+            return this.geometries[name] = new GeometryContextImpl(
+                this,
+                provider(),
+                fallback ? fallback() : Promise.resolve(ThreeContextImpl.FALLBACK_GEOMETRY)
+            )
+        }
+        return this.geometries[name]
+    }
+
+    useMaterial<M extends THREE.Material>(
+        name: string,
+        provider: () => Promise<M>,
+        fallback?: () => Promise<THREE.Material>
+    ): PsrThreePluginTypes.MaterialContext<M> {
+        if (!this.materials[name]) {
+            return this.materials[name] = new MaterialContextImpl(
+                this,
+                provider(),
+                fallback ? fallback() : Promise.resolve(ThreeContextImpl.FALLBACK_MATERIAL)
+            )
+        }
+        return this.materials[name]
+    }
+
     dispose() {
         // 停止上下文运行
         this.running.value = false
@@ -172,6 +210,20 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
             object.dispose()
             delete this.objects[objectId]
         }
+        // 销毁所有几何结构
+        for (const geometryId in this.geometries) {
+            const geometry = this.geometries[geometryId]
+            geometry.dispose()
+            delete this.geometries[geometryId]
+        }
+        ThreeContextImpl.FALLBACK_GEOMETRY.dispose()
+        // 销毁所有材质
+        for (const materialId in this.materials) {
+            const material = this.materials[materialId]
+            material.dispose()
+            delete this.materials[materialId]
+        }
+        ThreeContextImpl.FALLBACK_MATERIAL.dispose()
         // 销毁所有渲染器
         for (const rendererId in this.renderers) {
             const renderer = this.renderers[rendererId].object
