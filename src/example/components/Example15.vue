@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 import {onMounted} from "vue";
 import * as THREE from "three";
-import {PsrThreeAddons, PsrThreeCanvas} from "../../package";
+import {PsrThreeCanvas} from "../../package";
+import {PsrThreeAddons} from "../../../addons";
 import {GLTFLoader} from "three/examples/jsm/loaders/GLTFLoader";
 import cathedralUrl from "../asserts/cathedral-compressed.glb?url"
 import {createExampleContext} from "./createExampleContext.ts";
