@@ -15,6 +15,10 @@ import {SpotLightContextImpl} from "./light/SpotLightContext.ts";
 import {createEventHook} from "@vueuse/core";
 import {GeometryContextImpl} from "./geometry/GeometryContext.ts";
 import {MaterialContextImpl} from "./material/MaterialContext.ts";
+import {MeshContextImpl} from "./primitive/MeshContext.ts";
+import {LineContextImpl} from "./primitive/LineContext.ts";
+import {PointsContextImpl} from "./primitive/PointsContext.ts";
+import {SpriteContextImpl} from "./primitive/SpriteContext.ts";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
     static FALLBACK_GEOMETRY = new THREE.BoxGeometry(1, 1, 1);
@@ -195,6 +199,46 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
             )
         }
         return this.materials[name]
+    }
+
+    useLine<O extends THREE.Line = THREE.Line>(name: string, provider?: () => O): PsrThreePluginTypes.LineContext<O> {
+        return this.getObject(
+            name,
+            'Line',
+            provider
+                ? () => new LineContextImpl(this, provider())
+                : () => LineContextImpl.newInstance(this) as LineContextImpl<O>
+        )
+    }
+
+    useMesh<O extends THREE.Mesh = THREE.Mesh>(name: string, provider?: () => O): PsrThreePluginTypes.MeshContext<O> {
+        return this.getObject(
+            name,
+            'Mesh',
+            provider
+                ? () => new MeshContextImpl(this, provider())
+                : () => MeshContextImpl.newInstance(this) as MeshContextImpl<O>
+        )
+    }
+
+    usePoints<O extends THREE.Points = THREE.Points>(name: string, provider?: () => O): PsrThreePluginTypes.PointsContext<O> {
+        return this.getObject(
+            name,
+            'Points',
+            provider
+                ? () => new PointsContextImpl(this, provider())
+                : () => PointsContextImpl.newInstance(this) as PointsContextImpl<O>
+        )
+    }
+
+    useSprite<O extends THREE.Sprite = THREE.Sprite>(name: string, provider?: () => O): PsrThreePluginTypes.SpriteContext<O> {
+        return this.getObject(
+            name,
+            'Sprite',
+            provider
+                ? () => new SpriteContextImpl(this, provider())
+                : () => SpriteContextImpl.newInstance(this) as SpriteContextImpl<O>
+        )
     }
 
     dispose() {

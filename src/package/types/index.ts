@@ -78,6 +78,14 @@ export namespace PsrThreePluginTypes {
             fallback?: () => Promise<THREE.Material>
         ): MaterialContext<M>
 
+        useLine<O extends THREE.Line = THREE.Line>(name: string, provider?: () => O): LineContext<O>
+
+        useMesh<O extends THREE.Mesh = THREE.Mesh>(name: string, provider?: () => O): MeshContext<O>
+
+        usePoints<O extends THREE.Points = THREE.Points>(name: string, provider?: () => O): PointsContext<O>
+
+        useSprite<O extends THREE.Sprite = THREE.Sprite>(name: string, provider?: () => O): SpriteContext<O>
+
         dispose(): void;
     }
 
@@ -129,11 +137,17 @@ export namespace PsrThreePluginTypes {
         | 'HemisphereLight'
         | 'PointLight'
         | 'SpotLight'
+    export type PrimitiveType =
+        'Mesh'
+        | 'Line'
+        | 'Points'
+        | 'Sprite'
     export type Object3DType =
         'Object3D'
         | 'Scene'
         | LightType
         | CameraType
+        | PrimitiveType
     export const CameraTypes: String[] = ['Camera', 'PerspectiveCamera', 'OrthographicCamera', 'ArrayCamera']
     export const LightTypes: String[] = ['Light', 'DirectionalLight', 'HemisphereLight', 'PointLight', 'SpotLight']
     export const Object3DTypes: String[] = ['Object3D', 'Scene', ...LightTypes, ...CameraTypes]
@@ -314,5 +328,22 @@ export namespace PsrThreePluginTypes {
         readonly fallbackObject: ShallowRef<THREE.Material | undefined>
 
         dispose(): void
+    }
+
+    export interface AbstractPrimitiveContext<O extends THREE.Mesh | THREE.Line | THREE.Points | THREE.Sprite> extends Object3DContext<O> {
+        readonly geometry: ShallowRef<GeometryContext<THREE.BufferGeometry> | undefined>
+        readonly material: ShallowRef<MaterialContext<THREE.Material> | undefined>
+    }
+
+    export interface MeshContext<O extends THREE.Mesh> extends AbstractPrimitiveContext<O> {
+    }
+
+    export interface LineContext<O extends THREE.Line> extends AbstractPrimitiveContext<O> {
+    }
+
+    export interface PointsContext<O extends THREE.Points> extends AbstractPrimitiveContext<O> {
+    }
+
+    export interface SpriteContext<O extends THREE.Sprite> extends AbstractPrimitiveContext<O> {
     }
 }
