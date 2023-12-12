@@ -1,5 +1,6 @@
 import * as THREE from "three"
 import {PsrThreePluginTypes} from "../../package/types";
+import {watch} from "vue";
 
 export function createCube(
     context: PsrThreePluginTypes.ThreeContext,
@@ -12,22 +13,28 @@ export function createCube(
 ) {
     const {id, helper, ani} = options || {}
     // 为场景添加模型
-    const box = new THREE.BoxGeometry(1, 1, 1);
-    const cubeCtx = context.useObject(id + '-cube', () => new THREE.Mesh(
-        box,
-        new THREE.MeshBasicMaterial({color: 0x00ff00})
-    ));
+    const cubeGeo = context.useGeometry('box-geo', () => Promise.resolve(new THREE.BoxGeometry(1, 1, 1)))
+    const cubeMat = context.useMaterial('box-mat', () => Promise.resolve(new THREE.MeshBasicMaterial({color: 0x00ff00})))
+    const cubeCtx = context.useMesh(id + '-cube')
+    cubeCtx.geometry.value = cubeGeo
+    cubeCtx.material.value = cubeMat
     scene.addChildren(cubeCtx)
 
-    const edges = new THREE.EdgesGeometry(box)
-    const lineCtx = context.useObject(id + '-line', () => new THREE.LineSegments(
-        edges,
-        new THREE.LineBasicMaterial({
-            color: 0x4b96ff,
-            depthTest: false,
-            transparent: true
+    const edgesGeo = context.useGeometry(
+        'box-edges-geo',
+        () => new Promise<THREE.BufferGeometry>(resolve => {
+            const watchHandle = watch(cubeGeo.object, cubeGeoObject => {
+                if (cubeGeoObject) {
+                    resolve(new THREE.EdgesGeometry(cubeGeoObject))
+                    watchHandle()
+                }
+            }, {immediate: true})
         })
-    ))
+    )
+    const edgesMat = context.useMaterial('box-edges-mat', () => Promise.resolve(new THREE.LineBasicMaterial({color: 0x4b96ff})))
+    const lineCtx = context.useLine(id + '-edges', () => new THREE.LineSegments())
+    lineCtx.geometry.value = edgesGeo
+    lineCtx.material.value = edgesMat
     scene.addChildren(lineCtx)
 
     let helperCtx: PsrThreePluginTypes.Object3DContext<THREE.BoxHelper> | undefined
