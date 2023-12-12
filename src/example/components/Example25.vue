@@ -18,7 +18,7 @@ const controls = camera.useOrbitControls(renderer.object.domElement)
 controls.object.target = new THREE.Vector3(0, 0, 0)
 controls.autoRotate.value = true
 
-const {cubeCtx,lineCtx} = createCube(context, scene)
+const {cubeCtx} = createCube(context, scene)
 const stateEnabled = ref(true)
 
 const con2 = new TransformControls(camera.object,renderer.object.domElement)
