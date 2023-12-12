@@ -1,7 +1,8 @@
 <script lang="ts" setup>
 
 import * as THREE from "three";
-import {Font, FontLoader, TextGeometry} from "three/addons";
+import {Font, FontLoader} from "three/examples/jsm/loaders/FontLoader";
+import {TextGeometry} from "three/examples/jsm/geometries/TextGeometry";
 import {PsrThreeCanvas} from "../../package";
 import {onMounted, ref, watch} from "vue";
 import {createExampleContext} from "./createExampleContext.ts";
@@ -96,7 +97,7 @@ function createText() {
   if (!text) return;
 
   textGeo = new TextGeometry(text, {
-    font: font,
+    font: font!,
     size: size,
     height: height,
     curveSegments: curveSegments,
