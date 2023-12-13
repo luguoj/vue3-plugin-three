@@ -17,7 +17,7 @@ export class ArrayCameraViewportContextImpl extends PerspectiveCameraContextImpl
     }
 
     constructor(arrayCamera: ArrayCameraContextImpl, viewport?: PsrThreePluginTypes.Viewport) {
-        super(arrayCamera.context);
+        super(arrayCamera.scene);
         this.arrayCamera = arrayCamera
         this.viewport.value = viewport
         this.adaptingSizing(this.viewportRect)
@@ -35,8 +35,8 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
 
     private stopAdaptingSizing?: WatchStopHandle = undefined
 
-    constructor(context: PsrThreePluginTypes.ThreeContext) {
-        super(context, new THREE.ArrayCamera());
+    constructor(scene: PsrThreePluginTypes.SceneContext) {
+        super(scene, new THREE.ArrayCamera());
     }
 
     adaptingSizing(size?: Ref<THREE.Vector4 | undefined>) {
@@ -57,7 +57,7 @@ export class ArrayCameraContextImpl extends CameraContextImpl<THREE.ArrayCamera>
             throw new Error("conflict array camera viewport name:" + name)
         }
         const viewportCtx = new ArrayCameraViewportContextImpl(this, viewport)
-        viewportCtx.object.name = this.name + '-cam-' + name
+        viewportCtx.name = this.name + '-cam-' + name
         this.viewports.push(viewportCtx)
         this.addChildren(viewportCtx)
         this.object.cameras.push(viewportCtx.object)

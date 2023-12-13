@@ -5,8 +5,8 @@ import {AbstractLightContextImpl} from "./AbstractLightContext.ts";
 export class PointLightContextImpl extends AbstractLightContextImpl<THREE.PointLight> implements PsrThreePluginTypes.PointLightContext {
     readonly type: PsrThreePluginTypes.Object3DType = 'PointLight';
 
-    constructor(context: PsrThreePluginTypes.ThreeContext) {
-        super(context, new THREE.PointLight());
+    constructor(scene: PsrThreePluginTypes.SceneContext) {
+        super(scene, new THREE.PointLight());
     }
 
     protected buildHelper(options: {

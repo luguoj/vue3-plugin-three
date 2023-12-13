@@ -48,8 +48,8 @@ export class OrthographicCameraContextImpl extends CameraContextImpl<THREE.Ortho
         this.addUpdateHandler(this.updateProjectionHandler, {once: true})
     }
 
-    constructor(context: PsrThreePluginTypes.ThreeContext) {
-        super(context, new THREE.OrthographicCamera());
+    constructor(scene: PsrThreePluginTypes.SceneContext) {
+        super(scene, new THREE.OrthographicCamera());
         watch(this.zoom, zoom => {
             this.object.zoom = zoom
             this.addUpdateHandler(this.updateProjectionHandler, {once: true})

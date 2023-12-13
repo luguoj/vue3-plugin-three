@@ -38,33 +38,13 @@ export namespace PsrThreePluginTypes {
             beginUpdate: EventHook<void>
             endUpdate: EventHook<void>
         }
-        readonly objects: ShallowReactive<Record<string, PsrThreePluginTypes.Object3DContext<any>>>
+        readonly scenes: ShallowReactive<Record<string, PsrThreePluginTypes.SceneContext>>
         readonly geometries: ShallowReactive<Record<string, PsrThreePluginTypes.GeometryContext<any>>>
         readonly materials: ShallowReactive<Record<string, PsrThreePluginTypes.MaterialContext<any>>>
 
         useRenderer(name: string, params?: THREE.WebGLRendererParameters): RendererContext;
 
-        retrieveObject(name: string): PsrThreePluginTypes.Object3DContext<any>
-
-        useObject<O extends THREE.Object3D>(name: string, provider: () => O): Object3DContext<O>;
-
         useScene(name: string): SceneContext;
-
-        useCamera<C extends THREE.Camera>(name: string, provider: () => C): CameraContext<C>;
-
-        usePerspectiveCamera(name: string): PerspectiveCameraContext;
-
-        useOrthographicCamera(name: string): OrthographicCameraContext;
-
-        useArrayCamera(name: string): ArrayCameraContext;
-
-        useDirectionalLight(name: string): DirectionalLightContext
-
-        useHemisphereLight(name: string): HemisphereLightContext
-
-        usePointLight(name: string): PointLightContext
-
-        useSpotLight(name: string): SpotLightContext
 
         useGeometry<G extends THREE.BufferGeometry>(
             name: string,
@@ -77,14 +57,6 @@ export namespace PsrThreePluginTypes {
             provider: () => Promise<M>,
             fallback?: () => Promise<THREE.Material>
         ): MaterialContext<M>
-
-        useLine<O extends THREE.Line = THREE.Line>(name: string, provider?: () => O): LineContext<O>
-
-        useMesh<O extends THREE.Mesh = THREE.Mesh>(name: string, provider?: () => O): MeshContext<O>
-
-        usePoints<O extends THREE.Points = THREE.Points>(name: string, provider?: () => O): PointsContext<O>
-
-        useSprite<O extends THREE.Sprite = THREE.Sprite>(name: string, provider?: () => O): SpriteContext<O>
 
         dispose(): void;
     }
@@ -123,7 +95,7 @@ export namespace PsrThreePluginTypes {
         // 运行标识
         readonly running: Ref<boolean>
 
-        getObjectCssPosition(objectId: string): ObjectCssPosition | undefined
+        getObjectCssPosition(objectName: string): ObjectCssPosition | undefined
     }
 
     export type CameraType =
@@ -153,9 +125,9 @@ export namespace PsrThreePluginTypes {
     export const Object3DTypes: String[] = ['Object3D', 'Scene', ...LightTypes, ...CameraTypes]
 
     export interface AbstractObject3DContext<O extends THREE.Object3D> {
-        readonly context: ThreeContext
         readonly type: Object3DType
-        readonly name: string
+        name: string
+        readonly context: PsrThreePluginTypes.ThreeContext
         // 3D对象
         readonly object: O;
         parent?: AbstractObject3DContext<any>
@@ -169,10 +141,6 @@ export namespace PsrThreePluginTypes {
 
         removeChildren(...objectCtxArr: AbstractObject3DContext<any>[]): void
 
-        getChildren(): AbstractObject3DContext<any>[]
-
-        getObjectByName(name: string): AbstractObject3DContext<any> | undefined
-
         // 添加更新处理器
         addUpdateHandler(handler: (delta: number) => boolean | void, options?: { once?: boolean }): void
 
@@ -182,20 +150,24 @@ export namespace PsrThreePluginTypes {
         // 更新对象
         update(delta: number, time: number): void
 
-        // 获取辅助器对象
-        useHelper(options?: any): AbstractObject3DContext<any>
-
         // 释放
         dispose(): void
     }
 
-    export interface Object3DContext<O extends THREE.Object3D> extends AbstractObject3DContext<O> {
+    export interface AbstractSceneObject3DContext<O extends THREE.Object3D> extends AbstractObject3DContext<O> {
+        scene: SceneContext
+
+        // 获取辅助器对象
+        useHelper(options?: any): AbstractSceneObject3DContext<any>
+    }
+
+    export interface Object3DContext<O extends THREE.Object3D> extends AbstractSceneObject3DContext<O> {
         useHelper(options?: { color?: THREE.ColorRepresentation }): Object3DContext<THREE.BoxHelper>
     }
 
     export type CameraControlsType = 'arcball' | 'orbit' | 'trackball' | 'first-person' | 'fly' | 'map' | 'pointer-lock'
 
-    export interface CameraContext<C extends THREE.Camera> extends AbstractObject3DContext<C> {
+    export interface CameraContext<C extends THREE.Camera> extends AbstractSceneObject3DContext<C> {
         useHelper(): Object3DContext<THREE.CameraHelper>
 
         useArcballControls(eventTarget: HTMLElement, scene?: SceneContext): ArcballControlsContext
@@ -245,9 +217,36 @@ export namespace PsrThreePluginTypes {
 
 
     export interface SceneContext extends AbstractObject3DContext<THREE.Scene> {
+        objects: ShallowReactive<Record<string, AbstractSceneObject3DContext<any>>>
+
+        useObject<O extends THREE.Object3D>(name: string, provider: () => O): AbstractSceneObject3DContext<O>;
+
+        useCamera<C extends THREE.Camera>(name: string, provider: () => C): CameraContext<C>;
+
+        usePerspectiveCamera(name: string): PerspectiveCameraContext;
+
+        useOrthographicCamera(name: string): OrthographicCameraContext;
+
+        useArrayCamera(name: string): ArrayCameraContext;
+
+        useDirectionalLight(name: string): DirectionalLightContext
+
+        useHemisphereLight(name: string): HemisphereLightContext
+
+        usePointLight(name: string): PointLightContext
+
+        useSpotLight(name: string): SpotLightContext
+
+        useLine<O extends THREE.Line = THREE.Line>(name: string, provider?: () => O): LineContext<O>
+
+        useMesh<O extends THREE.Mesh = THREE.Mesh>(name: string, provider?: () => O): MeshContext<O>
+
+        usePoints<O extends THREE.Points = THREE.Points>(name: string, provider?: () => O): PointsContext<O>
+
+        useSprite<O extends THREE.Sprite = THREE.Sprite>(name: string, provider?: () => O): SpriteContext<O>
     }
 
-    export interface AbstractLightContext<L extends THREE.Light> extends AbstractObject3DContext<L> {
+    export interface AbstractLightContext<L extends THREE.Light> extends AbstractSceneObject3DContext<L> {
     }
 
     export interface DirectionalLightContext extends AbstractLightContext<THREE.DirectionalLight> {
@@ -314,20 +313,19 @@ export namespace PsrThreePluginTypes {
         readonly object: TrackballControls
     }
 
-    export interface GeometryContext<G extends THREE.BufferGeometry> {
+    export type Resource = THREE.BufferGeometry | THREE.Material
+    export interface ResourceContext<R extends Resource, FR extends Resource> {
         readonly context: PsrThreePluginTypes.ThreeContext
-        readonly object: ShallowRef<G | undefined>
-        readonly fallbackObject: ShallowRef<THREE.BufferGeometry | undefined>
+        readonly object: ShallowRef<R | undefined>
+        readonly fallbackObject: ShallowRef<FR | undefined>
 
         dispose(): void
     }
 
-    export interface MaterialContext<M extends THREE.Material> {
-        readonly context: PsrThreePluginTypes.ThreeContext
-        readonly object: ShallowRef<M | undefined>
-        readonly fallbackObject: ShallowRef<THREE.Material | undefined>
+    export interface GeometryContext<G extends THREE.BufferGeometry> extends ResourceContext<G, THREE.BufferGeometry> {
+    }
 
-        dispose(): void
+    export interface MaterialContext<M extends THREE.Material> extends ResourceContext<M, THREE.Material> {
     }
 
     export interface AbstractPrimitiveContext<O extends THREE.Mesh | THREE.Line | THREE.Points | THREE.Sprite> extends Object3DContext<O> {

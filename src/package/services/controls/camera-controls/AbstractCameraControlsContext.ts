@@ -10,7 +10,7 @@ export abstract class AbstractCameraControlsContextImpl implements PsrThreePlugi
 
     readonly object: any
     // 激活标识
-    readonly enabled: Ref<boolean> = ref(true)
+    readonly enabled: Ref<boolean> = ref(false)
 
     constructor(camera: PsrThreePluginTypes.CameraContext<any>, eventTarget: HTMLElement, options?: any) {
         this.camera = camera

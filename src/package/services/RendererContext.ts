@@ -44,9 +44,9 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         })
     }
 
-    getObjectCssPosition(objectId: string): PsrThreePluginTypes.ObjectCssPosition | undefined {
+    getObjectCssPosition(objectName: string): PsrThreePluginTypes.ObjectCssPosition | undefined {
         const camera = this.camera.value?.object
-        const object = this.scene.getObjectByName(objectId)?.object
+        const object = this.scene.objects[objectName]?.object
         if (camera && object) {
             // 获取对象位置
             const tempV = new THREE.Vector3()

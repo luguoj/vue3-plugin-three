@@ -37,8 +37,8 @@ export class PerspectiveCameraContextImpl extends CameraContextImpl<THREE.Perspe
         this.addUpdateHandler(this.updateProjectionHandler, {once: true})
     }
 
-    constructor(context: PsrThreePluginTypes.ThreeContext) {
-        super(context, new THREE.PerspectiveCamera());
+    constructor(scene: PsrThreePluginTypes.SceneContext) {
+        super(scene, new THREE.PerspectiveCamera());
         watch(this.zoom, zoom => {
             this.object.zoom = zoom
             this.addUpdateHandler(this.updateProjectionHandler, {once: true})

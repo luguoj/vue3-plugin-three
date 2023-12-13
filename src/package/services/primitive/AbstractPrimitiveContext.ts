@@ -3,7 +3,7 @@ import * as THREE from "three";
 import {PsrThreePluginTypes} from "../../types";
 import {Object3DContextImpl} from "../Object3DContext.ts";
 
-export class AbstractPrimitiveContextImpl<O extends THREE.Mesh | THREE.Line | THREE.Points | THREE.Sprite> extends Object3DContextImpl<O> implements PsrThreePluginTypes.AbstractPrimitiveContext<O> {
+export abstract class AbstractPrimitiveContextImpl<O extends THREE.Mesh | THREE.Line | THREE.Points | THREE.Sprite> extends Object3DContextImpl<O> implements PsrThreePluginTypes.AbstractPrimitiveContext<O> {
     private static readonly GEOMETRY_DEFAULT = new THREE.BufferGeometry();
     private static readonly MATERIAL_DEFAULT = new THREE.MeshBasicMaterial();
     readonly type: PsrThreePluginTypes.Object3DType = 'Mesh';
@@ -11,10 +11,10 @@ export class AbstractPrimitiveContextImpl<O extends THREE.Mesh | THREE.Line | TH
     readonly material: ShallowRef<PsrThreePluginTypes.MaterialContext<THREE.Material> | undefined> = shallowRef<PsrThreePluginTypes.MaterialContext<THREE.Material>>();
 
     constructor(
-        context: PsrThreePluginTypes.ThreeContext,
+        scene: PsrThreePluginTypes.SceneContext,
         object: O,
     ) {
-        super(context, object);
+        super(scene, object);
         this.geometry = shallowRef<PsrThreePluginTypes.GeometryContext<THREE.BufferGeometry>>();
         watchEffect(() => {
             const geometry = this.geometry.value?.object.value || this.geometry.value?.fallbackObject.value

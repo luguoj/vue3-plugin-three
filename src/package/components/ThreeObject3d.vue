@@ -1,17 +1,22 @@
 <script setup lang="ts">
-import {inject} from "vue";
+import {inject, provide} from "vue";
 import {PsrThreePluginTypes} from "../types";
-import {INJECTION_KEY_THREE_CONTEXT, INJECTION_KEY_THREE_SCENE} from "./index.ts";
+import {INJECTION_KEY_THREE_PARENT, INJECTION_KEY_THREE_SCENE} from "./index.ts";
 
 const props = defineProps<{
   objectName: string
   objectProvider: () => THREE.Object3D
 }>()
 
-const threeContext = inject<PsrThreePluginTypes.ThreeContext>(INJECTION_KEY_THREE_CONTEXT)!
-const object3D = threeContext.useObject(props.objectName, props.objectProvider)
 const scene = inject<PsrThreePluginTypes.SceneContext>(INJECTION_KEY_THREE_SCENE)!
-scene.addChildren(object3D)
+const object3D = scene.useObject(props.objectName, props.objectProvider)
+const parent = inject<PsrThreePluginTypes.AbstractSceneObject3DContext<any>>(INJECTION_KEY_THREE_PARENT)!
+if (parent) {
+  parent.addChildren(object3D)
+} else {
+  scene.addChildren(object3D)
+}
+provide(INJECTION_KEY_THREE_PARENT, object3D)
 </script>
 
 <template>

@@ -18,7 +18,7 @@ const viewport = renderer.createViewport(props.objectName, threeContext.useScene
 // 监听camera
 watchEffect(() => {
   if (props.cameraName) {
-    const camera = threeContext.objects[props.cameraName]
+    const camera = viewport.scene.objects[props.cameraName]
     if (camera && PsrThreePluginTypes.CameraTypes.includes(camera.type)) {
       viewport.camera.value = camera as any
       return

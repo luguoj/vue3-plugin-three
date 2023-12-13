@@ -5,8 +5,8 @@ import {AbstractLightContextImpl} from "./AbstractLightContext.ts";
 export class HemisphereLightContextImpl extends AbstractLightContextImpl<THREE.HemisphereLight> implements PsrThreePluginTypes.HemisphereLightContext {
     readonly type: PsrThreePluginTypes.Object3DType = 'HemisphereLight';
 
-    constructor(context: PsrThreePluginTypes.ThreeContext) {
-        super(context, new THREE.HemisphereLight());
+    constructor(scene: PsrThreePluginTypes.SceneContext) {
+        super(scene, new THREE.HemisphereLight());
     }
 
     protected buildHelper(options: {

@@ -2,28 +2,14 @@ import {ref, Ref, shallowReactive, ShallowReactive, watch} from "vue";
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 import {RendererContextImpl} from "./RendererContext.ts";
-import {CameraContextImpl} from "./camera/CameraContext.ts";
-import {PerspectiveCameraContextImpl} from "./camera/PerspectiveCameraContext.ts";
-import {OrthographicCameraContextImpl} from "./camera/OrthographicCameraContext.ts";
-import {ArrayCameraContextImpl} from "./camera/ArrayCameraContext.ts";
 import {SceneContextImpl} from "./SceneContext.ts";
-import {Object3DContextImpl} from "./Object3DContext.ts";
-import {DirectionalLightContextImpl} from "./light/DirectionalLightContext.ts";
-import {HemisphereLightContextImpl} from "./light/HemisphereLightContext.ts";
-import {PointLightContextImpl} from "./light/PointLightContext.ts";
-import {SpotLightContextImpl} from "./light/SpotLightContext.ts";
 import {createEventHook} from "@vueuse/core";
-import {GeometryContextImpl} from "./geometry/GeometryContext.ts";
-import {MaterialContextImpl} from "./material/MaterialContext.ts";
-import {MeshContextImpl} from "./primitive/MeshContext.ts";
-import {LineContextImpl} from "./primitive/LineContext.ts";
-import {PointsContextImpl} from "./primitive/PointsContext.ts";
-import {SpriteContextImpl} from "./primitive/SpriteContext.ts";
+import {GeometryContextImpl} from "./resource/geometry/GeometryContext.ts";
+import {MaterialContextImpl} from "./resource/material/MaterialContext.ts";
 
 export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
-    static FALLBACK_GEOMETRY = new THREE.BoxGeometry(1, 1, 1);
-    static FALLBACK_MATERIAL = new THREE.MeshBasicMaterial({color: 0x00ff00});
-
+    private static readonly FALLBACK_GEOMETRY_DEFAULT = new THREE.BoxGeometry(1, 1, 1);
+    private static readonly FALLBACK_MATERIAL_DEFAULT = new THREE.MeshBasicMaterial({color: 0x00ff00});
     // 运行标识
     readonly running: Ref<boolean> = ref(false)
     // 事件
@@ -33,18 +19,18 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         // 结束更新
         endUpdate: createEventHook<void>()
     }
-    // 时钟
-    private readonly clock: THREE.Clock = new THREE.Clock()
-    // 渲染器集合
-    private readonly renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
-    // 3D对象集合
-    readonly objects: ShallowReactive<Record<string, PsrThreePluginTypes.Object3DContext<any>>> = shallowReactive({})
+    // 场景集合
+    readonly scenes: ShallowReactive<Record<string, PsrThreePluginTypes.SceneContext>> = shallowReactive({})
     // 集合结构集合
     readonly geometries: ShallowReactive<Record<string, PsrThreePluginTypes.GeometryContext<any>>> = shallowReactive({})
     // 材质集合
     readonly materials: ShallowReactive<Record<string, PsrThreePluginTypes.MaterialContext<any>>> = shallowReactive({})
+    // 时钟
+    private readonly _clock: THREE.Clock = new THREE.Clock()
+    // 渲染器集合
+    private readonly _renderers: Record<string, PsrThreePluginTypes.RendererContext> = {}
     // 动画帧请求ID
-    private animationId: number | undefined = undefined
+    private _frameId: number | undefined = undefined
 
     constructor() {
         // 监听运行状态，执行更新和绘制逻辑
@@ -53,21 +39,21 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
                 return false
             }
             let running = false
-            for (const renderersKey in this.renderers) {
-                running = running || this.renderers[renderersKey].running.value
+            for (const renderersKey in this._renderers) {
+                running = running || this._renderers[renderersKey].running.value
             }
             return running
         }, running => {
             if (running) {
                 // 重置时钟
-                this.clock.getDelta()
+                this._clock.getDelta()
                 // 在浏览器下一帧进行重绘
-                this.animationId = requestAnimationFrame(() => this.update());
-            } else if (this.animationId) {
+                this._frameId = requestAnimationFrame(() => this.update());
+            } else if (this._frameId) {
                 // 停止时取消下一次动画帧
-                cancelAnimationFrame(this.animationId)
+                cancelAnimationFrame(this._frameId)
                 // 在下一帧清空渲染器
-                this.animationId = requestAnimationFrame(() => this.clear())
+                this._frameId = requestAnimationFrame(() => this.clear())
             }
         })
     }
@@ -81,21 +67,21 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
             // 触发开始更新事件
             this.events.beginUpdate.trigger().then()
             // 获取两次绘制的时间差
-            const time = this.clock.elapsedTime
-            const delta = this.clock.getDelta()
+            const time = this._clock.elapsedTime
+            const delta = this._clock.getDelta()
             // 更新3D对象
-            for (const objectsKey in this.objects) {
-                const object = this.objects[objectsKey]
-                object.update(delta, time)
+            for (const scenesKey in this.scenes) {
+                const sceneContext = this.scenes[scenesKey]
+                sceneContext.update(delta, time)
             }
             // 触发渲染器绘制
-            for (const renderersKey in this.renderers) {
-                this.renderers[renderersKey].draw()
+            for (const renderersKey in this._renderers) {
+                this._renderers[renderersKey].draw()
             }
             // 触发结束更新事件
             this.events.endUpdate.trigger().then()
             // 在浏览器下一帧进行重绘
-            this.animationId = requestAnimationFrame(() => this.update());
+            this._frameId = requestAnimationFrame(() => this.update());
         }
     }
 
@@ -104,71 +90,25 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
      * @private
      */
     private clear() {
-        for (const renderersKey in this.renderers) {
-            const renderer = this.renderers[renderersKey]
+        for (const renderersKey in this._renderers) {
+            const renderer = this._renderers[renderersKey]
             renderer.clear()
         }
     }
 
     useRenderer(name: string, params?: THREE.WebGLRendererParameters): PsrThreePluginTypes.RendererContext {
-        if (!this.renderers[name]) {
-            this.renderers[name] = new RendererContextImpl(this, params)
+        if (!this._renderers[name]) {
+            this._renderers[name] = new RendererContextImpl(this, params)
         }
-        return this.renderers[name]
+        return this._renderers[name]
     }
 
-    retrieveObject(name: string): PsrThreePluginTypes.Object3DContext<any> {
-        return this.objects[name]
-    }
-
-    private getObject<O extends PsrThreePluginTypes.AbstractObject3DContext<any>>(name: string, type: PsrThreePluginTypes.Object3DType, provider: () => O): O {
-        if (!this.objects[name]) {
-            this.objects[name] = provider()
-        } else if (this.objects[name].type !== type) {
-            throw new Error("type mismatch")
-        }
-        this.objects[name].object.name = name
-        return this.objects[name] as O
-    }
-
-    useObject<O extends THREE.Object3D>(name: string, provider: () => O): PsrThreePluginTypes.Object3DContext<O> {
-        return this.getObject(name, 'Object3D', () => new Object3DContextImpl(this, provider()))
-    }
 
     useScene(name: string): PsrThreePluginTypes.SceneContext {
-        return this.getObject(name, 'Scene', () => new SceneContextImpl(this))
-    }
-
-    useCamera<C extends THREE.Camera>(name: string, provider: () => C): PsrThreePluginTypes.CameraContext<C> {
-        return this.getObject(name, 'Camera', () => new CameraContextImpl<C>(this, provider()))
-    }
-
-    usePerspectiveCamera(name: string): PsrThreePluginTypes.PerspectiveCameraContext {
-        return this.getObject(name, 'PerspectiveCamera', () => new PerspectiveCameraContextImpl(this))
-    }
-
-    useOrthographicCamera(name: string): PsrThreePluginTypes.OrthographicCameraContext {
-        return this.getObject(name, 'OrthographicCamera', () => new OrthographicCameraContextImpl(this))
-    }
-
-    useArrayCamera(name: string): PsrThreePluginTypes.ArrayCameraContext {
-        return this.getObject(name, 'ArrayCamera', () => new ArrayCameraContextImpl(this))
-    }
-
-    useDirectionalLight(name: string): PsrThreePluginTypes.DirectionalLightContext {
-        return this.getObject(name, 'DirectionalLight', () => new DirectionalLightContextImpl(this))
-    }
-
-    useHemisphereLight(name: string): PsrThreePluginTypes.HemisphereLightContext {
-        return this.getObject(name, 'HemisphereLight', () => new HemisphereLightContextImpl(this))
-    }
-
-    usePointLight(name: string): PsrThreePluginTypes.PointLightContext {
-        return this.getObject(name, 'PointLight', () => new PointLightContextImpl(this))
-    }
-
-    useSpotLight(name: string): PsrThreePluginTypes.SpotLightContext {
-        return this.getObject(name, 'SpotLight', () => new SpotLightContextImpl(this))
+        if(!this.scenes[name]){
+            this.scenes[name] = new SceneContextImpl(this)
+        }
+        return this.scenes[name]
     }
 
     useGeometry<G extends THREE.BufferGeometry>(
@@ -177,10 +117,10 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         fallback?: () => Promise<THREE.BufferGeometry>
     ): PsrThreePluginTypes.GeometryContext<G> {
         if (!this.geometries[name]) {
-            return this.geometries[name] = new GeometryContextImpl(
+            this.geometries[name] = new GeometryContextImpl(
                 this,
                 provider(),
-                fallback ? fallback() : Promise.resolve(ThreeContextImpl.FALLBACK_GEOMETRY)
+                fallback ? fallback() : Promise.resolve(ThreeContextImpl.FALLBACK_GEOMETRY_DEFAULT)
             )
         }
         return this.geometries[name]
@@ -192,67 +132,27 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
         fallback?: () => Promise<THREE.Material>
     ): PsrThreePluginTypes.MaterialContext<M> {
         if (!this.materials[name]) {
-            return this.materials[name] = new MaterialContextImpl(
+            this.materials[name] = new MaterialContextImpl(
                 this,
                 provider(),
-                fallback ? fallback() : Promise.resolve(ThreeContextImpl.FALLBACK_MATERIAL)
+                fallback ? fallback() : Promise.resolve(ThreeContextImpl.FALLBACK_MATERIAL_DEFAULT)
             )
         }
         return this.materials[name]
-    }
-
-    useLine<O extends THREE.Line = THREE.Line>(name: string, provider?: () => O): PsrThreePluginTypes.LineContext<O> {
-        return this.getObject(
-            name,
-            'Line',
-            provider
-                ? () => new LineContextImpl(this, provider())
-                : () => LineContextImpl.newInstance(this) as LineContextImpl<O>
-        )
-    }
-
-    useMesh<O extends THREE.Mesh = THREE.Mesh>(name: string, provider?: () => O): PsrThreePluginTypes.MeshContext<O> {
-        return this.getObject(
-            name,
-            'Mesh',
-            provider
-                ? () => new MeshContextImpl(this, provider())
-                : () => MeshContextImpl.newInstance(this) as MeshContextImpl<O>
-        )
-    }
-
-    usePoints<O extends THREE.Points = THREE.Points>(name: string, provider?: () => O): PsrThreePluginTypes.PointsContext<O> {
-        return this.getObject(
-            name,
-            'Points',
-            provider
-                ? () => new PointsContextImpl(this, provider())
-                : () => PointsContextImpl.newInstance(this) as PointsContextImpl<O>
-        )
-    }
-
-    useSprite<O extends THREE.Sprite = THREE.Sprite>(name: string, provider?: () => O): PsrThreePluginTypes.SpriteContext<O> {
-        return this.getObject(
-            name,
-            'Sprite',
-            provider
-                ? () => new SpriteContextImpl(this, provider())
-                : () => SpriteContextImpl.newInstance(this) as SpriteContextImpl<O>
-        )
     }
 
     dispose() {
         // 停止上下文运行
         this.running.value = false
         // 停止所有渲染器运行
-        for (const rendererId in this.renderers) {
-            this.renderers[rendererId].running.value = false
+        for (const rendererId in this._renderers) {
+            this._renderers[rendererId].running.value = false
         }
-        // 销毁所有对象
-        for (const objectId in this.objects) {
-            const object = this.objects[objectId]
-            object.dispose()
-            delete this.objects[objectId]
+        // 销毁所有场景
+        for (const scenesKey in this.scenes) {
+            const scene = this.scenes[scenesKey]
+            scene.dispose()
+            delete this.scenes[scenesKey]
         }
         // 销毁所有几何结构
         for (const geometryId in this.geometries) {
@@ -260,20 +160,20 @@ export class ThreeContextImpl implements PsrThreePluginTypes.ThreeContext {
             geometry.dispose()
             delete this.geometries[geometryId]
         }
-        ThreeContextImpl.FALLBACK_GEOMETRY.dispose()
+        ThreeContextImpl.FALLBACK_GEOMETRY_DEFAULT.dispose()
         // 销毁所有材质
         for (const materialId in this.materials) {
             const material = this.materials[materialId]
             material.dispose()
             delete this.materials[materialId]
         }
-        ThreeContextImpl.FALLBACK_MATERIAL.dispose()
+        ThreeContextImpl.FALLBACK_MATERIAL_DEFAULT.dispose()
         // 销毁所有渲染器
-        for (const rendererId in this.renderers) {
-            const renderer = this.renderers[rendererId].object
+        for (const rendererId in this._renderers) {
+            const renderer = this._renderers[rendererId].object
             renderer.dispose()
             renderer.forceContextLoss()
-            delete this.renderers[rendererId]
+            delete this._renderers[rendererId]
         }
     }
 }

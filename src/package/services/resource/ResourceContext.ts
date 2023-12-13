@@ -1,16 +1,15 @@
-import * as THREE from "three";
 import {PsrThreePluginTypes} from "../../types";
 import {shallowRef, ShallowRef} from "vue";
 
-export class MaterialContextImpl<M extends THREE.Material> implements PsrThreePluginTypes.MaterialContext<M> {
+export class ResourceContextImpl<R extends PsrThreePluginTypes.Resource, FR extends PsrThreePluginTypes.Resource> implements PsrThreePluginTypes.ResourceContext<R, FR> {
     readonly context: PsrThreePluginTypes.ThreeContext
-    readonly object: ShallowRef<M | undefined> = shallowRef<M>()
-    readonly fallbackObject: ShallowRef<THREE.Material | undefined> = shallowRef<THREE.Material>()
+    readonly object: ShallowRef<R | undefined> = shallowRef<R>()
+    readonly fallbackObject: ShallowRef<FR | undefined> = shallowRef<FR>()
 
-    private _objectPromise: Promise<M>
-    private _fallbackObjectPromise?: Promise<THREE.Material>
+    private _objectPromise: Promise<R>
+    private _fallbackObjectPromise?: Promise<FR>
 
-    constructor(context: PsrThreePluginTypes.ThreeContext, objectPromise: Promise<M>, fallbackObjectPromise?: Promise<THREE.Material>) {
+    constructor(context: PsrThreePluginTypes.ThreeContext, objectPromise: Promise<R>, fallbackObjectPromise?: Promise<FR>) {
         this.context = context
         this._objectPromise = objectPromise
         this._fallbackObjectPromise = fallbackObjectPromise
