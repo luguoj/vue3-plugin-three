@@ -5,7 +5,7 @@ import {ViewportUtils} from "../utils/ViewportUtils.ts";
 import {OrthographicCameraContextImpl} from "./camera/OrthographicCameraContext.ts";
 import {PerspectiveCameraContextImpl} from "./camera/PerspectiveCameraContext.ts";
 import {ArrayCameraContextImpl} from "./camera/ArrayCameraContext.ts";
-import {createEventHook} from "@vueuse/core";
+import {createEventHook, useResizeObserver} from "@vueuse/core";
 
 export class RendererViewportContextImpl implements PsrThreePluginTypes.RendererViewportContext {
     readonly renderer: RendererContextImpl
@@ -92,15 +92,17 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                 this.dirty = true
                 // 将画布追加到容器
                 container.appendChild(this.object.domElement);
-                // 监控容器resize
-                const resizeObserver = new ResizeObserver(entries => this.size.value = {
-                    width: entries[0].contentRect.width,
-                    height: entries[0].contentRect.height
-                })
-                resizeObserver.observe(container)
                 this.running.value = true
             }
         })
+        // 监控容器resize
+        useResizeObserver(
+            this.containerRef,
+            entries => this.size.value = {
+                width: entries[0].contentRect.width,
+                height: entries[0].contentRect.height
+            }
+        )
         // 更新渲染器尺寸
         watch(this.size, size => {
             this.dirty = true
