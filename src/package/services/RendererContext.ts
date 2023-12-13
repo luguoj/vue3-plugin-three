@@ -5,6 +5,7 @@ import {ViewportUtils} from "../utils/ViewportUtils.ts";
 import {OrthographicCameraContextImpl} from "./camera/OrthographicCameraContext.ts";
 import {PerspectiveCameraContextImpl} from "./camera/PerspectiveCameraContext.ts";
 import {ArrayCameraContextImpl} from "./camera/ArrayCameraContext.ts";
+import {createEventHook} from "@vueuse/core";
 
 export class RendererViewportContextImpl implements PsrThreePluginTypes.RendererViewportContext {
     readonly renderer: RendererContextImpl
@@ -73,7 +74,11 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
     readonly containerRef: ShallowRef<HTMLElement | undefined> = shallowRef<HTMLElement>()
     readonly object: THREE.WebGLRenderer
     readonly running: Ref<boolean> = ref(false)
-
+    // 事件
+    readonly events = {
+        // 绘制
+        draw: createEventHook<void>()
+    }
     readonly size: Ref<PsrThreePluginTypes.Size | undefined> = ref()
     dirty: boolean = true
     readonly viewports: ShallowReactive<PsrThreePluginTypes.RendererViewportContext[]> = shallowReactive([])
@@ -171,6 +176,7 @@ export class RendererContextImpl implements PsrThreePluginTypes.RendererContext 
                     }
                 }
             }
+            this.events.draw.trigger().then()
         }
     }
 }

@@ -69,6 +69,11 @@ export namespace PsrThreePluginTypes {
         readonly object: THREE.WebGLRenderer
         // 运行标识
         readonly running: Ref<boolean>
+        // 事件
+        readonly events: {
+            // 绘制
+            draw: EventHook<void>
+        }
         readonly size: Ref<Size | undefined>
         // 视口
         readonly viewports: ShallowReactive<RendererViewportContext[]>
