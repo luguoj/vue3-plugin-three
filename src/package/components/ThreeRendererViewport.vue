@@ -37,6 +37,7 @@ function handleResize(entry: ResizeObserverEntry) {
     top: target.offsetTop
   }
 }
+
 // 监听div的位置变化
 const handleMutation = {
   options: {
@@ -46,7 +47,7 @@ const handleMutation = {
     mutations.forEach(mutation => {
       if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
         const div = mutation.target as HTMLDivElement
-        viewport.viewport.value.left =div.offsetLeft
+        viewport.viewport.value.left = div.offsetLeft
         viewport.viewport.value.top = div.offsetTop
       }
     })
@@ -56,7 +57,6 @@ const handleMutation = {
 
 <template>
   <div
-      ref="divRef"
       v-psr-resize-observer="handleResize"
       v-psr-mutation-observer="handleMutation"
       style="pointer-events: none; position: absolute;overflow:hidden;"
