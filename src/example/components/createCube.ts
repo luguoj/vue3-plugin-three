@@ -15,7 +15,7 @@ export function createCube(
     // 为场景添加模型
     const cubeGeo = context.useGeometry('box-geo', () => Promise.resolve(new THREE.BoxGeometry(1, 1, 1)))
     const cubeMat = context.useMaterial('box-mat', () => Promise.resolve(new THREE.MeshBasicMaterial({color: 0x00ff00})))
-    const cubeCtx = context.useMesh(id + '-cube')
+    const cubeCtx = scene.useMesh(id + '-cube')
     cubeCtx.geometry.value = cubeGeo
     cubeCtx.material.value = cubeMat
     scene.addChildren(cubeCtx)
@@ -32,7 +32,7 @@ export function createCube(
         })
     )
     const edgesMat = context.useMaterial('box-edges-mat', () => Promise.resolve(new THREE.LineBasicMaterial({color: 0x4b96ff})))
-    const lineCtx = context.useLine(id + '-edges', () => new THREE.LineSegments())
+    const lineCtx = scene.useLine(id + '-edges', () => new THREE.LineSegments())
     lineCtx.geometry.value = edgesGeo
     lineCtx.material.value = edgesMat
     scene.addChildren(lineCtx)

@@ -7,7 +7,7 @@ import {PsrThreeCanvas} from "../../package";
 import {onMounted, ref, watch} from "vue";
 import {createExampleContext} from "./createExampleContext.ts";
 
-const {context, renderer, scene, camera} = createExampleContext()
+const {renderer, scene, camera} = createExampleContext()
 
 scene.object.background = new THREE.Color(0x000000);
 scene.object.fog = new THREE.Fog(0x000000, 250, 1400);
@@ -19,10 +19,10 @@ camera.object.lookAt(new THREE.Vector3(0, 150, 0))
 // 创建光源
 const dirLight = new THREE.DirectionalLight(0xffffff, 0.4);
 dirLight.position.set(0, 0, 1).normalize();
-scene.addChildren(context.useObject('dir-l', () => dirLight))
+scene.addChildren(scene.useObject('dir-l', () => dirLight))
 
 
-scene.addChildren(context.useObject('point-l', () => {
+scene.addChildren(scene.useObject('point-l', () => {
   const pointLight = new THREE.PointLight(0xffffff, 4.5, 0, 0);
   pointLight.color.setHSL(Math.random(), 1, 0.5);
   pointLight.position.set(0, 100, 90);
@@ -36,7 +36,7 @@ const materials: THREE.MeshPhongMaterial[] = [
 ];
 
 // 创建3d对象组
-const group = context.useObject('text-g', () => {
+const group = scene.useObject('text-g', () => {
   const group = new THREE.Group();
   group.position.y = 100;
   return group
@@ -44,7 +44,7 @@ const group = context.useObject('text-g', () => {
 scene.addChildren(group);
 
 // 创建背景平面
-scene.addChildren(context.useObject('bg-p', () => {
+scene.addChildren(scene.useObject('bg-p', () => {
   const plane = new THREE.Mesh(
       new THREE.PlaneGeometry(10000, 10000),
       new THREE.MeshBasicMaterial({color: 0xffffff, opacity: 0.5, transparent: true})

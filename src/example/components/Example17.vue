@@ -6,14 +6,14 @@ import {PsrThreeCanvas} from "../../package";
 import {createExampleContext} from "./createExampleContext.ts";
 import {OrbitControls} from "three/examples/jsm/controls/OrbitControls";
 
-const {renderer, context, scene, camera} = createExampleContext()
+const {renderer, scene, camera} = createExampleContext()
 camera.object.position.set(5, 5, 5);
 camera.object.lookAt(0, 0, 0)
 camera.object.updateProjectionMatrix()
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.addChildren(context.useObject('grid', () => gridHelper))
+scene.addChildren(scene.useObject('grid', () => gridHelper))
 
 const controls = new OrbitControls(camera.object, renderer.object.domElement)
 controls.target = new THREE.Vector3(0, 0, 0)

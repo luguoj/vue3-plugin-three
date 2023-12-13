@@ -14,9 +14,9 @@ viewport.viewport.value = {height: 1, width: 0.5, left: 0.5}
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.addChildren(context.useObject('grid', () => gridHelper))
+scene.addChildren(scene.useObject('grid', () => gridHelper))
 
-const camera2 = context.usePerspectiveCamera('c2')
+const camera2 = scene.usePerspectiveCamera('c2')
 camera2.object.fov = 15
 camera2.object.aspect = 1
 camera2.object.near = 0.1
@@ -46,7 +46,7 @@ const {lineCtx} = createCube(context, scene, {helper: true})
 
 const scene2 = context.useScene('scene-2')
 scene2.addChildren(lineCtx)
-const camera3 = context.useOrthographicCamera('camera-3')
+const camera3 = scene.useOrthographicCamera('camera-3')
 camera3.object.position.set(3, 1, 2);
 camera3.object.lookAt(new THREE.Vector3(0, 0, 0))
 scene2.addChildren(camera3)

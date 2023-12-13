@@ -12,6 +12,7 @@ camera.object.lookAt(0, 0, 0)
 camera.object.updateProjectionMatrix()
 camera.object.updateMatrixWorld()
 const controls = camera.useFlyControls(renderer.object.domElement)
+controls.enabled.value = true
 controls.object.rollSpeed = 0.5
 
 createCube(context, scene)

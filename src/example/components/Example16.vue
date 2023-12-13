@@ -13,9 +13,9 @@ camera.object.updateProjectionMatrix()
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.addChildren(context.useObject('grid', () => gridHelper))
+scene.addChildren(scene.useObject('grid', () => gridHelper))
 
-const camera2 = context.usePerspectiveCamera('c2')
+const camera2 = scene.usePerspectiveCamera('c2')
 camera2.object.position.set(5, 5, 5);
 camera2.object.lookAt(0, 0, 0)
 camera2.object.updateProjectionMatrix()

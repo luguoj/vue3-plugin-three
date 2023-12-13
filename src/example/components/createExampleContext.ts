@@ -11,7 +11,8 @@ export function createExampleContext(id?: string) {
     const scene = context.useScene(id + '-scene')
     const viewport = renderer.createViewport(id + '-viewport', scene)
     // 创建相机
-    const camera = context.usePerspectiveCamera(id + '-camera')
+    const camera = scene.usePerspectiveCamera(id + '-camera')
+    scene.addChildren(camera)
     // 设置默认相机
     viewport.camera.value = camera
 

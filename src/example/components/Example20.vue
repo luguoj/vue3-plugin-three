@@ -11,7 +11,7 @@ camera.object.position.y = 5;
 camera.object.lookAt(0, 0, 0)
 camera.object.updateProjectionMatrix()
 camera.object.updateMatrixWorld()
-camera.useFirstPersonControls(renderer.object.domElement)
+camera.useFirstPersonControls(renderer.object.domElement).enabled.value = true
 
 createCube(context, scene)
 const stateEnabled = ref(true)

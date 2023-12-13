@@ -16,7 +16,7 @@ viewport.viewport.value = {height: 0.5, width: 0.5, left: 0.25, top: 0.25}
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.addChildren(context.useObject('grid', () => gridHelper))
+scene.addChildren(scene.useObject('grid', () => gridHelper))
 const {cubeCtx} = createCube(context, scene)
 
 const controls = new OrbitControls(camera.object, renderer.object.domElement)

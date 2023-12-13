@@ -13,6 +13,7 @@ camera.object.lookAt(0, 0, 0)
 camera.object.updateProjectionMatrix()
 camera.object.updateMatrixWorld()
 const controls = camera.useArcballControls(renderer.object.domElement, scene)
+controls.enabled.value = true
 controls.object.enableAnimations = true
 controls.object.target = new THREE.Vector3(0, 0, 0)
 

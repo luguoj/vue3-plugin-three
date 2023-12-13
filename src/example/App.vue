@@ -1,14 +1,18 @@
 <script setup lang="ts">
 
-import Example from "./components/Example12.vue";
 import {ref} from "vue";
+import {total} from "./router.ts";
 
 const show = ref(true)
+const exampleRoute = Array.from(new Array(total).keys()).map(i=>`/${i+1}`)
 </script>
 
 <template>
+  <div>
+    <router-link v-for="route in exampleRoute" :key="route" :to="route">{{ route}}</router-link>
+  </div>
   <div v-if="show" style="height: 100%;width: 100%;">
-    <example style="height: 100%;width: 100%;"/>
+    <router-view  style="height: 100%;width: 100%;"/>
   </div>
 </template>
 

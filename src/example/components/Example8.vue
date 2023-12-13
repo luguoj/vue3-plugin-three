@@ -23,6 +23,7 @@ controls.movementSpeed = 10; //相机移动速度
 controls.constrainVertical = true; //约束垂直
 controls.verticalMin = 1.0;
 controls.verticalMax = 2.0;
+
 camera.addUpdateHandler(delta => {
   controls.update(delta)
 })

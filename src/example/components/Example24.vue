@@ -12,6 +12,7 @@ camera.object.lookAt(0, 0, 0)
 camera.object.updateProjectionMatrix()
 camera.object.updateMatrixWorld()
 const controls = camera.useTrackballControls(renderer.object.domElement)
+controls.enabled.value = true
 controls.object.rotateSpeed = 1
 controls.object.zoomSpeed = 1.2
 controls.object.panSpeed = 0.8

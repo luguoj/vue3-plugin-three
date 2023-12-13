@@ -4,7 +4,7 @@ import * as THREE from "three";
 import {PsrThreeCanvas} from "../../package";
 import {createExampleContext} from "./createExampleContext.ts";
 
-const {context, renderer, scene, camera} = createExampleContext()
+const {renderer, scene, camera} = createExampleContext()
 
 camera.object.position.z = 100;
 
@@ -17,7 +17,7 @@ points.push(new THREE.Vector3(0, 10, 0));
 points.push(new THREE.Vector3(10, 0, 0));
 const geometry = new THREE.BufferGeometry().setFromPoints(points);
 // 创建线段（连接几何结构中的连续顶点）
-scene.addChildren(context.useObject('l', () => new THREE.Line(geometry, material)))
+scene.addChildren(scene.useObject('l', () => new THREE.Line(geometry, material)))
 </script>
 
 <template>

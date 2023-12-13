@@ -14,6 +14,7 @@ camera.object.lookAt(0, 0, 0)
 camera.object.updateProjectionMatrix()
 camera.object.updateMatrixWorld()
 const controls = camera.useOrbitControls(renderer.object.domElement)
+controls.enabled.value = true
 
 controls.object.target = new THREE.Vector3(0, 0, 0)
 controls.autoRotate.value = true

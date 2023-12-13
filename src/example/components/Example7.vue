@@ -38,7 +38,7 @@ controls.addEventListener('dragend', function () {
 });
 // 添加鼠标覆盖事件
 controls.addEventListener('hoveron', function (event) {
-  const objCtx = context.retrieveObject(event.object.name)
+  const objCtx = scene.objects[event.object.name]
   objCtx.addUpdateHandler(() => {
     if (objCtx.object instanceof THREE.Mesh) {
       objCtx.object.material.color.set(0x00ffff);
@@ -46,7 +46,7 @@ controls.addEventListener('hoveron', function (event) {
   }, {once: true})
 });
 controls.addEventListener('hoveroff', function (event) {
-  const objCtx = context.retrieveObject(event.object.name)
+  const objCtx = scene.objects[event.object.name]
   objCtx.addUpdateHandler(() => {
     if (objCtx.object instanceof THREE.Mesh) {
       objCtx.object.material.color.set(0x00ff00);

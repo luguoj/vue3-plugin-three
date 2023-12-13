@@ -9,9 +9,10 @@ const {renderer, context, scene, viewport} = createExampleContext()
 
 // 坐标格辅助器
 const gridHelper = new THREE.GridHelper(10, 10, 0x444444, 0x888888);
-scene.addChildren(context.useObject('grid', () => gridHelper))
+scene.addChildren(scene.useObject('grid', () => gridHelper))
 
-const cameraArr = context.useArrayCamera('c-arr')
+const cameraArr = scene.useArrayCamera('c-arr')
+scene.addChildren(cameraArr)
 viewport.camera.value = cameraArr
 
 const viewport1 = cameraArr.createViewport('1', {width: 0.3, height: 0.3, top: 0.5, right: 0.5})
