@@ -17,5 +17,7 @@ watch(() => props.contextRunning, (running) => {
 </script>
 
 <template>
-  <slot/>
+  <div>
+    <slot/>
+  </div>
 </template>
