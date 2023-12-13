@@ -1,8 +1,11 @@
 import {ref, ShallowRef, watch} from "vue";
+import {PsrThreePluginTypes} from "../types";
 
 export class StateContext {
+    private _renderer: PsrThreePluginTypes.RendererContext
+    readonly enabled = ref(false)
     static readonly PR = Math.round(window.devicePixelRatio || 1)
-    static readonly  PANEL_SIZE = {
+    static readonly PANEL_SIZE = {
         WIDTH: 80 * StateContext.PR,
         HEIGHT: 48 * StateContext.PR,
         TEXT_X: 3 * StateContext.PR,
@@ -29,11 +32,21 @@ export class StateContext {
     prevTime: number = this.beginTime
     frames: number = 0;
 
-    constructor() {
+    constructor(renderer: PsrThreePluginTypes.RendererContext) {
+        this._renderer = renderer
         watch(this.canvasRef, canvas => {
             if (canvas) {
                 const PR = StateContext.PR
-                const {WIDTH, HEIGHT, TEXT_X, TEXT_Y, GRAPH_X, GRAPH_Y, GRAPH_WIDTH, GRAPH_HEIGHT} = StateContext.PANEL_SIZE
+                const {
+                    WIDTH,
+                    HEIGHT,
+                    TEXT_X,
+                    TEXT_Y,
+                    GRAPH_X,
+                    GRAPH_Y,
+                    GRAPH_WIDTH,
+                    GRAPH_HEIGHT
+                } = StateContext.PANEL_SIZE
                 const context = this.canvasContext = canvas.getContext('2d')!;
                 context.font = 'bold ' + (9 * PR) + 'px Helvetica,Arial,sans-serif';
                 context.textBaseline = 'top';
@@ -54,14 +67,20 @@ export class StateContext {
                 }
             }
         })
+        this._renderer.context.events.beginUpdate.on(() => this.enabled.value && this.begin())
+        this._renderer.context.events.endUpdate.on(() => this.enabled.value && this.end())
+        this._renderer.events.draw.on(() => this.enabled.value && this.draw())
     }
 
     begin() {
         this.beginTime = (performance || Date).now();
     }
 
-    end() {
+    draw() {
         this.frames++;
+    }
+
+    end() {
         const time = (performance || Date).now();
         this.updatePanel(1, {value: time - this.beginTime, maxValue: 200})
 
@@ -75,12 +94,8 @@ export class StateContext {
         return time;
     }
 
-    update() {
-        this.beginTime = this.end();
-    }
-
     private updatePanel(i: number, values: { value: number, maxValue: number }) {
-        if (this.canvasContext && this.canvasRef.value) {
+        if (this.canvasContext && this.canvasRef.value && this.enabled.value) {
             const canvas = this.canvasRef.value
             const context = this.canvasContext
             const PR = StateContext.PR
