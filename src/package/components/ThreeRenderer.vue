@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import {inject, provide, watch} from "vue";
-import {INJECTION_KEY_THREE_CONTEXT, INJECTION_KEY_THREE_RENDERER, PsrThreeCanvas} from "./index.ts";
+import {inject, provide, shallowRef, watch} from "vue";
+import {WebGL} from "three/examples/jsm/Addons";
+import {INJECTION_KEY_THREE_CONTEXT, INJECTION_KEY_THREE_RENDERER} from "./index.ts";
 import {PsrThreePluginTypes} from "../types";
+import ThreeStatePanel from "./ThreeStatePanel.vue";
 
 
 const props = withDefaults(defineProps<{
@@ -20,16 +22,30 @@ provide(INJECTION_KEY_THREE_RENDERER, renderer)
 watch(() => props.rendererRunning, (running) => {
   renderer.running.value = running
 }, {immediate: true})
+
+// 检查WebGL兼容性
+const isWebGLAvailable = WebGL.isWebGLAvailable();
+const containerRef = shallowRef<HTMLElement>()
+
+watch(containerRef, container => {
+  renderer.containerRef.value = container
+})
 </script>
 
 <template>
-  <div style="position: relative;overflow: hidden;">
-    <psr-three-canvas
+  <div
+      style="position: relative;overflow: hidden;"
+      v-if="isWebGLAvailable"
+  >
+    <div
+        style="position: absolute;width:100%;height:100%;"
+        ref="containerRef"
+    />
+    <three-state-panel
+        style="position: absolute;"
         :renderer-context="renderer"
         :state-enabled="stateEnabled"
-        style="position: absolute;width: 100%;height: 100%;"
-    >
-    </psr-three-canvas>
+    />
     <slot/>
   </div>
 </template>
