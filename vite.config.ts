@@ -3,10 +3,12 @@ import vue from '@vitejs/plugin-vue'
 import {resolve} from "path";
 import dts from 'vite-plugin-dts'
 import libCss from "vite-plugin-libcss"
+import vueJsxPlugin from "@vitejs/plugin-vue-jsx";
 
 export default defineConfig({
     plugins: [
         vue(),
+        vueJsxPlugin(),
         libCss(),
         dts({
             exclude: ["src/example/**/*.vue", "src/example/**/*.ts"],
