@@ -4,45 +4,45 @@ import {
   PsrThreeContext,
   PsrThreeObject3d,
   PsrThreePerspectiveCamera,
-  PsrThreePerspectiveCameraExposed,
   PsrThreeRenderer,
-  PsrThreeRendererViewport,
   PsrThreeScene
 } from "../../package";
-import {ref, watch} from "vue";
+import Example26Viewport from "./Example26Viewport.vue";
+import {PsrThreePluginTypes} from "../../package/types";
+import Example26Object from "./Example26Object.vue";
+import {cubes} from "./Example26Service.ts";
 
-function buildCube() {
-  return new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshBasicMaterial({color: 0x00ff00})
-  )
+function handleCameraReady(camera: PsrThreePluginTypes.PerspectiveCameraContext) {
+  camera.object.far=10
+  camera.object.position.z = 5
 }
 
-const cameraRef = ref<PsrThreePerspectiveCameraExposed>()
-watch(cameraRef, camera => {
-  if (camera) camera.camera.addUpdateHandler(() => {
-    camera.camera.object.position.z = 5
-  }, {once: true})
-})
+function handleObjectUpdate(event: { object: PsrThreePluginTypes.Object3DContext<THREE.Object3D>, delta: number }) {
+  event.object.object.rotation.x += event.delta*0.1
+  event.object.object.rotation.y += event.delta*0.1
+}
 </script>
 
 <template>
   <psr-three-context>
-    <psr-three-renderer style="height: 100%;" object-name="renderer-1" state-enabled>
-      <psr-three-renderer-viewport
-          object-name="viewport-0"
-          scene-name="scene-1"
-          camera-name="camera-1"
-          style="width: 50%;height: 30%;top: 10%;left: 10%;"
-      >
-        <div style="border:1px solid red;height: calc(100% - 2px);width: calc(100% - 2px);"></div>
-      </psr-three-renderer-viewport>
+    <psr-three-renderer
+        style="height: 100%;"
+        object-name="renderer-1"
+        state-enabled
+    >
+      <example26-viewport/>
     </psr-three-renderer>
     <psr-three-scene
         object-name="scene-1"
     >
-      <psr-three-perspective-camera ref="cameraRef" object-name="camera-1"/>
-      <psr-three-object3d :object-provider="buildCube" object-name="cube-1"/>
+      <psr-three-perspective-camera object-name="camera-1" @object-ready="handleCameraReady"/>
+      <psr-three-object3d object-name="cube-parent" @object-update="handleObjectUpdate">
+        <example26-object
+            v-for="cube in cubes" :key="cube.name"
+            :object-name="cube.name"
+            :object-position="cube.position"
+        />
+      </psr-three-object3d>
     </psr-three-scene>
   </psr-three-context>
 </template>

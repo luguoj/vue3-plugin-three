@@ -57,8 +57,9 @@ camera.addUpdateHandler(updateTitlePos, {once: true})
             v-if="titlePos"
             style="position: absolute;color: lightyellow;"
             :style="{
-            ...titlePos
-          }"
+              left: titlePos.left + 'px',
+              bottom: titlePos.bottom + 'px',
+            }"
         >box
         </div>
       </template>
