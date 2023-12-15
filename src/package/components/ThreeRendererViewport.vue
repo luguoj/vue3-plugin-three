@@ -67,7 +67,7 @@ const handleMutation = {
   <div
       v-psr-resize-observer="handleResize"
       v-psr-mutation-observer="handleMutation"
-      style="pointer-events: none; position: absolute;overflow:hidden;"
+      style="pointer-events: none; position: absolute;"
   >
     <slot/>
   </div>
