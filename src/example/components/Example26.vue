@@ -15,6 +15,8 @@ import {cubes} from "./Example26Service.ts";
 function handleCameraReady(camera: PsrThreePluginTypes.PerspectiveCameraContext) {
   camera.object.far=10
   camera.object.position.z = 5
+  camera.object.updateProjectionMatrix()
+  camera.object.updateMatrixWorld()
 }
 
 function handleObjectUpdate(event: { object: PsrThreePluginTypes.Object3DContext<THREE.Object3D>, delta: number }) {
@@ -36,7 +38,7 @@ function handleObjectUpdate(event: { object: PsrThreePluginTypes.Object3DContext
         object-name="scene-1"
     >
       <psr-three-perspective-camera object-name="camera-1" @object-ready="handleCameraReady"/>
-      <psr-three-object3d object-name="cube-parent" @object-update="handleObjectUpdate">
+      <psr-three-object3d object-name="cube-parent" :object-update-handler="handleObjectUpdate">
         <example26-object
             v-for="cube in cubes" :key="cube.name"
             :object-name="cube.name"

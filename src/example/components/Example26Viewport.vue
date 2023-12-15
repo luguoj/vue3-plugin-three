@@ -3,42 +3,50 @@ import * as THREE from 'three'
 import {PsrThreeRendererViewport} from "../../package";
 import {cubes, CubeType} from "./Example26Service.ts";
 import {PsrThreePluginTypes} from "../../package/types";
-import {reactive, UnwrapRef} from "vue";
+import {reactive, UnwrapRef, watch} from "vue";
 
 type CubePosType = CubeType & {
-  pos?: { left: string, bottom: string }
+  style?: { left: string, bottom: string }
   outOfView: boolean
   inFrustum: boolean
 }
 
 const cubePoses: UnwrapRef<CubePosType[]> = reactive<CubePosType[]>([])
+const frustum = new THREE.Frustum()
+
+function updateFrustum(camera: THREE.Camera) {
+  frustum.setFromProjectionMatrix(
+      new THREE.Matrix4().multiplyMatrices(
+          camera.projectionMatrix,
+          camera.matrixWorldInverse
+      )
+  )
+}
+
+let hook: { off: () => void } | undefined
+
+function handleViewportReady(viewport: PsrThreePluginTypes.RendererViewportContext) {
+  watch(viewport.camera, camera => {
+    hook && hook.off()
+    hook = undefined
+    if (camera) {
+      updateFrustum(camera.object)
+      hook = camera.events.changed.on(() => updateFrustum(camera.object))
+    }
+  })
+}
 
 function handleViewportDraw(viewport: PsrThreePluginTypes.RendererViewportContext) {
-  const camera = viewport.camera.value
-  if (camera) {
-    const frustum = new THREE.Frustum()
-    frustum.setFromProjectionMatrix(
-        new THREE.Matrix4().multiplyMatrices(
-            camera.object.projectionMatrix,
-            camera.object.matrixWorldInverse
-        )
-    )
-    cubePoses.splice(0, cubePoses.length)
-    cubePoses.push(...cubes.map(cube => {
-      const pos = viewport.getObjectCssPosition(cube.name)
-      return {
-        ...cube,
-        pos: pos && {left: pos.left + 'px', bottom: pos.bottom + 'px'},
-        outOfView: !!pos?.outOfView,
-        inFrustum: frustum.containsPoint(viewport.scene.objects[cube.name].object.position)
-      }
-    }).filter(cubePos => cubePos.pos && !cubePos.outOfView && cubePos.inFrustum))
-  } else {
-    cubePoses.forEach(cubePos => {
-      cubePos.pos = undefined
-      cubePos.inFrustum = false
-    })
-  }
+  cubePoses.splice(0, cubePoses.length)
+  cubePoses.push(...cubes.map(cube => {
+    const pos = viewport.getObjectPosition(cube.name)
+    return {
+      ...cube,
+      style: pos && {left: pos.viewPosition.x + 'px', bottom: pos.viewPosition.y + 'px'},
+      outOfView: !!pos?.outOfView,
+      inFrustum: (!!pos) && frustum.containsPoint(pos.worldPosition)
+    }
+  }).filter(cubePos => cubePos.style && !cubePos.outOfView && cubePos.inFrustum))
 }
 
 </script>
@@ -49,6 +57,7 @@ function handleViewportDraw(viewport: PsrThreePluginTypes.RendererViewportContex
       scene-name="scene-1"
       camera-name="camera-1"
       style="width: 50%;height: 30%;top: 10%;left: 10%;"
+      @viewport-ready="handleViewportReady"
       @viewport-draw="handleViewportDraw"
   >
     <div style="border:1px solid red;height: calc(100% - 2px);width: calc(100% - 2px);position: relative;">
@@ -56,10 +65,10 @@ function handleViewportDraw(viewport: PsrThreePluginTypes.RendererViewportContex
           v-for="cube in cubePoses" :key="cube.name"
           style="position: absolute; pointer-events: all;"
           :style="{
-                  ...cube.pos
+                  ...cube.style
                 }"
       >
-        <button>click me</button>
+        <button>{{cube.name.split('-')[1]}}</button>
       </div>
     </div>
   </psr-three-renderer-viewport>
