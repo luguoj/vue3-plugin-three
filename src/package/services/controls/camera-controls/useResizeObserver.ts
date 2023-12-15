@@ -3,7 +3,6 @@ export function useResizeObserver<CTX extends {
     object: { handleResize: () => void }
 }>(ctx: CTX) {
     const resizeObserver = new ResizeObserver(() => {
-        console.log('resize')
         ctx.object.handleResize()
     })
     resizeObserver.observe(ctx.eventTarget)
