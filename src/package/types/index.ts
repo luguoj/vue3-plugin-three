@@ -139,6 +139,11 @@ export namespace PsrThreePluginTypes {
         // 3D对象
         readonly object: O;
         parent?: AbstractObject3DContext<any>
+        // 事件
+        readonly events: {
+            // 变更
+            changed: EventHook<void>
+        }
 
         // 脏标识
         isDirty(): boolean

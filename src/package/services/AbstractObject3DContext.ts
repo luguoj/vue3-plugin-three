@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import {PsrThreePluginTypes} from "../types";
 import {Object3DUtils} from "../utils/Object3DUtils.ts";
+import {createEventHook} from "@vueuse/core";
 
 const HANDLER_MARK_DIRTY = () => {
 }
@@ -10,6 +11,11 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
     readonly context: PsrThreePluginTypes.ThreeContext
     readonly object: O;
     parent?: PsrThreePluginTypes.AbstractObject3DContext<any>
+    // 事件
+    readonly events = {
+        // 变更
+        changed: createEventHook<void>()
+    }
 
     get name(): string {
         return this.object.name
@@ -121,6 +127,9 @@ export abstract class AbstractObject3DContextImpl<O extends THREE.Object3D> impl
         let flag = false
         for (const updateHandler of this._updateHandlers.values()) {
             flag = (updateHandler(delta) !== false) || flag
+        }
+        if (flag) {
+            this.events.changed.trigger().then()
         }
         for (const child of this._children) {
             child.update(delta, time)
