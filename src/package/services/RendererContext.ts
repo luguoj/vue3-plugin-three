@@ -60,9 +60,11 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
             // 转换为CSS坐标
             const left = (tempV.x * 0.5 + 0.5) * this.viewportRect.value.width
             const bottom = (tempV.y * 0.5 + 0.5) * this.viewportRect.value.height
+            const outOfView = left < 0 || bottom < 0 || left > this.viewportRect.value.width || bottom > this.viewportRect.value.height
             return {
-                left: left + 'px',
-                bottom: bottom + 'px'
+                left,
+                bottom,
+                outOfView
             }
         }
         return undefined

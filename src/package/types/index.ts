@@ -16,8 +16,9 @@ export namespace PsrThreePluginTypes {
     }
 
     export type ObjectCssPosition = {
-        left: string
-        bottom: string
+        left: number
+        bottom: number
+        outOfView: boolean
     }
 
     export type Viewport = {
@@ -89,6 +90,8 @@ export namespace PsrThreePluginTypes {
     }
 
     export interface RendererViewportContext {
+        // 渲染器上下文
+        readonly renderer: RendererContext
         readonly name: string
         // 场景上下文
         readonly scene: SceneContext
