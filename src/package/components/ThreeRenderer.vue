@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import {inject, provide, shallowRef, watch} from "vue";
+import {provide, shallowRef, watch} from "vue";
 import {WebGL} from "three/examples/jsm/Addons";
-import {INJECTION_KEY_THREE_CONTEXT, INJECTION_KEY_THREE_RENDERER} from "./index.ts";
-import {PsrThreePluginTypes} from "../types";
 import ThreeStatePanel from "./ThreeStatePanel.vue";
+import {PsrThree} from "../plugins";
 
 
 const props = withDefaults(defineProps<{
@@ -15,9 +14,9 @@ const props = withDefaults(defineProps<{
   stateEnabled: false
 })
 
-const threeContext = inject<PsrThreePluginTypes.ThreeContext>(INJECTION_KEY_THREE_CONTEXT)!
-const renderer = threeContext.useRenderer(props.objectName)
-provide(INJECTION_KEY_THREE_RENDERER, renderer)
+const context = PsrThree.useContext()
+const renderer = context.useRenderer(props.objectName)
+provide(PsrThree.INJECTION_KEY_THREE_RENDERER, renderer)
 
 watch(() => props.rendererRunning, (running) => {
   renderer.running.value = running

@@ -17,12 +17,3 @@ export {
     PsrThreePerspectiveCamera,
     PsrThreeObject3d
 }
-
-export const INJECTION_KEY_THREE_CONTEXT = Symbol('three-context')
-export const INJECTION_KEY_THREE_RENDERER = Symbol('three-renderer')
-export const INJECTION_KEY_THREE_SCENE = Symbol('three-scene')
-export const INJECTION_KEY_THREE_PARENT = Symbol('three-parent')
-
-export type PsrThreePerspectiveCameraExposed = {
-    camera: PsrThreePluginTypes.PerspectiveCameraContext
-}

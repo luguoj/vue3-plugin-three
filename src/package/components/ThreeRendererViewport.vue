@@ -1,20 +1,19 @@
 <script setup lang="ts">
-import {inject, watchEffect} from "vue";
+import {provide, watchEffect} from "vue";
 import {vPsrMutationObserver, vPsrResizeObserver} from "@psr-framework/vue3-plugin-utils"
 import {PsrThreePluginTypes} from "../types";
-import {INJECTION_KEY_THREE_CONTEXT, INJECTION_KEY_THREE_RENDERER} from "./index.ts";
+import {PsrThree} from "../plugins";
 
 const props = defineProps<{
   objectName: string
   sceneName: string,
   cameraName?: string
 }>()
-const threeContext = inject<PsrThreePluginTypes.ThreeContext>(INJECTION_KEY_THREE_CONTEXT)
-if (!threeContext) throw new Error("No ThreeContext found")
-const renderer = inject<PsrThreePluginTypes.RendererContext>(INJECTION_KEY_THREE_RENDERER)
-if (!renderer) throw new Error("No RendererContext found")
+const context = PsrThree.useContext()
+const renderer = PsrThree.useRenderer()
 
-const viewport = renderer.createViewport(props.objectName, threeContext.useScene(props.sceneName));
+const viewport = renderer.createViewport(props.objectName, context.useScene(props.sceneName));
+provide(PsrThree.INJECTION_KEY_THREE_RENDERER_VIEWPORT, viewport)
 // 监听camera
 watchEffect(() => {
   if (props.cameraName) {
