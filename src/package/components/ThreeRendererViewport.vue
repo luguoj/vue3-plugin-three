@@ -9,11 +9,20 @@ const props = defineProps<{
   sceneName: string,
   cameraName?: string
 }>()
+const emits = defineEmits<{
+  (e: 'viewportReady', viewport: PsrThreePluginTypes.RendererViewportContext): void
+  (e: 'viewportDraw', viewport: PsrThreePluginTypes.RendererViewportContext): void
+}>()
+
 const context = PsrThree.useContext()
 const renderer = PsrThree.useRenderer()
 
 const viewport = renderer.createViewport(props.objectName, context.useScene(props.sceneName));
 provide(PsrThree.INJECTION_KEY_THREE_RENDERER_VIEWPORT, viewport)
+emits('viewportReady', viewport)
+viewport.renderer.events.draw.on(() => {
+  emits('viewportDraw', viewport)
+})
 // 监听camera
 watchEffect(() => {
   if (props.cameraName) {
