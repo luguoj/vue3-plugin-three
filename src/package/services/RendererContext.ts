@@ -45,25 +45,26 @@ export class RendererViewportContextImpl implements PsrThreePluginTypes.Renderer
         })
     }
 
-    getObjectCssPosition(objectName: string): PsrThreePluginTypes.ObjectCssPosition | undefined {
+    getObjectPosition(objectName: string): PsrThreePluginTypes.ObjectCssPosition | undefined {
         const camera = this.camera.value?.object
         const object = this.scene.objects[objectName]?.object
         if (camera && object) {
             // 获取对象位置
-            const tempV = new THREE.Vector3()
+            const worldPosition = new THREE.Vector3()
             // 更新模型在世界坐标系中的位置（updateWorldMatrix(true, false)在getWorldPosition中调用了，无需单独调用）
-            object.getWorldPosition(tempV)
+            object.getWorldPosition(worldPosition)
             // 获取标准化屏幕坐标（x,y在-1~1之间）
             // x = -1 标识最左侧
             // y = -1 标识最底部
-            tempV.project(camera)
+            const tempV = worldPosition.clone().project(camera)
             // 转换为CSS坐标
-            const left = (tempV.x * 0.5 + 0.5) * this.viewportRect.value.width
-            const bottom = (tempV.y * 0.5 + 0.5) * this.viewportRect.value.height
-            const outOfView = left < 0 || bottom < 0 || left > this.viewportRect.value.width || bottom > this.viewportRect.value.height
+            const x = (tempV.x * 0.5 + 0.5) * this.viewportRect.value.width
+            const y = (tempV.y * 0.5 + 0.5) * this.viewportRect.value.height
+            const viewPosition = new THREE.Vector2(x, y)
+            const outOfView = x < 0 || y < 0 || x > this.viewportRect.value.width || y > this.viewportRect.value.height
             return {
-                left,
-                bottom,
+                worldPosition,
+                viewPosition,
                 outOfView
             }
         }

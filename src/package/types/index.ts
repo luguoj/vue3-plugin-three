@@ -16,8 +16,8 @@ export namespace PsrThreePluginTypes {
     }
 
     export type ObjectCssPosition = {
-        left: number
-        bottom: number
+        worldPosition: THREE.Vector3
+        viewPosition: THREE.Vector2
         outOfView: boolean
     }
 
@@ -103,7 +103,7 @@ export namespace PsrThreePluginTypes {
         // 运行标识
         readonly running: Ref<boolean>
 
-        getObjectCssPosition(objectName: string): ObjectCssPosition | undefined
+        getObjectPosition(objectName: string): ObjectCssPosition | undefined
     }
 
     export type CameraType =
